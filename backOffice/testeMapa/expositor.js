@@ -10,7 +10,7 @@ export class Expositor{
         this.products = [];
         this.capacity = 0;
         this.divisions = 0;
-        this.storeSection = '';
+        this.storeSection = 0;
         this.storeSectionColor = '';
 
         this.addPosX = 0; 

@@ -22,7 +22,6 @@ document.getElementById("rotateExpositor").onmousedown = (event) =>{
         canvas.reziseShapes = [];
     } catch (error) {
         window.alert("Selecione um expositor para realizar esta ação");
-        console.log('3')
     }
     
     canvas.draw_shapes();
@@ -33,8 +32,7 @@ document.getElementById("excludeExpositor").onmousedown = (event) =>{
         canvas.excludeExpositores(canvas.getSelectedExpositor())
         canvas.reziseShapes = [];
     } catch (error) {
-        window.alert("Selecione um expositor para realizar esta ação");
-        console.log('4')
+        window.alert("Selecione um expositor para realizar esta ação"); 
     }
     
     canvas.draw_shapes();
@@ -45,8 +43,7 @@ document.getElementById("resizeExpositor").onmousedown = (event) =>{
         let selectedExpositor = canvas.getSelectedExpositor()
         canvas.resizers(selectedExpositor)
     } catch (error) {
-        window.alert("Selecione um expositor para realizar esta ação");
-        console.log('5')
+        window.alert("Selecione um expositor para realizar esta ação"); 
     }
     
     canvas.draw_shapes();
@@ -57,32 +54,48 @@ document.getElementById("detailExpositor").onmousedown = (event) =>{
     try {
         selectedExpositor = canvas.getCurrentExpositor();
 
+        let capacity = document.getElementById('selectCapacity')
+
+        console.log(selectedExpositor.capacity)
+        console.log(capacity)
+
+        // resolver problema de caso expo não tenha produtos, da segunda vez q se entra nele, os campos estão vazios
+
+        console.log(selectedExpositor.capacity === 0)
+
         if(selectedExpositor.capacity === 0){
-            document.getElementById('selectCapacity').value = "0";
+            console.log("1")
+            capacity.value = selectedExpositor.capacity;
             document.getElementById("addProdutos").innerHTML = '';
             selectedExpositor.products = [];
+            
         }else{
-            var capacity = document.getElementById('selectCapacity').value;
-            capacity = selectedExpositor.capacity;
+            console.log("2")
+            capacity.value = selectedExpositor.capacity;
 
-            createProductSpaces(capacity);
+            createProductSpaces(capacity.value);
 
-            for (let index = 0; index < capacity; index++) {
+
+            for (let index = 0; index < parseInt(capacity.value); index++) {
                 var productSpace = document.getElementById('selectProduct'+index);
-                productSpace.value = selectedExpositor.products[index];
+
+                var ExpositorProduct = selectedExpositor.products[index];
+                console.log(ExpositorProduct)
+                if(ExpositorProduct !== undefined)
+                    productSpace.value = ExpositorProduct.toString();
             }
         }
     
-        if(selectedExpositor.storeSection === ''){
+        if(selectedExpositor.storeSection === 0){
             document.getElementById('selectSector').value = "0";
         }else{
-            document.getElementById('selectSector').value =  selectedExpositor.storeSection;
+            document.getElementById('selectSector').value =  selectedExpositor.storeSection.toString(); 
         }
     
         if(selectedExpositor.divisions === 0){
             document.getElementById('selectDivision').value = "0";
         }else{
-            document.getElementById('selectDivision').value =  selectedExpositor.divisions;
+            document.getElementById('selectDivision').value =  selectedExpositor.divisions.toString();
         }
 
     } catch (error) {
@@ -97,12 +110,10 @@ document.getElementById("detailExpositor").onmousedown = (event) =>{
     myModalTitle._element.innerText = 'Expositor ' + selectedExpositor.id;
 
 
-    myModal.toggle();
-    myModal.show();
 
     document.getElementById('selectCapacity').onchange = (event) => {
         var inputText = event.target.value;
-        selectedExpositor.capacity = inputText;
+        selectedExpositor.capacity = parseInt(inputText);
 
         createProductSpaces(inputText);
 
@@ -114,12 +125,12 @@ document.getElementById("detailExpositor").onmousedown = (event) =>{
     
     document.getElementById('selectSector').onchange = (event) => {
         var inputText = event.target.value;
-        selectedExpositor.storeSection = inputText;
+        selectedExpositor.storeSection = parseInt(inputText);
     }
     
     document.getElementById('selectDivision').onchange = (event) => {
         var inputText = event.target.value;
-        selectedExpositor.divisions = inputText;
+        selectedExpositor.divisions = parseInt(inputText);
     }
 
     document.getElementById("addProdutos").onchange = (event) => {
@@ -165,6 +176,10 @@ document.getElementById("detailExpositor").onmousedown = (event) =>{
         }
     }
     // saveInfo id do botão de salvar modal
+
+    
+    myModal.toggle();
+    myModal.show();
 }
 
 

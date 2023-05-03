@@ -26,6 +26,7 @@ export class Quadro{
     
     
     addExpositores(expositor){
+        console.log(expositor.capacity)
         this.shapes.push(expositor);
         
         this.draw_shapes();  
