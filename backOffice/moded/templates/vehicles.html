@@ -1,0 +1,75 @@
+{% extends 'index.html'%}
+
+{% block navOptions %}
+    <ul class="sidebar-nav">
+        <li class="sidebar-item">
+            <a class="sidebar-link" href="{{url_for('homeModule.toHomePage')}}">
+                <i class="align-middle" data-feather="sliders"></i> <span class="align-middle">Home</span>
+            </a>
+        </li>
+        <li class="sidebar-item  ">
+            <a class="sidebar-link" href="{{url_for('userModule.toUsersPage')}}">
+                <i class="align-middle" data-feather="user"></i> <span class="align-middle">Utilzadores</span>
+            </a>
+        </li>
+        <li class="sidebar-item">
+            <a class="sidebar-link" href="{{url_for('rideModule.toRidePage')}}">
+                <i class="align-middle" data-feather="book"></i> <span class="align-middle">Boleias</span>
+            </a>
+        </li>
+        <li class="sidebar-item">
+            <a class="sidebar-link" href="{{url_for('reservaModule.toReservaPage')}}">
+                <i class="align-middle" data-feather="book"></i> <span class="align-middle">Reservas</span>
+            </a>
+        </li>
+        <li class="sidebar-item  active">
+            <a class="sidebar-link" href="{{url_for('vehicleModule.toVehiclesPage')}}">
+                <i class="align-middle" data-feather="book"></i> <span class="align-middle">Veiculos</span>
+            </a>
+        </li>
+    </ul>
+{% endblock navOptions %}
+
+{% block page %}
+<h3 class="position-absolute m-2 fw-bold text-">Veiculos</h3>
+{% endblock page %}
+
+{% block profile %}
+<img src="{{url_for('static', filename='img/avatars/avatar.jpg')}}" class="avatar img-fluid rounded me-1"/> <span class="text-dark">{{activeUser.name}}</span>
+{% endblock profile %}
+
+{% block content %}
+<div class="container-md" id="table">
+    <div class="table-responsive"> 
+        <table class="table display nowrap" id="tabela">
+            <thead class="bg-primary text-white">
+                <tr>
+                    <th>Id</th>
+                    <th>Matricula</th>
+                    <th>Dono</th>
+                    <th>Cor</th>
+                    <th>Nº Lugares</th>
+                    <th>Especificações</th>
+                    <th>Eliminado</th>
+                    <th>Apagar Veiculo</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- GetUsers vem do teu init  -->
+                {% for v in veiculos %}
+                    <tr>
+                        <td>{{v.Vehicle.id}}</td>
+                        <td>{{v.Vehicle.license_plate}}</td>
+                        <td>{{v.User.name}}</td>
+                        <td>{{v.Vehicle.color}}</td>
+                        <td>{{v.Vehicle.number_of_seats}}</td>
+                        <td>{{v.Vehicle.vehicle_specs}}</td>
+                        <td>{{v.Vehicle.deleted}}</td>
+                        <td><button class="ApagarV btn btn-primary" id="{{v.Vehicle.id}}">Apagar Veiculo</button></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock content %}

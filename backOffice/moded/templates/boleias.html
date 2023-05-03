@@ -1,0 +1,78 @@
+{% extends 'index.html'%}
+
+{% block navOptions %}
+    <ul class="sidebar-nav">
+        <li class="sidebar-item">
+            <a class="sidebar-link" href="{{url_for('homeModule.toHomePage')}}">
+                <i class="align-middle" data-feather="sliders"></i> <span class="align-middle">Home</span>
+            </a>
+        </li>
+        <li class="sidebar-item ">
+            <a class="sidebar-link" href="{{url_for('userModule.toUsersPage')}}">
+                <i class="align-middle" data-feather="user"></i> <span class="align-middle">Utilzadores</span>
+            </a>
+        </li>
+        <li class="sidebar-item active">
+            <a class="sidebar-link" href="{{url_for('rideModule.toRidePage')}}">
+                <i class="align-middle" data-feather="book"></i> <span class="align-middle">Boleias</span>
+            </a>
+        </li>
+        <li class="sidebar-item ">
+            <a class="sidebar-link" href="{{url_for('reservaModule.toReservaPage')}}">
+                <i class="align-middle" data-feather="book"></i> <span class="align-middle">Reservas</span>
+            </a>
+        </li>
+        <li class="sidebar-item">
+            <a class="sidebar-link" href="{{url_for('vehicleModule.toVehiclesPage')}}">
+                <i class="align-middle" data-feather="book"></i> <span class="align-middle">Veiculos</span>
+            </a>
+        </li>
+    </ul>
+{% endblock navOptions %}
+
+
+{% block page %}
+<h3 class="position-absolute m-2 fw-bold text-">Boleias</h3>
+{% endblock page %}
+
+{% block profile %}
+<img src="{{url_for('static', filename='img/avatars/avatar.jpg')}}" class="avatar img-fluid rounded me-1"/> <span class="text-dark">{{activeUser.name}}</span>
+{% endblock profile %}
+
+{% block content %}
+<div class="container-md" id="table">
+    <div class="table-responsive"> 
+        <table class="table display nowrap" id="tabela">
+            <thead class="bg-primary text-white">
+                <tr>
+                    <th>Id</th>
+                    <th>Condutor</th>
+                    <th>Matricula</th>
+                    <th>Data</th>
+                    <th>Destino</th>
+                    <th>Origem</th>
+                    <th>Lugares</th>
+                    <th>Eliminada</th>
+                    <th>Apagar Boleia</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- GetUsers vem do teu init  -->
+                {% for ride in get_Ride %}  <!-- n sei se get_Ride  -->
+                <tr>
+                <td>{{ride.Ride.id}}</td>
+                <td>{{ride.User.name}}</td>
+                <td>{{ride.Vehicle.license_plate}}</td>
+                <td>{{ride.Ride.ride_date}}</td>
+                <td>{{ride.Ride.local_destiny}}</td>
+                <td>{{ride.Ride.local_origin}}</td>
+                <td>{{ride.Ride.number_of_available_seats}}</td>
+                <td>{{ride.Ride.deleted}}</td>
+                <td><button class="ApagarB btn btn-primary" id="{{ride.Ride.id}}">Apagar Boleia</button></td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div> 
+{% endblock content %}

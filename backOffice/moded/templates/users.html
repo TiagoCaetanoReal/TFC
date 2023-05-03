@@ -1,0 +1,138 @@
+{% extends 'index.html'%}
+
+{% block navOptions %}
+    <ul class="sidebar-nav">
+        <li class="sidebar-item">
+            <a class="sidebar-link" href="{{url_for('homeModule.toHomePage')}}">
+                <i class="align-middle" data-feather="sliders"></i> <span class="align-middle">Home</span>
+            </a>
+        </li>
+        <li class="sidebar-item  active">
+            <a class="sidebar-link" href="{{url_for('userModule.toUsersPage')}}">
+                <i class="align-middle" data-feather="user"></i> <span class="align-middle">Utilzadores</span>
+            </a>
+        </li>
+        <li class="sidebar-item">
+            <a class="sidebar-link" href="{{url_for('rideModule.toRidePage')}}">
+                <i class="align-middle" data-feather="book"></i> <span class="align-middle">Boleias</span>
+            </a>
+        </li>
+        <li class="sidebar-item">
+            <a class="sidebar-link" href="{{url_for('reservaModule.toReservaPage')}}">
+                <i class="align-middle" data-feather="book"></i> <span class="align-middle">Reservas</span>
+            </a>
+        </li>
+        <li class="sidebar-item">
+            <a class="sidebar-link" href="{{url_for('vehicleModule.toVehiclesPage')}}">
+                <i class="align-middle" data-feather="book"></i> <span class="align-middle">Veiculos</span>
+            </a>
+        </li>
+    </ul>
+{% endblock navOptions %}
+
+{% block page %}
+<h3 class="position-absolute m-2 fw-bold text-">Utilizadores</h3>
+{% endblock page %}
+
+{% block profile %}
+<img src="{{url_for('static', filename='img/avatars/avatar.jpg')}}" class="avatar img-fluid rounded me-1"/> <span class="text-dark">{{activeUser.name}}</span>
+{% endblock profile %}
+
+{% block content %}
+<div class="container-md" id="table">
+    <div class="table-responsive"> 
+        <table class="table display nowrap" id="tabela">
+            <thead class="bg-primary text-white">
+                <tr>
+                    <th>Id</th>
+                    <th>Student Name</th>
+                    <th>Student Number</th>
+                    <th>Phone Number</th>
+                    <th>Active</th>
+                    <th>Eliminado</th>
+                    <th>Editar</th>
+                    <th>Apagar</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- GetUsers vem do teu init  -->
+                {% for user in get_Users %}
+                <tr>
+                <td>{{user.id}}</td>
+                <td>{{user.name}}</td>
+                <td>{{user.student_number}}</td>
+                <td>{{user.phone_number	}}</td>
+                <td>{{user.active}}</td>
+                <td>{{user.deleted}}</td>
+                <td><button class="Editar btn btn-secondary" id="{{user.id}}" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Editar</button></td>
+                <td><button class="Apagar btn btn-primary" id="{{user.id}}">Apagar User</button></td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+            <!-- Modal -->
+<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="staticBackdropLabel">Editar Utilizador</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        
+        <div class="modal-body">
+            <form id="editsave">
+                <!-- ID -->
+                <label type="input">Id</label>
+                <div class="input-group my-1" > 
+                    <span class="input-group-text bg-secondary" id="basic-addon1">                    
+                        <i class="fa fa-id-card text-white"></i>
+                    </span>
+                    <input type="id" class="form-control" id="id" aria-describedby="ida" placeholder="Id" disabled> 
+                </div>
+                <!-- NOME -->
+                <label type="input">Nome</label>
+                <div class="input-group my-1" > 
+                    <span class="input-group-text bg-secondary" id="basic-addon2">                    
+                        <i class="fa fa-user text-white"></i>
+                    </span>
+                    <input type="text" class="form-control" id="name" aria-describedby="nome" placeholder="Nome" name="name"> 
+                </div>
+                <!-- USER NUMBER -->
+                <label type="input">User Number</label>
+                <div class="input-group my-1" > 
+                    <span class="input-group-text bg-secondary" id="basic-addon3">                    
+                        <i class="fa fa-university text-white"></i>
+                    </span>
+                    <input type="text" class="form-control" id="usern" aria-describedby="usern" placeholder="User Number" name="usern"> 
+                </div>
+                    <!-- Phone NUMBER -->
+                    <label type="input">Phone Number</label>
+                    <div class="input-group my-1" > 
+                        <span class="input-group-text bg-secondary" id="basic-addon3">                    
+                            <i class="fa fa-phone text-white"></i>
+                        </span>
+                        <input type="number" class="form-control" id="phone" aria-describedby="phone" placeholder="Phone Number" name="phone" maxlength="9" minlength="9"> 
+                    </div>
+                <!-- PASSWORD -->
+                <label type="input">Password</label>
+                <div class="input-group my-1" > 
+                    <span class="input-group-text bg-secondary" id="basic-addon4">                    
+                        <i class="fa fa-key text-white"></i>
+                    </span>
+                    <input type="password" class="form-control" id="password" aria-describedby="PASSWORD" placeholder="Password" name="password"> 
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <input type="submit" class="btn btn-primary" value="Guardar Alterações"></input>
+                </div>
+            </form>
+        </div>
+      </div>
+    </div>
+  </div>
+      
+    </div>
+    
+    
+</div>
+{% endblock content %}

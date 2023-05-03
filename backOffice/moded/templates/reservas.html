@@ -1,0 +1,77 @@
+{% extends 'index.html'%}
+
+{% block navOptions %}
+    <ul class="sidebar-nav">
+        <li class="sidebar-item">
+            <a class="sidebar-link" href="{{url_for('homeModule.toHomePage')}}">
+                <i class="align-middle" data-feather="sliders"></i> <span class="align-middle">Home</span>
+            </a>
+        </li>
+        <li class="sidebar-item  ">
+            <a class="sidebar-link" href="{{url_for('userModule.toUsersPage')}}">
+                <i class="align-middle" data-feather="user"></i> <span class="align-middle">Utilzadores</span>
+            </a>
+        </li>
+        <li class="sidebar-item">
+            <a class="sidebar-link" href="{{url_for('rideModule.toRidePage')}}">
+                <i class="align-middle" data-feather="book"></i> <span class="align-middle">Boleias</span>
+            </a>
+        </li>
+        <li class="sidebar-item active">
+            <a class="sidebar-link" href="{{url_for('reservaModule.toReservaPage')}}">
+                <i class="align-middle" data-feather="book"></i> <span class="align-middle">Reservas</span>
+            </a>
+        </li>
+        <li class="sidebar-item">
+            <a class="sidebar-link" href="{{url_for('vehicleModule.toVehiclesPage')}}">
+                <i class="align-middle" data-feather="book"></i> <span class="align-middle">Veiculos</span>
+            </a>
+        </li>
+    </ul>
+{% endblock navOptions %}
+
+{% block page %}
+<h3 class="position-absolute m-2 fw-bold text-">Reservas</h3>
+{% endblock page %}
+
+{% block profile %}
+<img src="{{url_for('static', filename='img/avatars/avatar.jpg')}}" class="avatar img-fluid rounded me-1"/> <span class="text-dark">{{activeUser.name}}</span>
+{% endblock profile %}
+
+{% block content %}
+<div class="container-md" id="table">
+    <div class="table-responsive"> 
+        <table class="table display nowrap" id="tabela">
+            <thead class="bg-primary text-white">
+                <tr>
+                    <th>Id</th>
+                    <th>Estado</th>
+                    <th>Data Criação</th>
+                    <th>Data Update</th>
+                    <th>Id Boleia</th>
+                    <th>Condutor</th>
+                    <th>Passageiro</th>
+                    <th>Eliminada</th>
+                    <th>Apagar Reserva</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- GetUsers vem do teu init  -->
+                {% for r in reserva %}
+                    <tr>
+                        <td>{{r[6]}}</td>
+                        <td>{{r[3]}}</td>
+                        <td>{{r[4]}}</td>
+                        <td>{{r[5]}}</td>
+                        <td>{{r[2]}}</td>
+                        <td>{{r[0]}}</td>
+                        <td>{{r[1]}}</td>
+                        <td>{{r[7]}}</td>
+                        <td><button class="ApagarR btn btn-primary" id="{{r[6]}}">Apagar Reserva</button></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock content %}
