@@ -4,6 +4,8 @@ export class Quadro{
     constructor(canvas, context){
         this.canvas = canvas;
         this.context = context;
+        
+        this.texts = [];
         this.shapes = [];
         this.reziseShapes = [];
         
@@ -26,11 +28,18 @@ export class Quadro{
     
     
     addExpositores(expositor){
-        console.log(expositor.capacity)
         this.shapes.push(expositor);
+        this.draw_shapes();  
+    }
+    
+    addTextBlock(text){
+        this.context.font = "20px arial";
+        text.set_height(16);
+        text.set_width(this.context.measureText(text.text).width);
+
+        this.texts.push(text);
         
         this.draw_shapes();  
-
     }
 
     excludeExpositores(id){
@@ -98,6 +107,12 @@ export class Quadro{
         for(let shape of this.reziseShapes){
             this.context.fillStyle = shape.color;
             this.context.fillRect(shape.posX, shape.posY, shape.width, shape.height )
+        }
+
+        for(let text of this.texts){
+            // this.context.fillStyle = shape.color;
+            // this.context.fillRect(shape.posX, shape.posY, shape.width, shape.height )
+            this.context.fillText(text.text,text.posX,text.posY);
         }
 
         if(this.reziseShapes!=[] && !this.is_draggingResizer && this.is_dragging){

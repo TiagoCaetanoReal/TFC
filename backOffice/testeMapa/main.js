@@ -1,4 +1,5 @@
 import { Expositor } from './expositor.js';
+import { TextBlock } from './textblock.js';
 import { Quadro } from './quadro.js';
 
 // https://www.youtube.com/watch?v=7PYvx8u_9Sk
@@ -183,6 +184,25 @@ document.getElementById("detailExpositor").onmousedown = (event) =>{
 }
 
 
+
+
+document.getElementById("addText").onmousedown = (event) =>{
+    const myModal = new bootstrap.Modal(document.getElementById('addTextBackdrop'));
+    const addTextBtn = document.getElementById('addTextBtn')
+    const textInput = document.getElementById('textInput')
+    
+    addTextBtn.onclick = (event) =>{
+        canvas.addTextBlock(new TextBlock(canvas.shapes.length,sizeX/2,sizeY/2,textInput.value));
+        console.log(textInput.value);
+        textInput.value = '';
+    }
+
+    myModal.toggle();
+    myModal.show();
+}
+
+
+
 document.getElementById("CreateMap").onmousedown = (event) =>{
     let array = []
     let index = 0
@@ -197,6 +217,9 @@ document.getElementById("CreateMap").onmousedown = (event) =>{
     localStorage.setItem("map",json);
 }
 
+
+
+//https://stackoverflow.com/questions/22785521/how-can-i-drag-a-piece-of-user-generated-text-around-the-html5-canvas
 
 /* adicionar função de adicionar bloco de texto
 document.getElementById("addText").onmousedown = (event) =>{

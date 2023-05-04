@@ -211,8 +211,8 @@
                 Launch static backdrop modal
             </button> -->
             
-            <!-- Modal -->
 
+            <!-- Modal Detalhes -->
             <div class="modal modal-lg fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
@@ -274,6 +274,28 @@
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                             <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="saveInfo">Guardar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+              <!-- Modal AddText -->
+              <div class="modal modal-lg fade" id="addTextBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3 class="modal-title">Adicionar Texto</h3>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body m-3"> 
+                            <h5>Insira texto no campo seguinte:</h5>
+                            <div class="input-group input-group-lg ">
+                                <input type="text" class="form-control" placeholder="Addicionar Texto" id="textInput">
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="addTextBtn" >Adicionar</button>
                         </div>
                     </div>
                 </div>
