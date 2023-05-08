@@ -4,6 +4,9 @@ import { Quadro } from './quadro.js';
 
 // https://www.youtube.com/watch?v=7PYvx8u_9Sk
 
+var myModal = new bootstrap.Modal(document.getElementById('instructionsModal'), {})
+myModal.toggle()
+
 let canvas = new Quadro(document.getElementById("canvas"), document.getElementById("canvas").getContext("2d"));
 canvas.detectAction();
 let sizeX = canvas.canvas_width;
@@ -246,7 +249,7 @@ document.getElementById("CreateMap").onmousedown = (event) =>{
 
     canvas.getTexts().forEach(element => {
         array[index] = {"id": element.id, "posX": element.posX, "posY": element.posY, "width": element.width,
-                        "height": element.height, "value": element.text};
+                        "height": element.height, "angle": element.angle, "value": element.text};
         index ++;
     });
 
