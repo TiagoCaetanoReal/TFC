@@ -19,10 +19,22 @@ document.getElementById("addExpositor").onmousedown = (event) =>{
 
 document.getElementById("rotateExpositor").onmousedown = (event) =>{
     try {
-        canvas.getShapes()[canvas.getSelectedExpositor()].rotate_expositor();
-        canvas.reziseShapes = [];
+        if(canvas.selectedExpo){
+            canvas.getShapes()[canvas.getSelected(canvas.getShapes())].rotate_expositor();
+        }
+        else if(canvas.selectedText){
+            
+            // tentando mudar a seleção do texto, para que quando este rode, a seleção do rato se adapte à rotação ln-120 de quadro.js
+            var text = canvas.getTexts()[canvas.getSelected(canvas.getTexts())];
+            canvas.rotateText(text)
+        }
+        else
+            throw new TypeError('');
+
+        canvas.resizeShapes = [];
+        
     } catch (error) {
-        window.alert("Selecione um expositor para realizar esta ação");
+        window.alert("Selecione um expositor/texto para realizar esta ação");
     }
     
     canvas.draw_shapes();
@@ -30,8 +42,19 @@ document.getElementById("rotateExpositor").onmousedown = (event) =>{
 
 document.getElementById("excludeExpositor").onmousedown = (event) =>{ 
     try {
-        canvas.excludeExpositores(canvas.getSelectedExpositor())
-        canvas.reziseShapes = [];
+        if(canvas.selectedExpo){
+            canvas.excludeExpositores(canvas.getSelected(canvas.getShapes()))
+            canvas.resizeShapes = [];
+        }
+        else if(canvas.selectedText){
+            // var text = canvas.getTexts()[canvas.getSelected(canvas.getTexts())];
+            canvas.excludeText(canvas.getSelected(canvas.getTexts()))
+            
+        }
+    
+        else
+            throw new TypeError('');
+
     } catch (error) {
         window.alert("Selecione um expositor para realizar esta ação"); 
     }
@@ -41,8 +64,13 @@ document.getElementById("excludeExpositor").onmousedown = (event) =>{
 
 document.getElementById("resizeExpositor").onmousedown = (event) =>{
     try {
-        let selectedExpositor = canvas.getSelectedExpositor()
-        canvas.resizers(selectedExpositor)
+        if(canvas.selectedExpo){
+            let selectedExpositor = canvas.getSelected(canvas.getShapes())
+            canvas.resizers(selectedExpositor)
+        }
+        else
+            throw new TypeError('');
+
     } catch (error) {
         window.alert("Selecione um expositor para realizar esta ação"); 
     }
@@ -53,52 +81,55 @@ document.getElementById("resizeExpositor").onmousedown = (event) =>{
 document.getElementById("detailExpositor").onmousedown = (event) =>{
     let selectedExpositor;
     try {
-        selectedExpositor = canvas.getCurrentExpositor();
+        if(canvas.selectedExpo){
+            selectedExpositor = canvas.getCurrentExpositor();
 
-        let capacity = document.getElementById('selectCapacity')
+            let capacity = document.getElementById('selectCapacity')
 
-        console.log(selectedExpositor.capacity)
-        console.log(capacity)
+            console.log(selectedExpositor.capacity)
+            console.log(capacity)
 
-        // resolver problema de caso expo não tenha produtos, da segunda vez q se entra nele, os campos estão vazios
+            // resolver problema de caso expo não tenha produtos, da segunda vez q se entra nele, os campos estão vazios
 
-        console.log(selectedExpositor.capacity === 0)
+            console.log(selectedExpositor.capacity === 0)
 
-        if(selectedExpositor.capacity === 0){
-            console.log("1")
-            capacity.value = selectedExpositor.capacity;
-            document.getElementById("addProdutos").innerHTML = '';
-            selectedExpositor.products = [];
-            
-        }else{
-            console.log("2")
-            capacity.value = selectedExpositor.capacity;
+            if(selectedExpositor.capacity === 0){
+                console.log("1")
+                capacity.value = selectedExpositor.capacity;
+                document.getElementById("addProdutos").innerHTML = '';
+                selectedExpositor.products = [];
+                
+            }else{
+                console.log("2")
+                capacity.value = selectedExpositor.capacity;
 
-            createProductSpaces(capacity.value);
+                createProductSpaces(capacity.value);
 
 
-            for (let index = 0; index < parseInt(capacity.value); index++) {
-                var productSpace = document.getElementById('selectProduct'+index);
+                for (let index = 0; index < parseInt(capacity.value); index++) {
+                    var productSpace = document.getElementById('selectProduct'+index);
 
-                var ExpositorProduct = selectedExpositor.products[index];
-                console.log(ExpositorProduct)
-                if(ExpositorProduct !== undefined)
-                    productSpace.value = ExpositorProduct.toString();
+                    var ExpositorProduct = selectedExpositor.products[index];
+                    console.log(ExpositorProduct)
+                    if(ExpositorProduct !== undefined)
+                        productSpace.value = ExpositorProduct.toString();
+                }
+            }
+        
+            if(selectedExpositor.storeSection === 0){
+                document.getElementById('selectSector').value = "0";
+            }else{
+                document.getElementById('selectSector').value =  selectedExpositor.storeSection.toString(); 
+            }
+        
+            if(selectedExpositor.divisions === 0){
+                document.getElementById('selectDivision').value = "0";
+            }else{
+                document.getElementById('selectDivision').value =  selectedExpositor.divisions.toString();
             }
         }
-    
-        if(selectedExpositor.storeSection === 0){
-            document.getElementById('selectSector').value = "0";
-        }else{
-            document.getElementById('selectSector').value =  selectedExpositor.storeSection.toString(); 
-        }
-    
-        if(selectedExpositor.divisions === 0){
-            document.getElementById('selectDivision').value = "0";
-        }else{
-            document.getElementById('selectDivision').value =  selectedExpositor.divisions.toString();
-        }
-
+        else
+            throw new TypeError('');
     } catch (error) {
         window.alert("Selecione um expositor para realizar esta ação");
         console.log('6')
@@ -192,7 +223,7 @@ document.getElementById("addText").onmousedown = (event) =>{
     const textInput = document.getElementById('textInput')
     
     addTextBtn.onclick = (event) =>{
-        canvas.addTextBlock(new TextBlock(canvas.shapes.length,sizeX/2,sizeY/2,textInput.value));
+        canvas.addTextBlock(new TextBlock(canvas.texts.length,sizeX/2,sizeY/2,textInput.value));
         console.log(textInput.value);
         textInput.value = '';
     }
@@ -207,11 +238,19 @@ document.getElementById("CreateMap").onmousedown = (event) =>{
     let array = []
     let index = 0
     canvas.getShapes().forEach(element => {
-        array[index] = {"id": element.id, "posX": element.posX/sizeX, "posY": element.posY/sizeY, "width": element.width/sizeX,
-                        "height": element.height/sizeY, "color": element.color, "products": element.products, 
+        array[index] = {"id": element.id, "posX": element.posX, "posY": element.posY, "width": element.width,
+                        "height": element.height, "color": element.color, "products": element.products, 
                         "capacity": element.capacity, "divisions": element.divisions, "storeSection": element.storeSection};
         index ++;
     });
+
+    canvas.getTexts().forEach(element => {
+        array[index] = {"id": element.id, "posX": element.posX, "posY": element.posY, "width": element.width,
+                        "height": element.height, "value": element.text};
+        index ++;
+    });
+
+    
 
     let json = JSON.stringify(array)
     localStorage.setItem("map",json);
@@ -223,8 +262,8 @@ document.getElementById("CreateMap").onmousedown = (event) =>{
 
 /* adicionar função de adicionar bloco de texto
 document.getElementById("addText").onmousedown = (event) =>{
-    console.log(canvas.getShapes()[canvas.getSelectedExpositor()])
-    canvas.getShapes()[canvas.getSelectedExpositor()].rotate_expositor();
+    console.log(canvas.getShapes()[canvas.getSelected(canvas.getShapes())()])
+    canvas.getShapes()[canvas.getSelected(canvas.getShapes())()].rotate_expositor();
     canvas.draw_shapes();
 }
 

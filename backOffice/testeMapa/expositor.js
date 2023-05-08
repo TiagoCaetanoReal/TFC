@@ -39,7 +39,7 @@ export class Expositor{
         this.height = tempSize;
     }
 
-    rezise_expositor(widthAddition,heightAddition){
+    resize_expositor(widthAddition,heightAddition){
         this.width += widthAddition;
         this.height += heightAddition;
     }

@@ -88,8 +88,8 @@
                     <a class="sidebar-link bg-secondary px-2" href="">
                         <div class="row">
                             <div class="col-2 pe-0">
-                                <i class="fa fa-list my-2 " aria-hidden="true"></i>
-                                <i class="fa fa-store my-3 position-absolute" aria-hidden="true" style="margin-left: -10px;"></i>
+                                <i class="fa fa-list my-2 text-white" aria-hidden="true"></i>
+                                <i class="fa fa-store my-3 position-absolute text-white" aria-hidden="true" style="margin-left: -10px;"></i>
                             </div>
                         
                             <div class="col-10 g-0">
@@ -300,7 +300,23 @@
                     </div>
                 </div>
             </div>
-  
+
+            <!-- Modal Info -->
+            <div class="modal show" id="fes" role="dialog">
+                <div class="modal-dialog">
+                    <!-- Modal content-->
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title">Instruções</h4>
+                        </div>
+                        <div class="modal-body">
+                            <p>Some text in the modal.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+              
   
             <div class="container mt-4 border border-2 g-0" id="canvasCont" style="height: 700px;" >
                     <canvas id="canvas" class="h-100 w-100" ></canvas>
@@ -314,7 +330,7 @@
                     </form></div>
                 <div class="col-2">
                     <form  class="text-center">
-                        <button class="btn btn-lg btn-danger" type="submit" value="Delete" id="DeleteMap">Apagar</button>
+                        <button class="btn btn-lg btn-danger" type="submit" value="Delete" id="DeleteMap">Descartar</button>
                     </form></div>
             </div>
         </div>
