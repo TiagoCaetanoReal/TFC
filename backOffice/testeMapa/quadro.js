@@ -162,21 +162,19 @@ export class Quadro{
         this.context.clearRect(0, 0, this.canvas_width, this.canvas_height);
 
         for(let shape of this.shapes){
+            this.context.globalAlpha = shape.colorAlpha;
             this.context.fillStyle = shape.color;
             this.context.fillRect(shape.posX, shape.posY, shape.width, shape.height )
         }
 
         for(let shape of this.resizeShapes){
-            this.context.fillStyle = 'grey';
+            this.context.fillStyle = 'black';
             this.context.fillRect(shape.posX, shape.posY, shape.width, shape.height )
         }
  
         console.log(this.texts)
         for(let text of this.texts){
             this.context.fillStyle = '#000';
-
-            // this.resizeShapes.push(
-            //     new Expositor(3,text.posX - text.width / 1.5, text.posY - text.height * 1.5, text.height, text.width, 'grey'))
 
             this.context.save();
             this.context.translate(text.posX - text.width / 2, text.posY - text.height / 2);
@@ -186,7 +184,7 @@ export class Quadro{
             this.context.restore();
         }
 
-        if(this.resizeShapes!=[] && !this.is_draggingResizer && this.is_dragging){
+        if(this.resizeShapes!=[] && !this.is_draggingResizer && this.is_dragging || this.is_draggingText){
             this.resizeShapes = [];
         }
     }
@@ -229,6 +227,9 @@ export class Quadro{
                     this.is_draggingResizer= true;
                     this.selectedExpo = false;
                     this.selectedText = false;
+                    
+                    this.recolor();
+                    shape.changeAlpha(1)
                     return;
                 }
                 else{
@@ -247,8 +248,9 @@ export class Quadro{
                     this.is_draggingResizer= false;
                     this.selectedExpo = true;
                     this.selectedText = false;
+                    
                     this.recolor();
-                    shape.color = 'silver';
+                    shape.changeAlpha(0.5)
                     return;
                 }
                 else{
@@ -273,6 +275,9 @@ export class Quadro{
                     this.is_draggingText = true;
                     this.selectedExpo = false;
                     this.selectedText = true;
+                    
+                    this.recolor();
+                    shape.changeAlpha(1)
                     return
                 }
                 else{
@@ -355,9 +360,9 @@ export class Quadro{
         }
         this.draw_shapes();
 
-     }
+    }
 
-    // trying to move text
+    
     moveShapes(event, shapeList, pos){
         event.preventDefault();
 
@@ -390,12 +395,13 @@ export class Quadro{
 
     recolor(){
         for( let shape of this.shapes){
-            if(shape.storeSectionColor === "")
+            if(shape.storeSectionColor === ""){
                 shape.color = 'grey';
+                shape.changeAlpha(1);
+            }
             else
                 shape.color = shape.storeSectionColor;
+                shape.changeAlpha(1);
         }
     }
 }
-
-// cubos de resize ficam agarrados ao rato, resolver isso depois fazer função para verificar o id de qual o square que esta a ser segurado para fazer o resize só pela sua lateral

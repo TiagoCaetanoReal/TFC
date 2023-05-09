@@ -151,8 +151,7 @@ document.getElementById("detailExpositor").onmousedown = (event) =>{
         selectedExpositor.capacity = parseInt(inputText);
 
         createProductSpaces(inputText);
-
-        // resolver facto de produtos que aparecem no expositor, serem do expositor editado anteriormente 
+ 
 
         //nesta parte após serem criados os selects dos produtos, tem de ser mandado do backend um array ou string com os produtos, possivelmente um array
     }
@@ -161,6 +160,7 @@ document.getElementById("detailExpositor").onmousedown = (event) =>{
     document.getElementById('selectSector').onchange = (event) => {
         var inputText = event.target.value;
         selectedExpositor.storeSection = parseInt(inputText);
+        selectedExpositor.give_colorSection('blue');
     }
     
     document.getElementById('selectDivision').onchange = (event) => {
@@ -193,7 +193,7 @@ document.getElementById("detailExpositor").onmousedown = (event) =>{
                         </select><div class="invalid-feedback">Por Favor selecione um produto</div> 
                     </div>
                 </div>
-            `;
+            `; 
 
             document.getElementById("addProdutos").innerHTML += node
         }
@@ -210,11 +210,18 @@ document.getElementById("detailExpositor").onmousedown = (event) =>{
             });
         }
     }
-    // saveInfo id do botão de salvar modal
-
     
     myModal.toggle();
     myModal.show();
+
+    discardExpoInfo.onclick = (event) =>{
+        selectedExpositor.products = [];
+        selectedExpositor.capacity = 0;
+        selectedExpositor.divisions = 0;
+        selectedExpositor.storeSection = 0;
+        selectedExpositor.storeSectionColor = '';
+
+    }
 }
 
 
@@ -231,6 +238,10 @@ document.getElementById("addText").onmousedown = (event) =>{
         textInput.value = '';
     }
 
+    CancelTextBtn.onclick = (event) =>{
+        textInput.value = '';
+    }
+
     myModal.toggle();
     myModal.show();
 }
@@ -240,34 +251,59 @@ document.getElementById("addText").onmousedown = (event) =>{
 document.getElementById("CreateMap").onmousedown = (event) =>{
     let array = []
     let index = 0
-    canvas.getShapes().forEach(element => {
-        array[index] = {"id": element.id, "posX": element.posX, "posY": element.posY, "width": element.width,
-                        "height": element.height, "color": element.color, "products": element.products, 
-                        "capacity": element.capacity, "divisions": element.divisions, "storeSection": element.storeSection};
+
+    const myModal = new bootstrap.Modal(document.getElementById('saveDeleteMap'));
+    const myModalTitle = new bootstrap.Modal(document.getElementById('saveDeleteMapTitle'));
+
+    myModalTitle._element.innerText = "Deseja guardar o mapa criado?"
+
+    myModal.toggle();
+    myModal.show();
+
+    ConfirmSaveDeleteBtn.onclick = (event) =>{
+        console.log("hiiii")
+        array[index] = {"width": sizeX,"height": sizeY, "numExpos": canvas.getShapes().length, "numLabels": canvas.getTexts().length};
         index ++;
-    });
+        
+        canvas.getShapes().forEach(element => {
+            array[index] = {"id": element.id, "posX": element.posX, "posY": element.posY, "width": element.width,
+                            "height": element.height, "color": element.color, "products": element.products, 
+                            "capacity": element.capacity, "divisions": element.divisions, "storeSection": element.storeSection};
+            index ++;
+        });
 
-    canvas.getTexts().forEach(element => {
-        array[index] = {"id": element.id, "posX": element.posX, "posY": element.posY, "width": element.width,
-                        "height": element.height, "angle": element.angle, "value": element.text};
-        index ++;
-    });
+        canvas.getTexts().forEach(element => {
+            array[index] = {"id": element.id, "posX": element.posX, "posY": element.posY, "width": element.width,
+                            "height": element.height, "angle": element.angle, "value": element.text};
+            index ++;
+        });
 
-    
-
-    let json = JSON.stringify(array)
-    localStorage.setItem("map",json);
+        let json = JSON.stringify(array)
+        localStorage.setItem("map",json);
+    }
 }
+
+    document.getElementById("DeleteMap").onmousedown = (event) =>{
+        const myModal = new bootstrap.Modal(document.getElementById('saveDeleteMap'));
+        const myModalTitle = new bootstrap.Modal(document.getElementById('saveDeleteMapTitle'));
+    
+        myModalTitle._element.innerText = "Deseja descartar o mapa criado?"
+    
+        myModal.toggle();
+        myModal.show();
+
+        ConfirmSaveDeleteBtn.onclick = (event) =>{
+            canvas.shapes = [];
+            canvas.texts = [];
+            canvas.draw_shapes();
+        }
+    }
+
+
+
+
 
 
 
 //https://stackoverflow.com/questions/22785521/how-can-i-drag-a-piece-of-user-generated-text-around-the-html5-canvas
 
-/* adicionar função de adicionar bloco de texto
-document.getElementById("addText").onmousedown = (event) =>{
-    console.log(canvas.getShapes()[canvas.getSelected(canvas.getShapes())()])
-    canvas.getShapes()[canvas.getSelected(canvas.getShapes())()].rotate_expositor();
-    canvas.draw_shapes();
-}
-
-*/

@@ -272,8 +272,8 @@
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                            <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="saveInfo">Guardar</button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="discardExpoInfo">Cancelar</button>
+                            <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Guardar</button>
                         </div>
                     </div>
                 </div>
@@ -294,7 +294,7 @@
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="CancelTextBtn">Cancelar</button>
                             <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="addTextBtn" >Adicionar</button>
                         </div>
                     </div>
@@ -310,7 +310,7 @@
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body m-3"> 
-                            <p>O entrar na tela de criação de mapa, terá duas barras de ferramentas, esquerda e direita.</p>
+                            <p>Ao entrar na tela de criação de mapa, terá duas barras de ferramentas, esquerda e direita.</p>
                             <br>
                             <p>Na barra da esquerda, existem as opções de adicionar expositores e adicionar texto.</p>
                             <p>Ao adicionar qualquer um desses, basta clicar em cima do mesmo para que fique selecionado, ao clicar e arrastar, moverá o objeto.</p>
@@ -320,6 +320,22 @@
                             <p>Opção Redimensionar é usado somente para o expositor.</p>
                             <p>Opção Detalhas é usado somente para o expositor.</p>
                             <p>Opção Excluir, pode ser utilizado em ambos.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal to confirm deletion or saving of map -->
+            <div class="modal modal fade" id="saveDeleteMap" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3 class="modal-title" id="saveDeleteMapTitle"></h3>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal" id="CancelSaveDeleteBtn">Cancelar</button>
+                            <button type="submit" class="btn btn-info" data-bs-dismiss="modal" id="ConfirmSaveDeleteBtn" >Confirmar</button>
                         </div>
                     </div>
                 </div>
@@ -334,11 +350,11 @@
                 <div class="col-8"></div>
                 <div class="col-2">
                     <form  class="text-center">
-                        <button class="btn btn-lg btn-info" value="Create" id="CreateMap">Criar Mapa</button>
+                        <button class="btn btn-lg btn-info" id="CreateMap">Criar Mapa</button>
                     </form></div>
                 <div class="col-2">
                     <form  class="text-center">
-                        <button class="btn btn-lg btn-danger" type="submit" value="Delete" id="DeleteMap">Descartar</button>
+                        <button class="btn btn-lg btn-danger"  id="DeleteMap">Descartar</button>
                     </form></div>
             </div>
         </div>
