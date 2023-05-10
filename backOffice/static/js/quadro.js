@@ -102,7 +102,6 @@ export class Quadro{
     }
 
 
-    
     is_mouse_in_shape(x, y, shape, type){
         let shape_left;
         let shape_right;
@@ -124,11 +123,6 @@ export class Quadro{
             shape_top = shape.posY;
             shape_bottom = (shape.posY + shape.height);
         }
-
-        console.log(textLenghts[0])
-        console.log(textLenghts[1])
-        console.log(textLenghts[2])
-        console.log(textLenghts[3])
 
         if(x > shape_left && x < shape_right){
             if(y > shape_top && y < shape_bottom){

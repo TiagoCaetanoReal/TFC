@@ -14,8 +14,6 @@ export class Expositor{
         this.storeSection = this.setValue(storeSection);
         this.storeSectionColor = this.setValue(storeSectionColor, 'string');
 
-        console.log(products)
-        console.log(capacity)
         this.addPosX = 0; 
         this.addPosY = 0;
     }
@@ -29,32 +27,6 @@ export class Expositor{
             return '';
         else
             return 0;
-    }
-
-    setProducts(products){
-        if(products !== undefined)
-            return products
-        return [];
-    }
-    setCapacity(capacity){
-        if(capacity !== undefined)
-            return capacity
-        return 0;
-    }
-    setDivisions(divisions){
-        if(divisions !== undefined)
-            return divisions
-        return 0;
-    }
-    setStoreSection(storeSection){
-        if(storeSection !== undefined)
-            return storeSection
-        return 0;
-    }
-    setStoreSectionColor(storeSectionColor){
-        if(storeSectionColor !== undefined)
-            return storeSectionColor
-        return '';
     }
 
     changeAlpha(value){

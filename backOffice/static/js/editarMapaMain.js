@@ -17,67 +17,10 @@ array = JSON.parse(localStorage.getItem("map") || "[]");
 
 const numExpos = array[0].numExpos;
 
-console.log(numExpos)
-
-console.log(array);
-
-console.log(array[1].id + " " + array[1].posX + " " + array[1].posY + " " + array[1].width+ " " + array[1].height+ " " + array[1].color.toString());
-
 let index = 0
-let text;
 
-console.log(index)
 
 array.shift();
-
-// for (index; index < array.length; index++) {
-//     const element = array[index];
-
-//     if(index < numExpos){
-//         console.log(element);
-//         if(element.storeSection !== 0){
-//             canvas.addExpositores(new Expositor(element.id, element.posX, element.posY,  element.width, element.height, element.color, 
-//                 element.products, element.capacity, element.divisions, element.storeSection, element.storeSectionColor)); 
-//             }
-//         else{
-//             canvas.addExpositores(new Expositor(element.id, element.posX , element.posY , element.width, element.height, element.color));
-            
-        
-//         }
-//     }
-//     else{
-//         canvas.addTextBlock(new TextBlock(element.id, element.posX, element.posY, element.value, element.angle));
-//     }
-
-//     console.log(element)
-    
-// }
-
-// for(var element of array) {
-//     console.log(element);
-//     if(index < numExpos){
-//         console.log(element);
-//         if(element.storeSection !== 0){
-//             console.log(element);
-//             console.log(canvas.getShapes());
-//             canvas.addExpositores(new Expositor(element.id, element.posX, element.posY,  element.width, element.height, element.color.toString(), 
-//                 element.products, element.capacity, element.divisions, element.storeSection, element.storeSectionColor.toString())); 
-           
-//             console.log(canvas.getShapes());
-//             }
-//         else{
-//             console.log(element);
-//             console.log(canvas.getShapes());
-//             canvas.addExpositores(new Expositor(element.id, element.posX , element.posY , element.width, element.height, element.color.toString()));
-//             console.log(canvas.getShapes());
-       
-//         }
-//     }
-//    else{
-//         canvas.addTextBlock(new TextBlock(element.id, element.posX, element.posY, element.value, element.angle));
-//    }
-//    index++;
-// }
 
 array.forEach(element => {
     if(index < numExpos){
@@ -99,11 +42,6 @@ array.forEach(element => {
    index++;
 });
 
-console.log(canvas.getShapes());
-
-
-// consigo ler o localstorage de forma a obter um array de objetos.
-// tentar agora fazer ciclos para inserir objetos nos arrays de shapes, e texto
 
 // Adiciona o listener de resize à janela do navegador
 // window.addEventListener("resize", canvas.resizeCanvas, false);
