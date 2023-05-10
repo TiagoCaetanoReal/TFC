@@ -56,16 +56,12 @@ export class Quadro{
     }
     
     excludeText(id){
-        console.log(id)
         var text = this.getTexts().find(item => item.id === id);
-        console.log(text)
         const index = this.getTexts().indexOf(text);
-        console.log(index)
         
         if (index > -1) {  
             this.getTexts().splice(index, 1);
         }
-        console.log(this.getTexts())
     }
 
     resizers(id){
@@ -84,8 +80,6 @@ export class Quadro{
 
     rotateText(selectedText){
         // https://www.youtube.com/watch?v=5vxygxshTQ4
-        // para rodar texto, tenho de rodar o canvas todo primeiro 
-        // ou seja tenha de roda-lo, adicionar o texto, e colocar os outro ojeto de seguida
         
         selectedText.set_angle(90);
         this.draw_shapes();
@@ -110,7 +104,6 @@ export class Quadro{
 
     
     is_mouse_in_shape(x, y, shape, type){
-
         let shape_left;
         let shape_right;
 
@@ -138,10 +131,7 @@ export class Quadro{
         console.log(textLenghts[3])
 
         if(x > shape_left && x < shape_right){
-            console.log('horz');
             if(y > shape_top && y < shape_bottom){
-                console.log(shape.id)
-                console.log('vert')
                 textLenghts = [];
                 return true;
             }   
@@ -164,7 +154,6 @@ export class Quadro{
             this.context.fillRect(shape.posX, shape.posY, shape.width, shape.height )
         }
  
-        console.log(this.texts)
         for(let text of this.texts){
             this.context.fillStyle = '#000';
 
@@ -257,19 +246,15 @@ export class Quadro{
 
             for(let text of this.texts){
                 console.log(this.startX+ " " + this.startY)
-                console.log(text)
 
                 if(this.is_mouse_in_shape(this.startX, this.startY, text, 'text')){
                     this.current_shape_index = index;
-                    console.log(this.current_shape_index)
                     this.is_dragging = false;
                     this.is_draggingResizer= false;
                     this.is_draggingText = true;
                     this.selectedExpo = false;
                     this.selectedText = true;
-                    
                     this.recolor();
-                    shape.changeAlpha(1)
                     return
                 }
                 else{

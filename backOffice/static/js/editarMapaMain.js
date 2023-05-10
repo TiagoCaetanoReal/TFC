@@ -4,8 +4,8 @@ import { Quadro } from './quadro.js';
 
 // https://www.youtube.com/watch?v=7PYvx8u_9Sk
 
-var myModal = new bootstrap.Modal(document.getElementById('instructionsModal'), {})
-myModal.toggle()
+// var myModal = new bootstrap.Modal(document.getElementById('instructionsModal'), {})
+// myModal.toggle()
 
 let canvas = new Quadro(document.getElementById("canvas"), document.getElementById("canvas").getContext("2d"));
 canvas.detectAction();
@@ -30,9 +30,68 @@ console.log(index)
 
 array.shift();
 
+// for (index; index < array.length; index++) {
+//     const element = array[index];
+
+//     if(index < numExpos){
+//         console.log(element);
+//         if(element.storeSection !== 0){
+//             canvas.addExpositores(new Expositor(element.id, element.posX, element.posY,  element.width, element.height, element.color, 
+//                 element.products, element.capacity, element.divisions, element.storeSection, element.storeSectionColor)); 
+//             }
+//         else{
+//             canvas.addExpositores(new Expositor(element.id, element.posX , element.posY , element.width, element.height, element.color));
+            
+        
+//         }
+//     }
+//     else{
+//         canvas.addTextBlock(new TextBlock(element.id, element.posX, element.posY, element.value, element.angle));
+//     }
+
+//     console.log(element)
+    
+// }
+
+// for(var element of array) {
+//     console.log(element);
+//     if(index < numExpos){
+//         console.log(element);
+//         if(element.storeSection !== 0){
+//             console.log(element);
+//             console.log(canvas.getShapes());
+//             canvas.addExpositores(new Expositor(element.id, element.posX, element.posY,  element.width, element.height, element.color.toString(), 
+//                 element.products, element.capacity, element.divisions, element.storeSection, element.storeSectionColor.toString())); 
+           
+//             console.log(canvas.getShapes());
+//             }
+//         else{
+//             console.log(element);
+//             console.log(canvas.getShapes());
+//             canvas.addExpositores(new Expositor(element.id, element.posX , element.posY , element.width, element.height, element.color.toString()));
+//             console.log(canvas.getShapes());
+       
+//         }
+//     }
+//    else{
+//         canvas.addTextBlock(new TextBlock(element.id, element.posX, element.posY, element.value, element.angle));
+//    }
+//    index++;
+// }
+
 array.forEach(element => {
     if(index < numExpos){
-        canvas.addExpositores(new Expositor(element.id, element.posX , element.posY , element.width, element.height, element.color.toString()));
+        console.log(element.storeSection);
+        if(element.storeSection === 0){
+            canvas.addExpositores(new Expositor(element.id, element.posX , element.posY , element.width, element.height, element.color.toString()));
+            console.log(canvas.getShapes());
+        }
+        else{
+            canvas.addExpositores(new Expositor(element.id, element.posX, element.posY,  element.width, element.height, element.color.toString(), 
+                element.products, element.capacity, element.divisions, element.storeSection, element.storeSectionColor.toString())); 
+                
+            console.log(canvas.getShapes());
+        }
     }
    else{
         canvas.addTextBlock(new TextBlock(element.id, element.posX, element.posY, element.value, element.angle));
@@ -40,17 +99,7 @@ array.forEach(element => {
    index++;
 });
 
-// for (index; index <= numExpos.length; index++) {
-//     console.log(index)
-//     canvas.addExpositores(new Expositor(array[index].id, array[index].posX , array[index].posY , array[index].width, array[index].height, array[index].color.toString()));
-//     console.log(array[index].id + " " + array[index].posX + " " + array[index].posY + " " + array[index].width+ " " + array[index].height+ " " + array[index].color.toString());
-
-// }
-
-// for (index; index < numTexts.length; index++) {
-//     canvas.addTextBlock(new TextBlock(array[index].id, array[index].posX, array[index].posY, array[index].value));
-    
-// }
+console.log(canvas.getShapes());
 
 
 // consigo ler o localstorage de forma a obter um array de objetos.
@@ -312,7 +361,8 @@ document.getElementById("CreateMap").onmousedown = (event) =>{
         canvas.getShapes().forEach(element => {
             array[index] = {"id": element.id, "posX": element.posX, "posY": element.posY, "width": element.width,
                             "height": element.height, "color": element.color, "products": element.products, 
-                            "capacity": element.capacity, "divisions": element.divisions, "storeSection": element.storeSection};
+                            "capacity": element.capacity, "divisions": element.divisions, 
+                            "storeSection": element.storeSection, "storeSectionColor": element.storeSectionColor};
             index ++;
         });
 
