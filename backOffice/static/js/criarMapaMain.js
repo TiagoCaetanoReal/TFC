@@ -233,7 +233,7 @@ document.getElementById("addText").onmousedown = (event) =>{
     const textInput = document.getElementById('textInput')
     
     addTextBtn.onclick = (event) =>{
-        canvas.addTextBlock(new TextBlock(canvas.texts.length,sizeX/2,sizeY/2,textInput.value));
+        canvas.addTextBlock(new TextBlock(canvas.texts.length,sizeX/2,sizeY/2,textInput.value, 0));
         console.log(textInput.value);
         textInput.value = '';
     }

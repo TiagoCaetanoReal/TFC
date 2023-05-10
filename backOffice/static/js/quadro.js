@@ -107,6 +107,7 @@ export class Quadro{
         return this.shapes[this.current_shape_index]
     }
 
+
     
     is_mouse_in_shape(x, y, shape, type){
 

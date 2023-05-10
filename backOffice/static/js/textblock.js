@@ -1,12 +1,12 @@
 export class TextBlock{
-    constructor(id, posX, posY, text){
+    constructor(id, posX, posY, text, angle){
         this.id = id;
         this.posX = posX;
         this.posY = posY;
         this.text = text;
         this.width; 
         this.height;
-        this.angle = 0;
+        this.angle = angle;
 
         this.addPosX = 0; 
         this.addPosY = 0;

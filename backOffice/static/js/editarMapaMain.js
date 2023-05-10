@@ -15,7 +15,43 @@ let sizeY = canvas.canvas_height;
 let array = [];
 array = JSON.parse(localStorage.getItem("map") || "[]");
 
+const numExpos = array[0].numExpos;
+
+console.log(numExpos)
+
 console.log(array);
+
+console.log(array[1].id + " " + array[1].posX + " " + array[1].posY + " " + array[1].width+ " " + array[1].height+ " " + array[1].color.toString());
+
+let index = 0
+let text;
+
+console.log(index)
+
+array.shift();
+
+array.forEach(element => {
+    if(index < numExpos){
+        canvas.addExpositores(new Expositor(element.id, element.posX , element.posY , element.width, element.height, element.color.toString()));
+    }
+   else{
+        canvas.addTextBlock(new TextBlock(element.id, element.posX, element.posY, element.value, element.angle));
+   }
+   index++;
+});
+
+// for (index; index <= numExpos.length; index++) {
+//     console.log(index)
+//     canvas.addExpositores(new Expositor(array[index].id, array[index].posX , array[index].posY , array[index].width, array[index].height, array[index].color.toString()));
+//     console.log(array[index].id + " " + array[index].posX + " " + array[index].posY + " " + array[index].width+ " " + array[index].height+ " " + array[index].color.toString());
+
+// }
+
+// for (index; index < numTexts.length; index++) {
+//     canvas.addTextBlock(new TextBlock(array[index].id, array[index].posX, array[index].posY, array[index].value));
+    
+// }
+
 
 // consigo ler o localstorage de forma a obter um array de objetos.
 // tentar agora fazer ciclos para inserir objetos nos arrays de shapes, e texto
@@ -241,7 +277,7 @@ document.getElementById("addText").onmousedown = (event) =>{
     const textInput = document.getElementById('textInput')
     
     addTextBtn.onclick = (event) =>{
-        canvas.addTextBlock(new TextBlock(canvas.texts.length,sizeX/2,sizeY/2,textInput.value));
+        canvas.addTextBlock(new TextBlock(canvas.texts.length,sizeX/2,sizeY/2,textInput.value, 0));
         console.log(textInput.value);
         textInput.value = '';
     }
