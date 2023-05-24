@@ -137,17 +137,23 @@ export class Quadro{
     draw_shapes(){
         this.context.clearRect(0, 0, this.canvas_width, this.canvas_height);
 
+        console.log(this.context.fillStyle)
         for(let shape of this.shapes){
+            this.context.save();
             this.context.globalAlpha = shape.colorAlpha;
             this.context.fillStyle = shape.color;
             this.context.fillRect(shape.posX, shape.posY, shape.width, shape.height )
+            
+            this.context.restore();
         }
 
+        console.log(this.context.fillStyle)
         for(let shape of this.resizeShapes){
             this.context.fillStyle = 'black';
             this.context.fillRect(shape.posX, shape.posY, shape.width, shape.height )
         }
  
+        console.log(this.context.fillStyle)
         for(let text of this.texts){
             this.context.fillStyle = '#000';
 
@@ -158,6 +164,7 @@ export class Quadro{
 
             this.context.restore();
         }
+        console.log(this.context.fillStyle)
 
         if(this.resizeShapes!=[] && !this.is_draggingResizer && this.is_dragging || this.is_draggingText){
             this.resizeShapes = [];

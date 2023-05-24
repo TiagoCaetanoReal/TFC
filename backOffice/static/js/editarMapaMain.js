@@ -4,8 +4,8 @@ import { Quadro } from './quadro.js';
 
 // https://www.youtube.com/watch?v=7PYvx8u_9Sk
 
-// var myModal = new bootstrap.Modal(document.getElementById('instructionsModal'), {})
-// myModal.toggle()
+var myModal = new bootstrap.Modal(document.getElementById('instructionsModal'), {})
+myModal.toggle()
 
 let canvas = new Quadro(document.getElementById("canvas"), document.getElementById("canvas").getContext("2d"));
 canvas.detectAction();
@@ -24,7 +24,7 @@ array.shift();
 
 array.forEach(element => {
     if(index < numExpos){
-        console.log(element.storeSection);
+        console.log(element);
         if(element.storeSection === 0){
             canvas.addExpositores(new Expositor(element.id, element.posX , element.posY , element.width, element.height, element.color.toString()));
             console.log(canvas.getShapes());

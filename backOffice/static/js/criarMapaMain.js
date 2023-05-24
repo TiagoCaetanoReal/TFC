@@ -4,8 +4,8 @@ import { Quadro } from './quadro.js';
 
 // https://www.youtube.com/watch?v=7PYvx8u_9Sk
 
-var myModal = new bootstrap.Modal(document.getElementById('instructionsModal'), {})
-myModal.toggle()
+// var myModal = new bootstrap.Modal(document.getElementById('instructionsModal'), {})
+// myModal.toggle()
 
 let canvas = new Quadro(document.getElementById("canvas"), document.getElementById("canvas").getContext("2d"));
 canvas.detectAction();
@@ -268,7 +268,8 @@ document.getElementById("CreateMap").onmousedown = (event) =>{
         canvas.getShapes().forEach(element => {
             array[index] = {"id": element.id, "posX": element.posX, "posY": element.posY, "width": element.width,
                             "height": element.height, "color": element.color, "products": element.products, 
-                            "capacity": element.capacity, "divisions": element.divisions, "storeSection": element.storeSection};
+                            "capacity": element.capacity, "divisions": element.divisions, 
+                            "storeSection": element.storeSection, "storeSectionColor": element.storeSectionColor};
             index ++;
         });
 
