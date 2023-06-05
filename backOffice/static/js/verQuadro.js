@@ -14,7 +14,7 @@ export class Quadro{
         this.canvas_width = canvas.width;
         this.canvas_height = canvas.height;
         
-        this.current_shape_index = null;
+        this.current_shape_index;
         this.is_dragging;
         this.is_draggingResizer;
         this.is_draggingText;
@@ -110,7 +110,7 @@ export class Quadro{
         this.context.restore();
     }
 
-    detectAction(){
+    detectAction(id){
         const getMousePosition = (event) => {
             const rect = this.canvas.getBoundingClientRect();
             const scaleX = this.canvas.width / rect.width;
@@ -120,40 +120,6 @@ export class Quadro{
                 y: (event.clientY - rect.top) * scaleY
             }
         }
-
-        this.canvas.onmousedown = (event) =>{
-            event.preventDefault();
-
-            let mouseX = parseInt(event.clientX);
-            let mouseY = parseInt(event.clientY);
-            let canvasRect = canvas.getBoundingClientRect();
-            this.startX = (mouseX - canvasRect.left) * (this.canvas.width / canvasRect.width);
-            this.startY = (mouseY - canvasRect.top) * (this.canvas.height / canvasRect.height);            
-
-            let index = 0;
-            
-            this.is_dragging = true;
-           
-           
-            for( const shape of this.shapes){
-                if(this.is_mouse_in_shape((this.startX) / this.scale - this.translateX, (this.startY) / this.scale - this.translateY, shape)){
-                    this.current_shape_index = index;
-                    this.selectedExpo = true;
-
-                    this.recolor();
-                    shape.changeAlpha(0.5)
-                    return;
-                }
-                else{
-                    this.selectedExpo = false;
-                    this.current_shape_index = null;
-                }
-                index++;
-            }
-
-            this.recolor();
-            this.draw_shapes();
-        };
 
 
         this.canvas.onmouseup = (event) =>{
@@ -207,23 +173,68 @@ export class Quadro{
             this.isMouseOverCanvas = true;
         }
 
-        window.addEventListener("wheel", (e) => {
-            if (!this.isMouseOverCanvas) {
+        this.canvas.addEventListener("wheel", (e) => {
+            // if (!this.isMouseOverCanvas){
                 e.preventDefault();
-                return;
-              }
-
+            // }
+            // else{
             
             var scale = e.deltaY
-            if(scale > 0 && this.scale < 2){
-                this.scale += 0.5
+            if(scale > 0 && this.scale < 1.5){
+                this.scale += 0.05
             }
             else if(scale < 0 && this.scale > 0.5){
-                this.scale -= 0.5
+                this.scale -= 0.05
             }
             
             this.draw_shapes();
+            // }
+        });
+ 
+        return new Promise((resolve, reject) => {
+            this.canvas.onmousedown = (event) =>{
+                event.preventDefault();
+
+                let mouseX = parseInt(event.clientX);
+                let mouseY = parseInt(event.clientY);
+                let canvasRect = canvas.getBoundingClientRect();
+                this.startX = (mouseX - canvasRect.left) * (this.canvas.width / canvasRect.width);
+                this.startY = (mouseY - canvasRect.top) * (this.canvas.height / canvasRect.height);            
+
+                let index = 0;
+                
+                this.is_dragging = true;
             
+                let selectedExpositorId = null;
+                for( const shape of this.shapes){
+                    if(this.is_mouse_in_shape((this.startX) / this.scale - this.translateX, (this.startY) / this.scale - this.translateY, shape)){
+                        this.current_shape_index = index;
+                        this.selectedExpo = true;
+
+                        selectedExpositorId = this.getSelected(this.shapes);
+                        break;
+                    }
+                    else {
+                        this.selectedExpo = false;
+                        this.current_shape_index = null;
+                    }
+                    index++;  
+                }
+
+                this.recolor();
+                this.draw_shapes();
+
+              
+
+                if ( this.selectedExpo) {
+                    console.log("Selected Expositor ID:", selectedExpositorId);
+                    resolve(selectedExpositorId);
+                    
+                } else {
+                    resolve(null); // Nenhum expositor selecionado
+                    console.log("nothing")
+                }
+            };
         });
     }
 
@@ -238,14 +249,20 @@ export class Quadro{
 
  
     recolor(){
+       
         for( let shape of this.shapes){
-            if(shape.storeSectionColor === ""){
+            if(shape.storeSectionColor === "" && shape.id !== this.current_shape_index){
                 shape.color = 'grey';
                 shape.changeAlpha(1);
             }
-            else
+            else if(shape.id === this.current_shape_index){
+                shape.changeAlpha(0.5);
+            }
+            else if (shape.storeSectionColor !== "" && shape.id !== this.current_shape_index){
                 shape.color = shape.storeSectionColor;
                 shape.changeAlpha(1);
+            }
+                
         }
     }
 }
