@@ -1,0 +1,135 @@
+{% extends 'indexAute.html'%}
+{% block formulary %}
+    <div class="text-center pt-4">
+        <h2 class="">Registar Novo Funcionário</h2>
+    </div>
+    
+    <div class="row">
+        <div class="col-1"></div>
+        <fieldset class="py-2 col-10">
+            <div class="from-group">
+                {{formFront.username_funcionario.label(class="form-control-label")}}
+                <div class="input-group my-1 py-2" id="groupNameNumb">
+                    <span class="input-group-text bg-primary" id="basic-addon1">                    
+                        <i class="fa fa-user text-white"></i>
+                    </span>
+                    {% if formFront.username_funcionario.errors %}
+                        {{formFront.username_funcionario(class="form-control is-invalid", id="studentNumber", placeholder="ex: p35465575")}}
+                        {% else %}
+                        {{formFront.username_funcionario(class="form-control", id="studentNumber",  placeholder="ex: p35465575")}}
+                    {% endif %}
+                </div>
+                {% if formFront.username_funcionario.errors %}
+                {% for error in formFront.username_funcionario.errors %}
+                    <span>{{error}}</span>
+                {% endfor %}
+                {% else %}
+                {% endif %}
+            </div>
+        </fieldset> 
+    </div>
+
+    <div class="row">
+        <div class="col-1"></div>
+        <fieldset class="py-2 col-10">
+            <div class="from-group">
+                {{formFront.password_funcionario.label(class="form-control-label")}}
+                <div class="input-group my-1 py-2" id="groupPass">
+                    <span class="input-group-text bg-primary" id="basic-addon1">                    
+                        <i class="fa fa-key text-white"></i>
+                    </span>
+                    {% if formFront.password_funcionario.errors %}
+                        {{formFront.password_funcionario(class="form-control is-invalid", id="userPassword", placeholder="ex: effwegg45y5@")}}
+                        {% else %}
+                        {{formFront.password_funcionario(class="form-control", id="userPassword",  placeholder="ex: effwegg45y5@")}}
+                    {% endif %}
+                </div>
+                {% if formFront.password_funcionario.errors %}
+                {% for error in formFront.password_funcionario.errors %}
+                    <span>{{error}}</span>
+                {% endfor %}
+                {% else %}
+                {% endif %}
+            </div>
+        </fieldset> 
+    </div>
+
+    <div class="row">
+        <div class="col-1"></div>
+        <fieldset class="py-2 col-10">
+            <div class="from-group">
+                {{formFront.confirm_password.label(class="form-control-label")}}
+                <div class="input-group my-1 py-2" id="groupPassConf">
+                    <span class="input-group-text bg-primary" id="basic-addon1">                    
+                        <i class="fa fa-key text-white"></i>
+                    </span>
+                    {% if formFront.confirm_password.errors %}
+                        {{formFront.confirm_password(class="form-control is-invalid", id="userPasswordConfirm", placeholder="ex: effwegg45y5@")}}
+                        {% else %}
+                        {{formFront.confirm_password(class="form-control", id="userPasswordConfirm",  placeholder="ex: effwegg45y5@")}}
+                    {% endif %}
+                </div>
+                {% if formFront.confirm_password.errors %}
+                {% for error in formFront.confirm_password.errors %}
+                    <span>{{error}}</span>
+                {% endfor %}
+                {% else %}
+                {% endif %}
+            </div>
+        </fieldset>
+    </div>
+
+    <div class="row">
+        <div class="col-1"></div>
+        <fieldset class="py-2 col-5">
+            Loja
+            <div class="input-group my-1 needs-validation py-2" id="groupPass">
+                <span class="input-group-text bg-primary" id="basic-addon1">                    
+                    <i class="fa fa-store text-white"></i>
+                </span>
+                <select id="selectSector" class="form-select" id="seccao" required>
+                    <option class="is-invalid" disabled selected value="">Selecionar Loja</option>
+                    <option value="0">Quinta do Conde, Avenida 1</option>
+                </select> 
+                <div class="invalid-feedback">
+                    Por Favor insira Password
+                </div>
+            </div>
+        </fieldset >
+        <fieldset class="py-2 col-5">
+            Secção
+            <div class="input-group my-1 needs-validation py-2" id="groupPass">
+                <span class="input-group-text bg-primary" id="basic-addon1">                    
+                    <i class="fa fa-key text-white"></i>
+                </span>
+                <select id="selectSector" class="form-select" id="seccao" required>
+                    <option class="is-invalid" disabled selected value="">Selecionar Secção</option>
+                    <option value="0">Peixaria</option>
+                </select> 
+                <div class="invalid-feedback">
+                    Por Favor insira Secção
+                </div>
+            </div>
+        </fieldset >
+        <div class="col-1"></div>
+    </div>
+
+    <div class="row">
+        <div class="col-2"></div>
+        <div class="container col-8">
+            <div class="row"> 
+                <button class="btn btn-secondary my-2" type="submit" id="LogBtn" onclick="clicarBotao()">LogIn</button>
+                <a href="colocar referencia"><!-- exemplo../ForgotPass/ForgotPass.html -->
+                    <h6><dt>Já tem conta?</dt></h6>
+                </a>
+            </div>
+        </div>
+        <div class="col-2"></div>
+    </div>
+
+
+    <div class="container py-4">
+        
+    </div>
+        
+{% endblock formulary %}

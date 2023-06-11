@@ -5,23 +5,6 @@ from datetime import datetime
 db = SQLAlchemy()
 
 
-class Funcionario(db.Model, UserMixin):
-    __tablename__ = 'Funcionario'
-    id = db.Column(db.Integer(), primary_key=True)
-    nome = db.Column(db.String(40), unique=True) 
-    password = db.Column(db.String(60), nullable=False)
-    loja_id = db.Column('Loja_id', db.ForeignKey('Loja.id'), nullable=False)
-    loja = db.relationship('Loja', backref='Mapa')
-    secção_id = db.Column('Secção_id', db.ForeignKey('Secção.id'), nullable=False)
-    secção = db.relationship('Secção', backref='Funcionario')
-    EsperaAprovação = db.Column(db.Boolean(), default=True) 
-    Aprovado = db.Column(db.Boolean(), default=False) 
-    data_registo = db.Column(db.DateTime, default=datetime.now)
-
-    def __repr__(self) -> str:
-        return f"Funcionario self.nome"
-	
-
 class Cliente(db.Model, UserMixin):
 	__tablename__ = 'Cliente' 
 	id = db.Column(db.Integer, primary_key=True)
@@ -33,22 +16,13 @@ class Cliente(db.Model, UserMixin):
 		return f"User('{self.nome}',{self.password}','{self.gender}','{self.data_registo}')"
 
 
-class Admin (db.Model,UserMixin):
-    __tablename__= 'Admin'
-    id =  db.Column(db.Integer, primary_key=True)
-    funcionario_id = db.Column('Funcionario_id', db.ForeignKey('Funcionario.id'), nullable=False)
-    funcionario = db.relationship('Funcionario', backref='Admin')
-
-    def __repr__(self) -> str:
-        return '<Admin %r>' % self.id  
-
 
 class Loja (db.Model):
     __tablename__= 'Loja'
     id = db.Column(db.Integer, primary_key=True)
-    nome = db.Column(db.Integer, primary_key=True)
-    cidade = db.Column(db.Integer, primary_key=True)
-    morada = db.Column(db.Integer, primary_key=True)
+    nome = db.Column(db.String(80), unique=True, nullable=False)
+    cidade = db.Column(db.String(80), unique=True, nullable=False)
+    morada = db.Column(db.String(80), unique=True, nullable=False)
 
     def __repr__(self) -> str:
         return '<Admin %r>' % self.id  
@@ -63,8 +37,18 @@ class Mapa (db.Model):
     Aprovado = db.Column(db.Boolean(), default=False)
 
     def __repr__(self) -> str:
-        return '<Admin %r>' % self.id   
-    
+        return '<Admin %r>' % self.id    
+
+
+class Secção (db.Model):
+    __tablename__= 'Secção'
+    id = db.Column(db.Integer, primary_key=True)
+    nome = db.Column(db.String(25), unique=True, nullable=False)
+    cor = db.Column(db.String(20), unique=True, nullable=False)
+
+    def __repr__(self) -> str:
+        return '<Secção %r>' % self.id   
+
 
 class Expositor (db.Model):
     __tablename__= 'Expositor'
@@ -78,17 +62,7 @@ class Expositor (db.Model):
     mapa = db.relationship('Mapa', backref='Expositor')
 
     def __repr__(self) -> str:
-        return '<Admin %r>' % self.id  
-
-
-class Secção (db.Model):
-    __tablename__= 'Secção'
-    id = db.Column(db.Integer, primary_key=True)
-    nome = db.Column(db.String(25), unique=True, nullable=False)
-    cor = db.Column(db.String(20), unique=True, nullable=False)
-
-    def __repr__(self) -> str:
-        return '<Secção %r>' % self.id   
+        return '<Admin %r>' % self.id 
 
 
 class Iva (db.Model):
@@ -134,6 +108,7 @@ class Produto (db.Model):
 
 class Favorito (db.Model):
     __tablename__= 'Favorito'
+    id = db.Column(db.Integer, primary_key=True)
     produto_id = db.Column('Produto_id', db.ForeignKey('Produto.id'), nullable=False)
     produto = db.relationship('Produto', backref='Favorito')
     cliente_id = db.Column('Cliente_id', db.ForeignKey('Cliente.id'), nullable=False)
@@ -177,3 +152,32 @@ class TabelaNutricionalDR (db.Model):
 
     def __repr__(self) -> str:
         return '<Favorito %r>' % self.id  
+    
+
+class Funcionario(db.Model, UserMixin):
+    __tablename__ = 'Funcionario'
+    id = db.Column(db.Integer(), primary_key=True)
+    nome = db.Column(db.String(40), unique=True) 
+    password = db.Column(db.String(60), nullable=False)
+    loja_id = db.Column('Loja_id', db.ForeignKey('Loja.id'), nullable=False)
+    loja = db.relationship('Loja', backref='Mapa')
+    secção_id = db.Column('Secção_id', db.ForeignKey('Secção.id'), nullable=False)
+    secção = db.relationship('Secção', backref='Funcionario')
+    EsperaAprovação = db.Column(db.Boolean(), default=True) 
+    Aprovado = db.Column(db.Boolean(), default=False) 
+    data_registo = db.Column(db.DateTime, default=datetime.now)
+
+    def __repr__(self) -> str:
+        return f"Funcionario self.nome"
+	
+
+
+class Admin (db.Model,UserMixin):
+    __tablename__= 'Admin'
+    id =  db.Column(db.Integer, primary_key=True)
+    funcionario_id = db.Column('Funcionario_id', db.ForeignKey('Funcionario.id'), nullable=False)
+    funcionario = db.relationship('Funcionario', backref='Admin')
+
+    def __repr__(self) -> str:
+        return '<Admin %r>' % self.id  
+    
