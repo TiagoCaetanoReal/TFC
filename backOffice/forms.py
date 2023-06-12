@@ -16,3 +16,11 @@ class FuncionarioRegisterForm(FlaskForm):
     store = SelectField('Loja', coerce=str, validators=[InputRequired()])
     department = SelectField('Secção', coerce=str, validators=[InputRequired()])
     Register = SubmitField(label="Registar")
+
+    
+class FuncionarioEditForm(FlaskForm):
+    password_funcionario = PasswordField(label="Password", validators=[InputRequired()])
+    confirm_password = PasswordField(label="Confirmar Password", validators=[InputRequired(), EqualTo("password_funcionario")])
+    store = SelectField('Loja', coerce=str, validators=[InputRequired()])
+    department = SelectField('Secção', coerce=str, validators=[InputRequired()])
+    Alter = SubmitField(label="Alterar")
