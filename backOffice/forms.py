@@ -13,6 +13,6 @@ class FuncionarioRegisterForm(FlaskForm):
     username_funcionario = StringField(label="Nome Usuário", validators=[InputRequired(), Length(min=5, max=40)])
     password_funcionario = PasswordField(label="Password", validators=[InputRequired()])
     confirm_password = PasswordField(label="Confirmar Password", validators=[InputRequired(), EqualTo("password_funcionario")])
-    loja = SelectField('Loja', coerce=str, validators=[InputRequired()])
-    seccao = SelectField('Secção', coerce=str, validators=[InputRequired()])
+    store = SelectField('Loja', coerce=str, validators=[InputRequired()])
+    department = SelectField('Secção', coerce=str, validators=[InputRequired()])
     Register = SubmitField(label="Registar")

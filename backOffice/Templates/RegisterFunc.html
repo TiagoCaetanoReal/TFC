@@ -82,34 +82,51 @@
     <div class="row">
         <div class="col-1"></div>
         <fieldset class="py-2 col-5">
-            Loja
-            <div class="input-group my-1 needs-validation py-2" id="groupPass">
-                <span class="input-group-text bg-primary" id="basic-addon1">                    
-                    <i class="fa fa-store text-white"></i>
-                </span>
-                <select id="selectSector" class="form-select" id="seccao" required>
-                    <option class="is-invalid" disabled selected value="">Selecionar Loja</option>
-                    <option value="0">Quinta do Conde, Avenida 1</option>
-                </select> 
-                <div class="invalid-feedback">
-                    Por Favor insira Password
+            <div class="from-group">
+                {{formFront.store.label(class="form-control-label")}}
+                <div class="input-group my-1 py-2">
+                    <span class="input-group-text bg-primary" id="groupStore">                    
+                        <i class="fa fa-store text-white"></i>
+                    </span>
+                    {% if formFront.store.errors %}
+                        {{formFront.store(class="form-select is-invalid", id="selectloja", onchange="changedSelect()")}}
+                        {% else %}
+                        {{formFront.store(class="form-select", id="selectloja", onchange="changedSelect()")}}
+                    {% endif %}   
                 </div>
-            </div>
-        </fieldset >
+                {% if formFront.store.errors %}
+                    {% for error in formFront.store.errors %}
+                        <span>{{error}}</span>
+                    {% endfor %}
+                    {% else %}
+                {% endif %}
+             </div> 
+             <a href="{{url_for('AutenticationModule.doLogin')}}">
+                <h6><dt>Já tem Conta?</dt></h6>
+            </a>
+        </fieldset>
+
         <fieldset class="py-2 col-5">
-            Secção
-            <div class="input-group my-1 needs-validation py-2" id="groupPass">
-                <span class="input-group-text bg-primary" id="basic-addon1">                    
-                    <i class="fa fa-key text-white"></i>
-                </span>
-                <select id="selectSector" class="form-select" id="seccao" required>
-                    <option class="is-invalid" disabled selected value="">Selecionar Secção</option>
-                    <option value="0">Peixaria</option>
-                </select> 
-                <div class="invalid-feedback">
-                    Por Favor insira Secção
+            <div class="from-group">
+                {{formFront.department.label(class="form-control-label")}}
+                <div class="input-group my-1 py-2">
+                    <span class="input-group-text bg-primary" id="groupStore">                    
+                        <i class="fa fa-store text-white"></i>
+                    </span>
+                    {% if formFront.department.errors %}
+                        {{formFront.department(class="form-select is-invalid", id="selectdepartment", onchange="changedSelect()")}}
+                        {% else %}
+                        {{formFront.department(class="form-select", id="selectdepartment", onchange="changedSelect()")}}
+                    {% endif %}   
                 </div>
-            </div>
+                {% if formFront.department.errors %}
+                    {% for error in formFront.department.errors %}
+                        <span>{{error}}</span>
+                    {% endfor %}
+                    {% else %}
+                {% endif %}
+             </div>
+            
         </fieldset >
         <div class="col-1"></div>
     </div>
@@ -119,9 +136,7 @@
         <div class="container col-8">
             <div class="row"> 
                 <button class="btn btn-secondary my-2" type="submit" id="LogBtn" onclick="clicarBotao()">LogIn</button>
-                <a href="colocar referencia"><!-- exemplo../ForgotPass/ForgotPass.html -->
-                    <h6><dt>Já tem conta?</dt></h6>
-                </a>
+              
             </div>
         </div>
         <div class="col-2"></div>
@@ -133,3 +148,16 @@
     </div>
         
 {% endblock formulary %}
+
+{% block scripts %}
+    <script  type=text/javascript>
+        var store = document.getElementById("selectloja");
+        var department = document.getElementById("selectdepartment");
+
+        $( document ).ready(
+            store[0].setAttribute("disabled","selected"),
+            department[0].setAttribute("disabled","selected")
+        );
+    </script> 
+{% endblock scripts %}
+
