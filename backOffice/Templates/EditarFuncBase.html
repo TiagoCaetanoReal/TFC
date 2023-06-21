@@ -1,34 +1,9 @@
 {% extends 'indexAute.html'%}
 {% block formulary %}
-    {{formFront.hidden_tag()}}
     <div class="text-center pt-4">
-        <h2 class="">Registar Novo Funcionário</h2>
+        <h2 class="">Editar Dados Funcionário</h2>
     </div>
     
-    <div class="row">
-        <div class="col-1"></div>
-        <fieldset class="py-2 col-10">
-            <div class="from-group">
-                {{formFront.username_funcionario.label(class="form-control-label")}}
-                <div class="input-group my-1 py-2" id="groupNameNumb">
-                    <span class="input-group-text bg-primary" id="basic-addon1">                    
-                        <i class="fa fa-user text-white"></i>
-                    </span>
-                    {% if formFront.username_funcionario.errors %}
-                        {{formFront.username_funcionario(class="form-control is-invalid", id="studentNumber", placeholder="ex: p35465575")}}
-                        {% else %}
-                        {{formFront.username_funcionario(class="form-control", id="studentNumber",  placeholder="ex: p35465575")}}
-                    {% endif %}
-                </div>
-                {% if formFront.username_funcionario.errors %}
-                {% for error in formFront.username_funcionario.errors %}
-                    <span>{{error}}</span>
-                {% endfor %}
-                {% else %}
-                {% endif %}
-            </div>
-        </fieldset> 
-    </div>
 
     <div class="row">
         <div class="col-1"></div>
@@ -78,6 +53,7 @@
                 {% endif %}
             </div>
         </fieldset>
+        <div class="col-1"></div>
     </div>
 
     <div class="row">
@@ -101,12 +77,8 @@
                     {% endfor %}
                     {% else %}
                 {% endif %}
-             </div> 
-             <a href="{{url_for('AutenticationModule.doLogin')}}">
-                <h6><dt>Já tem Conta?</dt></h6>
-            </a>
+             </div>
         </fieldset>
-
         <fieldset class="py-2 col-5">
             <div class="from-group">
                 {{formFront.department.label(class="form-control-label")}}
@@ -129,18 +101,24 @@
              </div>
             
         </fieldset >
-        <div class="col-1"></div>
     </div>
 
-    <div class="row pb-4 pt-2">
-        <div class="col-3"></div>
-        {{formFront.Register(class="btn btn-secondary my-2 col-6", id="RegisterBtn")}}
-        <div class="col-1"></div>
+    <div class="row py-2">
+        <div class="col-2"></div>
+        <div class="container col-8">
+            <div class="row"> 
+                <button class="btn btn-secondary my-2" type="submit" id="LogBtn" onclick="clicarBotao()">Editar</button>
+            </div>
+        </div>
+        <div class="col-2"></div>
     </div>
-</div>  
+
+
+    <div class="container py-4">
         
+    </div>
+            
 {% endblock formulary %}
-
 {% block scripts %}
     <script  type=text/javascript>
         var store = document.getElementById("selectloja");
@@ -152,4 +130,3 @@
         );
     </script> 
 {% endblock scripts %}
-

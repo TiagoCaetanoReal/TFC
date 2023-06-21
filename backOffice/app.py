@@ -1,8 +1,11 @@
 from flask import Flask
 from models import db, Funcionario
 from flask_login import LoginManager
+from flask_babel import Babel
 
 from AutenticationModule import AutenticationModule
+from MapsModule import MapsModule
+from ProductsModule import ProductsModule
 
 def create_app(config_filename):
 	app = Flask(__name__)
@@ -13,7 +16,7 @@ def create_app(config_filename):
 	with app.app_context():
 		db.create_all()
 
-	login_manager = LoginManager()
+	login_manager = LoginManager() 
 	login_manager.login_view = 'auth.login'
 	login_manager.init_app(app)
 
@@ -22,6 +25,10 @@ def create_app(config_filename):
 		return Funcionario.query.get(int(user_id))
 
 	app.register_blueprint(AutenticationModule)
+	app.register_blueprint(MapsModule)
+	app.register_blueprint(ProductsModule)
+
+	babel = Babel(app)
 
 	return app
 

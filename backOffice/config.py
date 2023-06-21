@@ -9,12 +9,14 @@ class Config(object):
     TESTING = False
     CSRF_ENABLED = True
     SECRET_KEY = 'superSecretPass'
-    SERVER_NAME = "172.20.73.180:5000"
+    SERVER_NAME = "localhost:5000"
     params = urllib.parse.quote_plus('DRIVER={SQL Server};SERVER=DESKTOP-56CVD06\MSSQLSERVER01;DATABASE=projetoTFC;Trusted_Connection=yes;')
     SQLALCHEMY_DATABASE_URI = "mssql+pyodbc:///?odbc_connect=%s" % params
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-
+    
+    BABEL_TRANSLATION_DIRECTORIES = 'wtforms:translations'
+    BABEL_DEFAULT_LOCALE = 'pt'
 
 class ProductionConfig(Config):
     DEBUG = False

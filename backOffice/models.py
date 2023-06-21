@@ -16,7 +16,6 @@ class Cliente(db.Model, UserMixin):
 		return f"User('{self.nome}',{self.password}','{self.gender}','{self.data_registo}')"
 
 
-
 class Loja (db.Model):
     __tablename__= 'Loja'
     id = db.Column(db.Integer, primary_key=True)
@@ -28,18 +27,6 @@ class Loja (db.Model):
         return '<Admin %r>' % self.id  
 
 
-class Mapa (db.Model):
-    __tablename__= 'Mapa'
-    id = db.Column(db.Integer, primary_key=True)
-    loja_id = db.Column('Loja_id', db.ForeignKey('Loja.id'), nullable=False)
-    loja = db.relationship('Loja', backref='Mapa')
-    EsperaAprovação = db.Column(db.Boolean(), default=True) 
-    Aprovado = db.Column(db.Boolean(), default=False)
-
-    def __repr__(self) -> str:
-        return '<Admin %r>' % self.id    
-
-
 class Secção (db.Model):
     __tablename__= 'Secção'
     id = db.Column(db.Integer, primary_key=True)
@@ -49,20 +36,6 @@ class Secção (db.Model):
     def __repr__(self) -> str:
         return '<Secção %r>' % self.id   
 
-
-class Expositor (db.Model):
-    __tablename__= 'Expositor'
-    id = db.Column(db.Integer, primary_key=True)
-    capacidade = db.Column(db.Integer, unique=True, nullable=False)
-    divisorias = db.Column(db.Integer, unique=True, nullable=False)
-    coordenadas = db.Column(db.String(10), unique=True, nullable=False)
-    secção_id = db.Column('Secção_id', db.ForeignKey('Secção.id'), nullable=False)
-    secção = db.relationship('Secção', backref='Expositor')
-    mapa_id = db.Column('Mapa_id', db.ForeignKey('Mapa.id'), nullable=False)
-    mapa = db.relationship('Mapa', backref='Expositor')
-
-    def __repr__(self) -> str:
-        return '<Admin %r>' % self.id 
 
 
 class Iva (db.Model):
@@ -163,12 +136,13 @@ class Funcionario(db.Model, UserMixin):
     loja = db.relationship('Loja', backref='Funcionario')
     secção_id = db.Column('Secção_id', db.ForeignKey('Secção.id'), nullable=False)
     secção = db.relationship('Secção', backref='Funcionario')
+    cargo = db.Column(db.String(60), nullable=False) 
     EsperaAprovação = db.Column(db.Boolean(), default=True) 
     Aprovado = db.Column(db.Boolean(), default=False) 
     data_registo = db.Column(db.DateTime, default=datetime.now)
 
     def __repr__(self) -> str:
-        return f"Funcionario self.nome"
+        return f"Funcionario " + self.nome + " " + self.cargo
 	
 
 
@@ -181,3 +155,31 @@ class Admin (db.Model,UserMixin):
     def __repr__(self) -> str:
         return '<Admin %r>' % self.id  
     
+
+class Mapa (db.Model):
+    __tablename__= 'Mapa'
+    id = db.Column(db.Integer, primary_key=True)
+    funcionario_id = db.Column('Funcionario_id', db.ForeignKey('Funcionario.id'), nullable=False)
+    funcionario = db.relationship('Funcionario', backref='Mapa') 
+    loja_id = db.Column('Loja_id', db.ForeignKey('Loja.id'), nullable=False)
+    loja = db.relationship('Loja', backref='Mapa') 
+    EsperaAprovação = db.Column(db.Boolean(), default=True) 
+    Aprovado = db.Column(db.Boolean(), default=False)
+
+    def __repr__(self) -> str:
+        return '<Admin %r>' % self.id    
+
+
+class Expositor (db.Model):
+    __tablename__= 'Expositor'
+    id = db.Column(db.Integer, primary_key=True)
+    capacidade = db.Column(db.Integer, unique=True, nullable=False)
+    divisorias = db.Column(db.Integer, unique=True, nullable=False)
+    coordenadas = db.Column(db.String(10), unique=True, nullable=False)
+    secção_id = db.Column('Secção_id', db.ForeignKey('Secção.id'), nullable=False)
+    secção = db.relationship('Secção', backref='Expositor')
+    mapa_id = db.Column('Mapa_id', db.ForeignKey('Mapa.id'), nullable=False)
+    mapa = db.relationship('Mapa', backref='Expositor')
+
+    def __repr__(self) -> str:
+        return '<Admin %r>' % self.id 

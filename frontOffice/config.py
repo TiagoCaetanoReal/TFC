@@ -9,7 +9,7 @@ class Config(object):
     TESTING = False
     CSRF_ENABLED = True
     SECRET_KEY = 'superSecretPass'
-    SERVER_NAME = "localhost:5000"
+    # SERVER_NAME = "loscalhost:5000"
     params = urllib.parse.quote_plus('DRIVER={SQL Server};SERVER=DESKTOP-56CVD06\MSSQLSERVER01;DATABASE=projetoTFC;Trusted_Connection=yes;')
     SQLALCHEMY_DATABASE_URI = "mssql+pyodbc:///?odbc_connect=%s" % params
 

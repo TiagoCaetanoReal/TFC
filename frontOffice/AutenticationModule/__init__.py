@@ -31,3 +31,10 @@ def doAlteration():
     form = ClienteEditForm()
 
     return render_template("editarPerfil.html", title = "Login", formFront = form)
+
+
+@AutenticationModule.route("/ScanStore", methods=['GET', 'POST'])
+def scanStore():
+    form = ClienteEditForm()
+
+    return render_template("QRcode.html", title = "Login", formFront = form)

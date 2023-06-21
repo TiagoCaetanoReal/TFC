@@ -160,7 +160,7 @@ class Funcionario(db.Model, UserMixin):
     nome = db.Column(db.String(40), unique=True) 
     password = db.Column(db.String(60), nullable=False)
     loja_id = db.Column('Loja_id', db.ForeignKey('Loja.id'), nullable=False)
-    loja = db.relationship('Loja', backref='Mapa')
+    loja = db.relationship('Loja', backref='Funcionario')
     secção_id = db.Column('Secção_id', db.ForeignKey('Secção.id'), nullable=False)
     secção = db.relationship('Secção', backref='Funcionario')
     EsperaAprovação = db.Column(db.Boolean(), default=True) 

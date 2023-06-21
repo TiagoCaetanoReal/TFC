@@ -22,51 +22,79 @@
     <div class="row pt-4 mt-4">
         <div class="col-1"></div>
         <fieldset class="py-3 col-10">
-            Alterar Nome
-            <div class="input-group my-1 needs-validation py-2" id="groupNameNumb">
-                <span class="input-group-text bg-primary" id="basic-addon1">                    
-                    <i class="fa fa-user text-white"></i>
-                </span>
-                <input type="text" class="form-control" id="username" placeholder="Nikola Tesla" maxlength="50" required="">
-                <div class="invalid-feedback"></div>
-            </div>
-    
-        </fieldset>
-        <div class="col-1"></div>
-    </div>
-
-
-    <div class="row">
-        <div class="col-1"></div>
-        <fieldset class="py-3 col-10">
-        Password
-        <div class="input-group my-1 needs-validation py-2" id="groupPass">
-            <span class="input-group-text bg-primary" id="basic-addon1">                    
-                <i class="fa fa-key text-white"></i>
-            </span>
-            <input type="password" class="form-control" id="userPassword" maxlength="30" placeholder="Bobin@D3Te5L@" required=""> 
-            <div class="invalid-feedback">
-                Por Favor insira Password
-            </div>
-        </div>
-    </fieldset >
-        <div class="col-1"></div>
-    </div>
-
-    <div class="row">
-        <div class="col-1"></div>
-        <fieldset class="py-3 col-10">
-            Confirmar Password
-            <div class="input-group my-1 needs-validation py-2" id="groupPass">
-                <span class="input-group-text bg-primary" id="basic-addon1">                    
-                    <i class="fa fa-key text-white"></i>
-                </span>
-                <input type="password" class="form-control" id="userPassword" maxlength="30" placeholder="Bobin@D3Te5L@" required=""> 
-                <div class="invalid-feedback">
-                    Por Favor insira Password
+            <div class="from-group">
+                {{formFront.username_cliente.label(class="form-control-label")}}
+                <div class="input-group my-1 py-2" id="groupNameNumb">
+                    <span class="input-group-text bg-primary" id="basic-addon1">                    
+                        <i class="fa fa-user text-white"></i>
+                    </span>
+                    {% if formFront.username_cliente.errors %}
+                        {{formFront.username_cliente(class="form-control is-invalid", id="username", placeholder="ex: Nikola Tesla")}}
+                        {% else %}
+                        {{formFront.username_cliente(class="form-control", id="username",  placeholder="ex: Nikola Tesla")}}
+                    {% endif %}
                 </div>
+                {% if formFront.username_cliente.errors %}
+                {% for error in formFront.username_cliente.errors %}
+                    <span>{{error}}</span>
+                {% endfor %}
+                {% else %}
+                {% endif %}
             </div>
-        </fieldset >
+        </fieldset> 
+
+        <div class="col-1"></div>
+    </div>
+
+
+    <div class="row">
+        <div class="col-1"></div>
+        <fieldset class="py-3 col-10">
+            <div class="from-group">
+                {{formFront.password_cliente.label(class="form-control-label")}}
+                <div class="input-group my-1 py-2" id="groupPass">
+                    <span class="input-group-text bg-primary" id="basic-addon1">                    
+                        <i class="fa fa-key text-white"></i>
+                    </span>
+                    {% if formFront.password_cliente.errors %}
+                        {{formFront.password_cliente(class="form-control is-invalid", id="userPassword", placeholder="ex: effwegg45y5@")}}
+                        {% else %}
+                        {{formFront.password_cliente(class="form-control", id="userPassword",  placeholder="ex: effwegg45y5@")}}
+                    {% endif %}
+                </div>
+                {% if formFront.password_cliente.errors %}
+                {% for error in formFront.password_cliente.errors %}
+                    <span>{{error}}</span>
+                {% endfor %}
+                {% else %}
+                {% endif %}
+            </div>
+        </fieldset> 
+    </div>
+
+    <div class="row">
+        <div class="col-1"></div>
+        <fieldset class="py-3 col-10">
+            <div class="from-group">
+                {{formFront.confirm_password.label(class="form-control-label")}}
+                <div class="input-group my-1 py-2" id="groupPassConf">
+                    <span class="input-group-text bg-primary" id="basic-addon1">                    
+                        <i class="fa fa-key text-white"></i>
+                    </span>
+                    {% if formFront.confirm_password.errors %}
+                        {{formFront.confirm_password(class="form-control is-invalid", id="userPasswordConfirm", placeholder="ex: effwegg45y5@")}}
+                        {% else %}
+                        {{formFront.confirm_password(class="form-control", id="userPasswordConfirm",  placeholder="ex: effwegg45y5@")}}
+                    {% endif %}
+                </div>
+                {% if formFront.confirm_password.errors %}
+                {% for error in formFront.confirm_password.errors %}
+                    <span>{{error}}</span>
+                {% endfor %}
+                {% else %}
+                {% endif %}
+            </div>
+        </fieldset>
         <div class="col-1"></div>
     </div>
     
