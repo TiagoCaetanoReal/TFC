@@ -6,6 +6,10 @@ from flask_babel import Babel
 from AutenticationModule import AutenticationModule
 from MapsModule import MapsModule
 from ProductsModule import ProductsModule
+from AnalisysModule import AnalisysModule
+from ApprovalsModule import ApprovalsModule
+
+
 
 def create_app(config_filename):
 	app = Flask(__name__)
@@ -27,6 +31,8 @@ def create_app(config_filename):
 	app.register_blueprint(AutenticationModule)
 	app.register_blueprint(MapsModule)
 	app.register_blueprint(ProductsModule)
+	app.register_blueprint(ApprovalsModule)
+	app.register_blueprint(AnalisysModule)
 
 	babel = Babel(app)
 

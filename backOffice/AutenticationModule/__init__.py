@@ -27,7 +27,7 @@ def doLogin():
                 if(user.password == form.password_funcionario.data):
                     login_user(user)
                     print(current_user.id)
-                    return redirect('MapsList')
+                    return redirect('/ProductsList')
                 else:
                     l = list(form.password_funcionario.errors)
                     l.append("Incorrect Password")
@@ -62,9 +62,6 @@ def doRegister():
 
 
     if request.method == 'POST':
-        print(form.validate_on_submit())
-        print(form.Register.data)
-        # if a dar problema
         if form.validate_on_submit() and form.Register.data == True:
             verifyEmploeeName = db.session.query(Funcionario).filter(Funcionario.nome == form.username_funcionario.data).first()
 

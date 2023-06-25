@@ -24,7 +24,7 @@ class Loja (db.Model):
     morada = db.Column(db.String(80), unique=True, nullable=False)
 
     def __repr__(self) -> str:
-        return '<Admin %r>' % self.id  
+        return '<Loja %r>' % self.id  
 
 
 class Secção (db.Model):
@@ -50,7 +50,7 @@ class Iva (db.Model):
 class Foto (db.Model):
     __tablename__= 'Foto'
     id = db.Column(db.Integer, primary_key=True)
-    URI = db.Column(db.String(75), unique=True, nullable=False)
+    caminhoFot = db.Column(db.String(75), unique=True, nullable=False)
 
     def __repr__(self) -> str:
         return '<Foto %r>' % self.id   
@@ -64,19 +64,34 @@ class Origem (db.Model):
     def __repr__(self) -> str:
         return '<Origem %r>' % self.id   
     
+class Medida(db.Model):
+    __tablename__= 'Medida'
+    id = db.Column(db.Integer, primary_key=True)
+    unMedida = db.Column(db.String(40), unique=True, nullable=False)
+
+    def __repr__(self) -> str:
+        return '<Medida %r>' % self.id   
+    
 
 class Produto (db.Model):
     __tablename__= 'Produto'
     id = db.Column(db.Integer, primary_key=True)
-    preço = db.Column(db.Integer, unique=True, nullable=False)
-    nome = db.Column(db.String(40), unique=True, nullable=False)
+    preço = db.Column(db.Integer, unique=False, nullable=False)
+    nome = db.Column(db.String(40), unique=False, nullable=False)
+    origem_id = db.Column('Origem', db.ForeignKey('Origem.id'), nullable=False)
+    origem = db.relationship('Origem', backref='Produto')
+    iva_id = db.Column('Iva', db.ForeignKey('Iva.id'), nullable=False)
+    iva = db.relationship('Iva', backref='Produto')
+    unMedida_id = db.Column('Medida_id', db.ForeignKey('Medida.id'), nullable=False)
+    unMedida = db.relationship('Medida', backref='Produto')
     secção_id = db.Column('Secção_id', db.ForeignKey('Secção.id'), nullable=False)
     secção = db.relationship('Secção', backref='Produto')
-    expositor_id = db.Column('Expositor_id', db.ForeignKey('Expositor.id'), nullable=False)
-    expositor = db.relationship('Expositor', backref='Produto')
+    loja_id = db.Column('Loja_id', db.ForeignKey('Loja.id'), nullable=False)
+    loja = db.relationship('Loja', backref='Produto')
+    photoPath = db.Column(db.String(), unique=True, nullable=False)
 
     def __repr__(self) -> str:
-        return '<Admin %r>' % self.id  
+        return '<Produto %r>' % self.id  
     
 
 class Favorito (db.Model):
@@ -106,7 +121,7 @@ class TabelaNutricional100gr (db.Model):
     produto = db.relationship('Produto', backref='TabelaNutricional100gr')
 
     def __repr__(self) -> str:
-        return '<Favorito %r>' % self.id  
+        return '<TabelaNutricional100gr %r>' % self.id  
     
 
 class TabelaNutricionalDR (db.Model):
@@ -124,7 +139,7 @@ class TabelaNutricionalDR (db.Model):
     produto = db.relationship('Produto', backref='TabelaNutricionalDR')
 
     def __repr__(self) -> str:
-        return '<Favorito %r>' % self.id  
+        return '<TabelaNutricionalDR %r>' % self.id  
     
 
 class Funcionario(db.Model, UserMixin):
@@ -180,6 +195,8 @@ class Expositor (db.Model):
     secção = db.relationship('Secção', backref='Expositor')
     mapa_id = db.Column('Mapa_id', db.ForeignKey('Mapa.id'), nullable=False)
     mapa = db.relationship('Mapa', backref='Expositor')
+    produto_id = db.Column('Produto_id', db.ForeignKey('Produto.id'), nullable=False)
+    produto = db.relationship('Produto', backref='Expositor')
 
     def __repr__(self) -> str:
         return '<Admin %r>' % self.id 

@@ -8,7 +8,22 @@ from datetime import datetime, timedelta
 ApprovalsModule = Blueprint("ApprovalsModule", __name__)
 
 
-@ApprovalsModule.route("/ApproveMapsList", methods=['GET', 'POST'])
+@ApprovalsModule.route("/ApproveMaps", methods=['GET', 'POST'])
 def approveMapList():
+    active_user = current_user
 
-    return render_template("AprovarMapa.html", title = "ApproveMapsList")
+    departemant = db.session.query(Secção).filter(Secção.id==active_user.secção_id).first()
+    employee = [active_user.nome,active_user.cargo,departemant.nome]
+
+    return render_template("AprovarMapa.html", title = "ApproveMaps", active_user = employee)
+
+
+
+@ApprovalsModule.route("/ApproveEmployees", methods=['GET', 'POST'])
+def approveEmployeesList():
+    active_user = current_user
+
+    departemant = db.session.query(Secção).filter(Secção.id==active_user.secção_id).first()
+    employee = [active_user.nome,active_user.cargo,departemant.nome]
+    
+    return render_template("AprovarFuncionario.html", title = "ApproveEmployees", active_user = employee)
