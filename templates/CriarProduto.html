@@ -1,0 +1,484 @@
+{% extends 'indexBackOffice.html'%}
+
+    {% block pageTitle %}
+        <h2 class="position-absolute fw-bold text-white start-50">Criar Produto</h2>
+    {% endblock pageTitle %}
+
+    
+    {% block profile %}
+        <h4 class="mt-4 text-white" >{{active_user[0]}}</h4>
+        <h6 class="text-white">{{active_user[1]}}</h6>
+        <h6 class="text-white">{{active_user[2]}}</h6>
+    {% endblock profile %}
+
+    {% block navOptions %}
+
+        <li class="sidebar-item pt-2 pb-0 px-0 ">
+            <a class="sidebar-link bg-secondary px-2" href="{{url_for('MapsModule.seeMapList')}}">
+                <div class="row">
+                    <div class="col-2 pe-0">
+                        <i class="fa fa-list my-2 " aria-hidden="true"></i>
+                        <i class="fa fa-store my-3 position-absolute" aria-hidden="true" style="margin-left: -10px;"></i>
+                    </div>
+                
+                    <div class="col-10 g-0">
+                        <h4 class="text-start text-white my-2 ms-2">Listagem Mapas</h4>
+                    </div>
+                </div>
+            </a>
+        </li>
+        <li class="sidebar-item px-5">
+            <a class="sidebar-link bg-secondary">
+                <h6 class="text-white text-opacity-50">Criar Mapa</h6>
+            </a>
+        </li>
+        <li class="sidebar-item px-5">
+            <a class="sidebar-link bg-secondary">
+                <h6 class="text-white text-opacity-50">Editar Mapa</h6>
+            </a>
+        </li>
+        
+        <hr class="border border-2 border-white">
+
+        <li class="sidebar-item pt-2 pb-0 px-0 ">
+            <a class="sidebar-link bg-secondary px-2" href="{{url_for('ProductsModule.seeProductList')}}">
+                <div class="row">
+                    <div class="col-2 pe-0">
+                        <i class="fa fa-list my-2 text-center text-white" aria-hidden="true"></i>
+                        <i class="fa fa-box my-3 position-absolute text-white" aria-hidden="true" style="margin-left: -10px;"></i>
+                    </div>
+                
+                    <div class="col-10 g-0">
+                        <h4 class="text-start text-white my-2 ms-2">Listagem Produtos</h4>
+                    </div>
+                </div>
+            </a>
+        </li>
+        <li class="sidebar-item px-5 active">
+            <a class="sidebar-link bg-secondary" >
+                <h6 class="text-white text-opacity-100">Criar Produto</h6>
+            </a>
+        </li>
+        <li class="sidebar-item px-5">
+            <a class="sidebar-link bg-secondary" >
+                <h6 class="text-white text-opacity-50">Editar Produto</h6>
+            </a>
+        </li>
+
+        <hr class="border border-2 border-white">
+        
+        <li class="sidebar-item pt-2 pb-0 px-0">
+            <a class="sidebar-link bg-secondary px-2" >
+                <div class="row">
+                    <div class="col-2 ps-4">
+                        <i class="fa fa-chart-bar text-center text-white" aria-hidden="true"></i>
+                    </div>
+                
+                    <div class="col-10 g-0">
+                        <h4 class="text-start text-white ms-2 text-opacity-50">Consultas</h4>
+                    </div>
+                </div>
+            </a>
+        </li>
+        <li class="sidebar-item px-5">
+            <a class="sidebar-link disabled bg-secondary"  href="{{url_for('AnalisysModule.seeProductsTable')}}">
+                <h6 class="text-white">Consulta Produtos</h6>
+            </a>
+        </li>
+        <li class="sidebar-item px-5">
+            <a class="sidebar-link bg-secondary"  href="{{url_for('AnalisysModule.seeExhibitorsTable')}}">
+                <h6 class="text-white">Consulta Expositores</h6>
+            </a>
+        </li>
+    {% endblock navOptions %}
+
+    {% block content %}
+    <form method="POST" action="" novalidate enctype="multipart/form-data">
+        {{ productFormFront.csrf_token }}
+        <div class="row pt-5 mb-3">
+            <fieldset class="container gx-0 bg-light rounded-2 col-3">
+                <div class="from-group">
+                    {{productFormFront.name.label(class="form-control-label")}}
+                    <div class="input-group input-group-lg " id="groupName">
+                        {% if productFormFront.name.errors %}
+                            {{productFormFront.name(class="form-control is-invalid", id="productName" )}}
+                            {% else %}
+                            {{productFormFront.name(class="form-control", id="productName" )}}
+                        {% endif %}
+                    </div>
+                    {% if productFormFront.name.errors %}
+                    {% for error in productFormFront.name.errors %}
+                        <span>{{error}}</span>
+                    {% endfor %}
+                    {% else %}
+                    {% endif %}
+                </div>
+            </fieldset> 
+
+            <fieldset class="container gx-0 bg-light rounded-2 col-3">
+                <div class="from-group">
+                    {{productFormFront.price.label(class="form-control-label")}}
+                    <div class="input-group input-group-lg " id="groupPrice">
+                        {% if productFormFront.price.errors %}
+                            {{productFormFront.price(class="form-control is-invalid", id="productPrice", onkeyup="verifyNumber(productPrice)" )}}
+                            <span class="input-group-text">€</span>
+                        {% else %}
+                            {{productFormFront.price(class="form-control", id="productPrice", onkeyup="verifyNumber(productPrice)" )}}
+                            <span class="input-group-text">€</span>
+                        {% endif %}
+                    </div>
+                    {% if productFormFront.price.errors %}
+                    {% for error in productFormFront.price.errors %}
+                        <span>{{error}}</span>
+                    {% endfor %}
+                    {% else %}
+                    {% endif %}
+                </div>
+            </fieldset> 
+
+            <fieldset class="container gx-0 bg-light rounded-2 col-3">
+                <div class="from-group">
+                    {{productFormFront.iva.label(class="form-control-label")}}
+                    <div class="input-group input-group-lg " id="groupIva">
+                        {% if productFormFront.iva.errors %}
+                            {{productFormFront.iva(class="form-select is-invalid", id="productIva", onchange="changedSelect()")}}
+                        {% else %}
+                            {{productFormFront.iva(class="form-select", id="productIva", onchange="changedSelect()")}}
+                        {% endif %}   
+                    </div>
+                    {% if productFormFront.iva.errors %}
+                        {% for error in productFormFront.iva.errors %}
+                            <span>{{error}}</span>
+                        {% endfor %}
+                        {% else %}
+                    {% endif %}
+                 </div>
+            </fieldset >
+            
+            
+        </div>
+
+        <div class="row mb-3 mt-5">
+            <fieldset class="container gx-0 bg-light rounded-2 col-3">
+                <div class="from-group">
+                    {{productFormFront.metric.label(class="form-control-label")}}
+                    <div class="input-group input-group-lg " id="groupMetric">
+                        {% if productFormFront.metric.errors %}
+                            {{productFormFront.metric(class="form-select is-invalid", id="productMetric", onchange="changedSelect()")}}
+                        {% else %}
+                            {{productFormFront.metric(class="form-select", id="productMetric", onchange="changedSelect()")}}
+                        {% endif %}   
+                    </div>
+                    {% if productFormFront.metric.errors %}
+                        {% for error in productFormFront.metric.errors %}
+                            <span>{{error}}</span>
+                        {% endfor %}
+                        {% else %}
+                    {% endif %}
+                 </div>
+            </fieldset >
+            
+            <fieldset class="container gx-0 bg-light rounded-2 col-3">
+                <div class="from-group">
+                    {{productFormFront.origin.label(class="form-control-label")}}
+                    <div class="input-group input-group-lg " id="groupOrigin">
+                        {% if productFormFront.origin.errors %}
+                            {{productFormFront.origin(class="form-select is-invalid", id="productOrigin", onchange="changedSelect()")}}
+                        {% else %}
+                            {{productFormFront.origin(class="form-select", id="productOrigin", onchange="changedSelect()")}}
+                        {% endif %}   
+                    </div>
+                    {% if productFormFront.origin.errors %}
+                        {% for error in productFormFront.origin.errors %}
+                            <span>{{error}}</span>
+                        {% endfor %}
+                        {% else %}
+                    {% endif %}
+                 </div>
+            </fieldset >
+
+            <fieldset class="container gx-0 bg-light rounded-2 col-3">
+                <div class="from-group">
+                    {{productFormFront.department.label(class="form-control-label")}}
+                    <div class="input-group input-group-lg " id="groupDepartment">
+                        {% if productFormFront.department.errors %}
+                            {{productFormFront.department(class="form-select is-invalid", id="productDepartment", onchange="changedSelect()")}}
+                        {% else %}
+                            {{productFormFront.department(class="form-select", id="productDepartment", onchange="changedSelect()")}}
+                        {% endif %}   
+                    </div>
+                    {% if productFormFront.department.errors %}
+                        {% for error in productFormFront.department.errors %}
+                            <span>{{error}}</span>
+                        {% endfor %}
+                        {% else %}
+                    {% endif %}
+                 </div>
+            </fieldset >
+
+        </div>
+        
+        <div class="row mt-5 pt-5">
+            <div class="col-1"></div>
+            <div class="col-6">
+                <div class="container " style="height: 300px;">
+                    <h5>Tabela Nutricional </h5>
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th scope="col"></th>
+                            <th scope="col">Por 100gr</th>
+                            <th scope="col">%DR</th>
+                        </tr>
+                        </thead>
+                        <tbody class="overflow-auto" >
+                            <tr>
+                                <td>Energia[kcal]</td>
+                                <td>
+                                    <div class="input-group input-group-sm">
+                                        {{nutritionFormFront.kcal100gr(class="form-control verifyNumericValue", id="kcal100gr", onkeyup="verifyNumber(kcal100gr)")}}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="input-group input-group-sm">
+                                        {{nutritionFormFront.kcalDR(class="form-control verifyNumericValue", id="kcalDR", onkeyup="verifyNumber(kcalDR)" )}}
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Energia[kj]</td>
+                                <td>
+                                    <div class="input-group input-group-sm">
+                                        {{nutritionFormFront.kj100gr(class="form-control verifyNumericValue", id="kj100gr", onkeyup="verifyNumber(kj100gr)"  )}}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="input-group input-group-sm">
+                                        {{nutritionFormFront.kjDR(class="form-control verifyNumericValue",  id="kjDR", onkeyup="verifyNumber(kjDR)" )}}
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Lipigos[gr]</td>
+                                <td>
+                                    <div class="input-group input-group-sm">
+                                        {{nutritionFormFront.lipids100gr(class="form-control verifyNumericValue",  id="lipids100gr", onkeyup="verifyNumber(lipids100gr)" )}}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="input-group input-group-sm">
+                                        {{nutritionFormFront.lipidsDR(class="form-control verifyNumericValue", id="lipidsDR", onkeyup="verifyNumber(lipidsDR)" )}}
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Hidratos carbono[gr]</td>
+                                <td>
+                                    <div class="input-group input-group-sm">
+                                        {{nutritionFormFront.carbohydrates100gr(class="form-control verifyNumericValue",  id="carbohydrates100gr", onkeyup="verifyNumber(carbohydrates100gr)" )}}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="input-group input-group-sm">
+                                        {{nutritionFormFront.carbohydratesDR(class="form-control verifyNumericValue", id="carbohydratesDR", onkeyup="verifyNumber(carbohydratesDR)" )}}
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Açúcares[gr]</td>
+                                <td>
+                                    <div class="input-group input-group-sm">
+                                        {{nutritionFormFront.sugars100gr(class="form-control verifyNumericValue", id="sugars100gr", onkeyup="verifyNumber(sugars100gr)" )}}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="input-group input-group-sm">
+                                        {{nutritionFormFront.sugarsDR(class="form-control verifyNumericValue", id="sugarsDR", onkeyup="verifyNumber(sugarsDR)" )}}
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Fibra[gr]</td>
+                                <td>
+                                    <div class="input-group input-group-sm">
+                                        {{nutritionFormFront.fibers100gr(class="form-control verifyNumericValue", id="fibers100gr", onkeyup="verifyNumber(fibers100gr)" )}}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="input-group input-group-sm">
+                                        {{nutritionFormFront.fibersDR(class="form-control verifyNumericValue", id="fibersDR", onkeyup="verifyNumber(fibersDR)" )}}
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Proteínas[gr]</td>
+                                <td>
+                                    <div class="input-group input-group-sm">
+                                        {{nutritionFormFront.protein100gr(class="form-control verifyNumericValue",  id="protein100gr", onkeyup="verifyNumber(protein100gr)" )}}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="input-group input-group-sm">
+                                        {{nutritionFormFront.proteinDR(class="form-control verifyNumericValue",  id="proteinDR", onkeyup="verifyNumber(proteinDR)" )}}
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Sal[gr]</td>
+                                <td>
+                                    <div class="input-group input-group-sm">
+                                        {{nutritionFormFront.salt100gr(class="form-control verifyNumericValue",  id="salt100gr", onkeyup="verifyNumber(salt100gr)" )}}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="input-group input-group-sm">
+                                        {{nutritionFormFront.saltDR(class="form-control verifyNumericValue",  id="saltDR", onkeyup="verifyNumber(saltDR)" )}}
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    {% if nutritionFormFront.kcal100gr.errors %}
+                        {% for error in nutritionFormFront.kcal100gr.errors %}
+                            <span>{{error}}</span>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-1"></div>
+            <div class="col-3">
+                <h5 class="mb-4">Insira uma Fotografia do Produto</h5>
+
+                <canvas class="container border border-2 mt-3" id="imageCanvas" style="height: 250px; width: 250px;"></canvas>
+                
+                <i class="btn btn-grey  border border-5 border-purple " id="imgBtn" onclick="chooseImg()">
+                    <i class="fa fa-camera my-2 mx-1" aria-hidden="true"></i>
+                </i>
+
+                <div>
+                    {% if productFormFront.photoFile.errors %}
+                        {{productFormFront.photoFile(class="is-invalid", type="file", accept="image/*", id="imageFile", style="display: none;", onchange="loadFile(event)") }}
+                    {% else %}
+                        {{productFormFront.photoFile(type="file", accept="image/*", id="imageFile", style="display: none;", onchange="loadFile(event)") }}
+                    {% endif %}   
+                </div>
+                {% if productFormFront.photoFile.errors %}
+                    {% for error in productFormFront.photoFile.errors %}
+                        <span>{{error}}</span>
+                    {% endfor %}
+                {% endif %}
+
+                <div hidden>
+                    {{productFormFront.photoURI(id="photoURI")}}
+                </div>
+                {% if productFormFront.photoURI.errors %}
+                    {% for error in productFormFront.photoURI.errors %}
+                        <span>{{error}}</span>
+                    {% endfor %}
+                {% endif %}
+                
+               
+            </div>
+        </div>
+        
+        <div class="row mt-7 pt-7 align-items-end">
+            <div class="col-7"></div>
+            <div class="col-3">
+                <form action=""class="text-center">
+                    {{productFormFront.createProduct(class="btn btn-lg btn-info", id="createProductBtn")}}
+                </form></div>
+            <div class="col-2">
+                <form action="" href="{{url_for('ProductsModule.seeProductList')}}">
+                    <button class="btn btn-lg btn-danger"  >Descartar</button>
+                </form></div>
+        </div>
+                
+    </form>
+           
+    {% endblock content %}
+
+    {% block scripts %}
+        <script  type=text/javascript>
+            var iva = document.getElementById("productIva");
+            var metrica = document.getElementById("productMetric");
+            var origem = document.getElementById("productOrigin");
+            var seccao = document.getElementById("productDepartment");
+        
+            $( document ).ready(
+                iva[0].setAttribute("disabled","selected"),
+                metrica[0].setAttribute("disabled","selected"),
+                origem[0].setAttribute("disabled","selected"),
+                seccao[0].setAttribute("disabled","selected")
+            );
+
+            // realiza a verificação de numero para que fiquem no formato 124.435,54 por exemplo, 
+            // ponto separa os milhares das centenas, e a virgula separa as centenas das dezenas
+            function verifyNumber(element) {
+                var valor = element.value
+            
+                valor = valor + '';
+                valor = valor.replace(/[\D]+/g, '');
+
+                if (valor !== '') {
+                    valor = parseInt(valor);
+                    valor = valor + '';
+                    valor = valor.replace(/([0-9]{2})$/g, ",$1");
+
+                    if (valor.length > 6) {
+                        valor = valor.replace(/([0-9]{3}),([0-9]{2}$)/g, ".$1,$2");
+                    }
+                }
+
+                element.value = valor;
+            }
+        </script> 
+
+        <script>
+            // https://www.youtube.com/watch?v=T7huigh9BNQ
+            // https://codepen.io/dcode-software/pen/porebKK?editors=1010
+
+            const ImgBtnInput = document.getElementById("imgBtn");
+            const fileInput = document.getElementById("imageFile");
+            const imageURI = document.getElementById("photoURI");
+            const canvas = document.getElementById("imageCanvas");
+            const context = canvas.getContext("2d");
+
+            imageURI.value = ''
+
+            let activeImage, originalWidthToHeightRatio;
+
+            function chooseImg() {
+                fileInput.click();
+            }
+
+            var loadFile =  function(event) {
+                const reader = new FileReader();
+
+                reader.addEventListener("load", () => {
+                    openImage(reader.result);
+                });
+
+                reader.readAsDataURL(event.target.files[0]);
+            }
+
+            function openImage(imageSrc) {
+                activeImage = new Image();
+
+                activeImage.addEventListener("load", () => {
+                    originalWidthToHeightRatio = activeImage.width / activeImage.height;
+                    resize(250,250);
+                });
+
+                activeImage.src = imageSrc;
+                imageURI.value = activeImage.src
+            }
+
+            function resize(width, height) {
+                canvas.width = Math.floor(width);
+                canvas.height = Math.floor(height);
+
+                context.drawImage(activeImage, 0, 0, Math.floor(width), Math.floor(height));
+            }
+
+        </script>
+    {% endblock scripts %}

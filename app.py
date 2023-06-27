@@ -3,11 +3,11 @@ from models import db, Funcionario
 from flask_login import LoginManager
 from flask_babel import Babel
 
-from AutenticationModule import AutenticationModule
-from MapsModule import MapsModule
-from ProductsModule import ProductsModule
-from AnalisysModule import AnalisysModule
-from ApprovalsModule import ApprovalsModule
+from backOffice.AutenticationModule import AutenticationModule
+from backOffice.MapsModule import MapsModule
+from backOffice.ProductsModule import ProductsModule
+from backOffice.AnalisysModule import AnalisysModule
+from backOffice.ApprovalsModule import ApprovalsModule
 
 
 

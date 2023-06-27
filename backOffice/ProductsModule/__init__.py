@@ -1,7 +1,7 @@
 import os
-from flask import Blueprint, flash, request, session
+from flask import Blueprint, flash, request, session, send_from_directory
 from flask import redirect, render_template, url_for
-from forms import CreateProductForm, NutritionTableForm, ProductsListForm
+from forms import CreateProductForm, NutritionTableForm, ProductsListForm, EditProductForm
 from models import db, Loja, Secção, Iva, Medida, Origem, Produto, TabelaNutricional100gr, TabelaNutricionalDR
 from flask_login import login_user, logout_user, current_user
 from datetime import datetime, timedelta
@@ -111,7 +111,7 @@ def CreateProduct():
                 if(produto == None):
                     seccao = dict(productForm.department.choices).get(productForm.department.data)
 
-                    saveImgDir = 'database/productPhotos/'+str(store.id)+'/'+ str(seccao)
+                    saveImgDir = './static/productPhotos/'+str(store.id)+'/'+ str(seccao)+'/'
 
                     # alterar o sitio onde é guardada foto, e alterar o nome da foto segundo:
                     # https://www.youtube.com/watch?v=ZHQtxITPcAs&list=PLCC34OHNcOtolz2Vd9ZSeSXWc8Bq23yEz&index=38
@@ -133,11 +133,11 @@ def CreateProduct():
                                             photoPath = destination, loja_id = store.id)
                         
                         db.session.add(new_Product)
-                        db.session.commit()
 
                         fullyFilled, partFilled = isFormFilled(nutritionForm)
 
                         if(fullyFilled and not partFilled):
+                            db.session.commit()
                             get_produto = db.session.query(Produto).filter(Produto.loja_id == store.id, Produto.nome == productForm.name.data).first()
 
                             new_100grTable =  TabelaNutricional100gr(
@@ -163,6 +163,9 @@ def CreateProduct():
                             l.append("Ao preencher uma celula da tabela tem de a preencher toda")
                             nutritionForm.kcal100gr.errors = tuple(l)
 
+                        elif(not fullyFilled and not partFilled):
+                            db.session.commit()
+                            return redirect('/ProductsList')
 
                     except Exception as e:
                         return f'Erro ao salvar o produto: {str(e)}'
@@ -184,25 +187,39 @@ def CreateProduct():
 # verificar se há campos por preencher
 def isFormFilled(form):
     form_data = form._fields
-    counter = len(form_data) - 1 
+    counter = len(form_data) -1
+    
+    print(counter)
 
     for field in form_data:
-        if form[field].data == '':
+        if form[field].data :
             counter -= 1
     
-    if (counter <= len(form_data)-2 and counter > 0):
+    counter += 1
+    
+    if (counter < len(form_data)-1 and counter > 0):
+        
+        print(counter <= len(form_data)-1)
+        print(counter <= len(form_data))
+        print(counter)
         return False, True
-    elif (counter == len(form_data)):
+    
+    elif (counter == len(form_data) -1):
+        print(counter)
         return False, False
     else:
+        print(counter)
         return True, False
+
+
 
 # problema ao clicar no botão editar, no qual consigo receber o id do produto, porem
 # não consigo mudar o template
 # tentar passar o id do produto de forma escondida
+# resolução no script do js, adicionei o submit para enviar o form
 @ProductsModule.route("/EditProduct", methods=['GET','POST'])
 def AlterProduct():
-    productForm = CreateProductForm()
+    productForm = EditProductForm()
     nutritionForm = NutritionTableForm()
 
     active_user = current_user
@@ -210,18 +227,100 @@ def AlterProduct():
     departemant = db.session.query(Secção).filter(Secção.id==active_user.secção_id).first()
     employee = [active_user.nome,active_user.cargo,departemant.nome]
 
-    print("inside")
 
-    # if session.get('product', None) is not None:
-    
+    #query para o iva 
+    ivaQuery = db.session.query(Iva).all()
+    iva_group_list=[(str(i.id), str(i.percentagem)+'%') for i in ivaQuery]
+    iva_presets_group_list = [(' ',"Selecionar Iva")]
+
+    for iva in iva_group_list:    
+        iva_presets_group_list.append(iva)
+
+    productForm.iva.choices = iva_presets_group_list
+
+
+    #query para a unidade de medida
+    metricQuery = db.session.query(Medida).all()
+    metric_group_list=[(str(i.id), i.unMedida) for i in metricQuery]
+    metric_presets_group_list = [(' ',"Selecionar Unidade de Medida")]
+
+    for metric in metric_group_list:    
+        metric_presets_group_list.append(metric)
+
+    productForm.metric.choices = metric_presets_group_list
+
+
+    #query para a origem 
+    originQuery = db.session.query(Origem).all()
+    origin_group_list=[(str(i.id), i.Pais) for i in originQuery]
+    origin_presets_group_list = [(' ',"Selecionar Origem")]
+
+    for origin in origin_group_list:    
+        origin_presets_group_list.append(origin)
+
+    productForm.origin.choices = origin_presets_group_list
+
+
+    #query para a secção
+    departmentQuery = db.session.query(Secção).all()
+    department_group_list=[(str(i.id), i.nome) for i in departmentQuery]
+    department_presets_group_list = [(' ',"Selecionar Secção")]
+
+
+
+    for department in department_group_list:    
+        department_presets_group_list.append(department)
+
+    productForm.department.choices = department_presets_group_list
 
     if session.get('produto', None) is not None:
-        print("im dead")
         product_id = session.get('produto')
+        produto = db.session.query(Produto).filter(Produto.id==product_id).first()
 
-        print(product_id)
-        print("edit1")
+        tabela100gr = db.session.query(TabelaNutricional100gr).filter(TabelaNutricional100gr.produto_id==product_id).first()
+        tabelaDR = db.session.query(TabelaNutricionalDR).filter(TabelaNutricionalDR.produto_id==product_id).first()
 
+        # pathPhoto = load_file(produto.photoPath)
 
-    return render_template('EditarProduto.html', title="EditProduct", active_user=employee)
+        print(produto.photoPath)
+
+        # tentar realizar a procura de campos preenchidos de forma dinamica e ao fazer-lo inserir nos dado da query para fazer o update 
+        #  provavelmente terei de ter os nomes iguais dos dois lados, ou... ou ...
+        #  posso fazer um dicionario com as posiçoes dos campos do modelo ou do form
+       
+    # tentado o debaixo para fazer um dict com as posicçoes dos campos do modelo para 
+    # fazer um ciclo pelos campos do form e caso esse campo tenha sido preenchido 
+    # verifica com o dict o atributo do modelo e troca o seu valor
+    # tipo dict('nome': 1, 'preço':2) -> ('atributo modelo': posição no form)
+#        produto = db.session.query(Produto).filter(Produto.id == product_id).first()
+
+# if produto:
+#     atributos = vars(produto)
+    
+#     for indice in atributos:
+#         atributo = atributos[indice]
+#         valor = getattr(produto, atributo)
+#         print(f'{atributo}: {valor}')
+# else:
+#     print("Produto não encontrado.")
+       
+       
+        atributos = vars(produto)
+        for atributo, valor in atributos.items():
+            print(f'{atributo}: {valor}')
+
+        for field in productForm:
+            if field.data:
+                print(field.name)
+            else:
+                print("nothing " + field.name)
+        
+        
+        return render_template('EditarProduto.html', title="EditProduct", active_user=employee, produtoFront = produto, tabela100grFront = tabela100gr, 
+                               tabelaDRFront = tabelaDR, productFormFront = productForm, nutritionFormFront=nutritionForm)
+    
+    
+    return render_template('EditarProduto.html', title="EditProduct", active_user=employee, produtoFront = produto, productFormFront = productForm, nutritionFormFront=nutritionForm)
  
+# def load_file(filename):
+#     return send_from_directory('', filename)

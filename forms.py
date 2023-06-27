@@ -46,6 +46,19 @@ class CreateProductForm(FlaskForm):
     createProduct = SubmitField(label="Criar Produto")
 
 
+
+class EditProductForm(FlaskForm):
+    name = StringField(label="Inserir o Nome do Produto", render_kw={"placeholder": "Baguete"}, validators=[InputRequired(), Length(min=3, max=40)])
+    price = StringField(label="Inserir o Preço do Produto", render_kw={"placeholder": "3.50"}, validators=[InputRequired()])
+    iva = SelectField(label='Inserir a Percentagem do Iva', coerce=str, validators=[DataRequired()])
+    metric = SelectField('Inserir a Unidade de Medida', coerce=str, validators=[DataRequired()])        
+    origin = SelectField(label='Inserir a Origem do Produto', coerce=str, validators=[DataRequired()])
+    department = SelectField('Inserir a Secção do Produto', coerce=str, validators=[DataRequired()])  
+    photoURI = StringField(validators=[InputRequired()])
+    photoFile = FileField('Image', validators=[ FileAllowed(['jpg', 'png'], 'Apenas imagens JPG e PNG são permitidas.')])
+    editProduct = SubmitField(label="Alterar Produto")
+
+
 class NutritionTableForm(FlaskForm):
     kcal100gr = StringField(validators=())
     kj100gr = StringField()
@@ -68,3 +81,4 @@ class NutritionTableForm(FlaskForm):
 class ProductsListForm(FlaskForm):
     productId = IntegerField('productID')
     productIdBtn = SubmitField('productIdBtn')
+
