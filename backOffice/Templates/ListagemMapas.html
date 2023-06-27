@@ -116,20 +116,20 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for user in data %}
+                        {% for map in data %}
                             <tr>
-                                <td>{{user[0]}}</td>
-                                <td>{{user[1]}}</td>
-                                <td>{{user[2]}}</td>
+                                <td>{{map[0]}}</td>
+                                <td>{{map[1]}}</td>
+                                <td>{{map[2]}}</td>
                                 <td>
-                                    <button class="btn btn-sm btn-primary ms-1" id="{{user[0]}}">
+                                    <button class="btn btn-sm btn-primary ms-1" id="{{map[0]}}">
                                         <i class="fa fa-pencil"></i>
                                     </button>
                                 </td>
                                 
                                 <td>
                                     <div class="form-check ms-4">
-                                        <input class="form-check-input" type="checkbox" value="{{user[0]}}" id="flexCheckDefault">
+                                        <input class="form-check-input" type="checkbox" value="{{map[0]}}" id="flexCheckDefault">
                                         <label class="form-check-label" for="flexCheckDefault"></label>
                                     </div>
                                     

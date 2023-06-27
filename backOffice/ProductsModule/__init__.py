@@ -1,7 +1,7 @@
 import os
-from flask import Blueprint, flash, request
+from flask import Blueprint, flash, request, session
 from flask import redirect, render_template, url_for
-from forms import CreateProductForm, NutritionTableForm
+from forms import CreateProductForm, NutritionTableForm, ProductsListForm
 from models import db, Loja, Secção, Iva, Medida, Origem, Produto, TabelaNutricional100gr, TabelaNutricionalDR
 from flask_login import login_user, logout_user, current_user
 from datetime import datetime, timedelta
@@ -10,16 +10,37 @@ import shutil
 
 ProductsModule = Blueprint("ProductsModule", __name__)
 
-
+# problema ao clicar no botão editar, no qual consigo receber o id do produto, porem
+# não consigo mudar o template
+# tentar usar um form para ir buscar o id
 @ProductsModule.route("/ProductsList", methods=['GET', 'POST'])
 def seeProductList():
+    listForm = ProductsListForm()
     active_user = current_user
     
     departemant = db.session.query(Secção).filter(Secção.id==active_user.secção_id).first()
     employee = [active_user.nome,active_user.cargo,departemant.nome]
 
+    if(active_user.is_authenticated):
+        storeID = active_user.loja_id
+        
+        produtos = db.session.query(Produto, Secção).filter(Produto.loja_id == storeID, Produto.secção_id == Secção.id).all()
 
-    return render_template("ListagemProdutos.html", title = "MapList", active_user = employee)
+
+        if request.method == 'POST':
+            idproduto = listForm.productId.data
+            session['produto'] = idproduto
+            print(idproduto)
+
+            return redirect('/EditProduct')
+
+
+    else:
+        return redirect("/login")
+    
+    print("list")
+    
+    return render_template("ListagemProdutos.html", title = "MapList", active_user = employee, produtos = produtos, listFormFront = listForm)
 
 
 
@@ -30,8 +51,6 @@ def CreateProduct():
     nutritionForm = NutritionTableForm()
 
     active_user = current_user
-
-    print(active_user.is_authenticated)
 
     if(active_user.is_authenticated):
         departemant = db.session.query(Secção).filter(Secção.id==active_user.secção_id).first()
@@ -178,16 +197,31 @@ def isFormFilled(form):
     else:
         return True, False
 
-
-
-@ProductsModule.route("/EditProduct", methods=['GET', 'POST'])
+# problema ao clicar no botão editar, no qual consigo receber o id do produto, porem
+# não consigo mudar o template
+# tentar passar o id do produto de forma escondida
+@ProductsModule.route("/EditProduct", methods=['GET','POST'])
 def AlterProduct():
     productForm = CreateProductForm()
+    nutritionForm = NutritionTableForm()
 
     active_user = current_user
 
     departemant = db.session.query(Secção).filter(Secção.id==active_user.secção_id).first()
     employee = [active_user.nome,active_user.cargo,departemant.nome]
 
+    print("inside")
 
-    return render_template("EditarProduto.html", title = "EditProduct", active_user = employee)
+    # if session.get('product', None) is not None:
+    
+
+    if session.get('produto', None) is not None:
+        print("im dead")
+        product_id = session.get('produto')
+
+        print(product_id)
+        print("edit1")
+
+
+    return render_template('EditarProduto.html', title="EditProduct", active_user=employee)
+ 

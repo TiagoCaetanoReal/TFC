@@ -63,3 +63,8 @@ class NutritionTableForm(FlaskForm):
     fibersDR = StringField()
     proteinDR = StringField()
     saltDR = StringField()
+
+    
+class ProductsListForm(FlaskForm):
+    productId = IntegerField('productID')
+    productIdBtn = SubmitField('productIdBtn')
