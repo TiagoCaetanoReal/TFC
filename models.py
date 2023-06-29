@@ -91,7 +91,7 @@ class Produto (db.Model):
     photoPath = db.Column(db.String(), unique=True, nullable=False)
 
     def __repr__(self) -> str:
-        return '<Produto %r>' % self.id  
+        return f"Produto " + self.nome + " " + str(self.id)
     
 
 class Favorito (db.Model):
@@ -180,6 +180,7 @@ class Mapa (db.Model):
     loja = db.relationship('Loja', backref='Mapa') 
     EsperaAprovação = db.Column(db.Boolean(), default=True) 
     Aprovado = db.Column(db.Boolean(), default=False)
+    Usando = db.Column(db.Boolean(), default=False)
 
     def __repr__(self) -> str:
         return '<Admin %r>' % self.id    

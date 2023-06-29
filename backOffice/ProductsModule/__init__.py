@@ -7,6 +7,7 @@ from flask_login import login_user, logout_user, current_user
 from datetime import datetime, timedelta
 from werkzeug.utils import secure_filename
 import shutil
+from sqlalchemy.exc import SQLAlchemyError
 
 ProductsModule = Blueprint("ProductsModule", __name__)
 
@@ -21,6 +22,17 @@ def seeProductList():
     departemant = db.session.query(Secção).filter(Secção.id==active_user.secção_id).first()
     employee = [active_user.nome,active_user.cargo,departemant.nome]
 
+     #query para a secção
+    departmentQuery = db.session.query(Secção).all()
+    department_group_list=[(str(i.id), i.nome) for i in departmentQuery]
+    department_presets_group_list = [(' ',"Selecionar Secção")]
+
+
+    for department in department_group_list:    
+        department_presets_group_list.append(department)
+
+    listForm.department.choices = department_presets_group_list
+
     if(active_user.is_authenticated):
         storeID = active_user.loja_id
         
@@ -30,15 +42,12 @@ def seeProductList():
         if request.method == 'POST':
             idproduto = listForm.productId.data
             session['produto'] = idproduto
-            print(idproduto)
 
             return redirect('/EditProduct')
 
 
     else:
         return redirect("/login")
-    
-    print("list")
     
     return render_template("ListagemProdutos.html", title = "MapList", active_user = employee, produtos = produtos, listFormFront = listForm)
 
@@ -175,21 +184,17 @@ def CreateProduct():
                     l.append("Este nome de produto já existe na loja")
                     productForm.name.errors = tuple(l)
 
-                print(nutritionForm.kcal100gr.errors)
-
 
         return render_template("CriarProduto.html", title = "MakeProduct", active_user = employee, productFormFront = productForm, nutritionFormFront = nutritionForm)
 
     else:
         return redirect("/login")
-    
+
 
 # verificar se há campos por preencher
 def isFormFilled(form):
     form_data = form._fields
     counter = len(form_data) -1
-    
-    print(counter)
 
     for field in form_data:
         if form[field].data :
@@ -198,17 +203,11 @@ def isFormFilled(form):
     counter += 1
     
     if (counter < len(form_data)-1 and counter > 0):
-        
-        print(counter <= len(form_data)-1)
-        print(counter <= len(form_data))
-        print(counter)
         return False, True
     
     elif (counter == len(form_data) -1):
-        print(counter)
         return False, False
     else:
-        print(counter)
         return True, False
 
 
@@ -273,54 +272,84 @@ def AlterProduct():
 
     productForm.department.choices = department_presets_group_list
 
-    if session.get('produto', None) is not None:
+    if session.get('produto') is not None:
         product_id = session.get('produto')
         produto = db.session.query(Produto).filter(Produto.id==product_id).first()
 
         tabela100gr = db.session.query(TabelaNutricional100gr).filter(TabelaNutricional100gr.produto_id==product_id).first()
         tabelaDR = db.session.query(TabelaNutricionalDR).filter(TabelaNutricionalDR.produto_id==product_id).first()
 
-        # pathPhoto = load_file(produto.photoPath)
 
-        print(produto.photoPath)
-
-        # tentar realizar a procura de campos preenchidos de forma dinamica e ao fazer-lo inserir nos dado da query para fazer o update 
+        # tentar realizar a procura de campos preenchidos de forma dinamica e ao fazer-lo inserir no dado da query para fazer o update 
         #  provavelmente terei de ter os nomes iguais dos dois lados, ou... ou ...
         #  posso fazer um dicionario com as posiçoes dos campos do modelo ou do form
        
-    # tentado o debaixo para fazer um dict com as posicçoes dos campos do modelo para 
-    # fazer um ciclo pelos campos do form e caso esse campo tenha sido preenchido 
-    # verifica com o dict o atributo do modelo e troca o seu valor
-    # tipo dict('nome': 1, 'preço':2) -> ('atributo modelo': posição no form)
-#        produto = db.session.query(Produto).filter(Produto.id == product_id).first()
+        # tentado o debaixo para fazer um dict com as posicçoes dos campos do modelo para 
+        # fazer um ciclo pelos campos do form e caso esse campo tenha sido preenchido 
+        # verifica com o dict o atributo do modelo e troca o seu valor
+        # tipo dict('nome': 1, 'preço':2) -> ('atributo modelo': posição no form)
 
-# if produto:
-#     atributos = vars(produto)
-    
-#     for indice in atributos:
-#         atributo = atributos[indice]
-#         valor = getattr(produto, atributo)
-#         print(f'{atributo}: {valor}')
-# else:
-#     print("Produto não encontrado.")
-       
-       
-        atributos = vars(produto)
-        for atributo, valor in atributos.items():
-            print(f'{atributo}: {valor}')
+        if request.method == 'POST':
+            dictProduct  = {'name': 'nome', 'price': 'preço', 'iva': 'iva_id', 'metric': 'unMedida_id', 'origin': 'origem_id', 'department': 'secção_id', 'photoURI': 'photoPath'}
+            listProduct  = ['nome', 'preço', 'iva_id','unMedida_id','origem_id', 'secção_id', 'photoPath']
+            
+            itens = list(dictProduct.items())
 
-        for field in productForm:
-            if field.data:
-                print(field.name)
-            else:
-                print("nothing " + field.name)
-        
+            if productForm.validate() and productForm.editProduct.data == True:
+                try:
+                    for index, field in enumerate(productForm):
+                        if index < 7:
+                            valor = listProduct[index]
+                            
+                            if str(field.data) != str(getattr(produto, valor)) and str(field.data) != '':
+                                # if(valor == 'nome'):
+                                #     novo_nome = "Image.png"
+
+                                #     print(produto.photoPath)
+
+                                #     # guarda imagem mas não subscreve, depois disso é só fazer as tabela e a edição fica pronta
+
+                                #     productForm.photoURI.data = os.rename(produto.photoPath, field.data + novo_nome)
+
+                                #     print(productForm.photoURI.data)
+
+                                if(valor == 'photoPath'):
+                                    field.data = save_photo(produto)
+                                    print(field.data)
+                                setattr(produto, valor, field.data)
+
+                    # problema commit não esta a funcionar
+                    # solução  remover atributos[valor] e utilizar  setattr(produto, valor, field.data) 
+                    # para armazenar o valor modificado objeto da db
+                    db.session.commit()
+
+                    return redirect('/ProductsList')
+                except SQLAlchemyError as e:
+                    print(f'Erro ao editar o produto: {str(e)}')
+                finally:
+                    print("Após o commit")
+                    print("Objeto modificado:", produto.nome)
+                    
+                    
         
         return render_template('EditarProduto.html', title="EditProduct", active_user=employee, produtoFront = produto, tabela100grFront = tabela100gr, 
                                tabelaDRFront = tabelaDR, productFormFront = productForm, nutritionFormFront=nutritionForm)
     
     
-    return render_template('EditarProduto.html', title="EditProduct", active_user=employee, produtoFront = produto, productFormFront = productForm, nutritionFormFront=nutritionForm)
  
-# def load_file(filename):
-#     return send_from_directory('', filename)
+
+# alterar o sitio onde é guardada foto, e alterar o nome da foto segundo:
+# https://www.youtube.com/watch?v=ZHQtxITPcAs&list=PLCC34OHNcOtolz2Vd9ZSeSXWc8Bq23yEz&index=38
+def save_photo(produto):
+    departemant = db.session.query(Secção).filter(Secção.id==produto.secção_id).first()
+
+    saveImgDir = './static/productPhotos/'+str(produto.loja_id)+'/'+ str(departemant.nome)+'/'
+
+    if not os.path.exists(saveImgDir):
+        os.makedirs(saveImgDir)
+
+    photoPath = os.path.join(saveImgDir, produto.nome + 'Image.png')
+    print(photoPath)
+
+    request.files['photoFile'].save(photoPath)
+    return photoPath

@@ -141,9 +141,9 @@
                     {{productFormFront.iva.label(class="form-control-label")}}
                     <div class="input-group input-group-lg " id="groupIva">
                         {% if productFormFront.iva.errors %}
-                            {{productFormFront.iva(class="form-select is-invalid", id="productIva", onchange="changedSelect()", value=produtoFront.iva_id)}}
+                            {{productFormFront.iva(class="form-select is-invalid", id="productIva", value=produtoFront.iva_id)}}
                         {% else %}
-                            {{productFormFront.iva(class="form-select", id="productIva", onchange="changedSelect()", value=produtoFront.iva_id)}}
+                            {{productFormFront.iva(class="form-select", id="productIva", value=produtoFront.iva_id)}}
                         {% endif %}   
                     </div>
                     {% if productFormFront.iva.errors %}
@@ -164,9 +164,9 @@
                     {{productFormFront.metric.label(class="form-control-label")}}
                     <div class="input-group input-group-lg " id="groupMetric">
                         {% if productFormFront.metric.errors %}
-                            {{productFormFront.metric(class="form-select is-invalid", id="productMetric", onchange="changedSelect()", value=produtoFront.unMedida_id)}}
+                            {{productFormFront.metric(class="form-select is-invalid", id="productMetric", value=produtoFront.unMedida_id)}}
                         {% else %}
-                            {{productFormFront.metric(class="form-select", id="productMetric", onchange="changedSelect()", value=produtoFront.unMedida_id)}}
+                            {{productFormFront.metric(class="form-select", id="productMetric", value=produtoFront.unMedida_id)}}
                         {% endif %}   
                     </div>
                     {% if productFormFront.metric.errors %}
@@ -183,9 +183,9 @@
                     {{productFormFront.origin.label(class="form-control-label")}}
                     <div class="input-group input-group-lg " id="groupOrigin">
                         {% if productFormFront.origin.errors %}
-                            {{productFormFront.origin(class="form-select is-invalid", id="productOrigin", onchange="changedSelect()", value=produtoFront.origem_id)}}
+                            {{productFormFront.origin(class="form-select is-invalid", id="productOrigin", value=produtoFront.origem_id)}}
                         {% else %}
-                            {{productFormFront.origin(class="form-select", id="productOrigin", onchange="changedSelect()", value=produtoFront.origem_id)}}
+                            {{productFormFront.origin(class="form-select", id="productOrigin", value=produtoFront.origem_id)}}
                         {% endif %}   
                     </div>
                     {% if productFormFront.origin.errors %}
@@ -202,9 +202,9 @@
                     {{productFormFront.department.label(class="form-control-label")}}
                     <div class="input-group input-group-lg " id="groupDepartment">
                         {% if productFormFront.department.errors %}
-                            {{productFormFront.department(class="form-select is-invalid", id="productDepartment", onchange="changedSelect()", value=produtoFront.secção_id)}}
+                            {{productFormFront.department(class="form-select is-invalid", id="productDepartment" , value=produtoFront.secção_id)}}
                         {% else %}
-                            {{productFormFront.department(class="form-select", id="productDepartment", onchange="changedSelect()", value=produtoFront.secção_id)}}
+                            {{productFormFront.department(class="form-select", id="productDepartment" , value=produtoFront.secção_id)}}
                         {% endif %}   
                     </div>
                     {% if productFormFront.department.errors %}
@@ -390,7 +390,7 @@
                     {{productFormFront.editProduct(class="btn btn-lg btn-info", id="editProductBtn")}}
                 </form></div>
             <div class="col-2">
-                <form action="" href="{{url_for('ProductsModule.seeProductList')}}">
+                <form action="{{ url_for('ProductsModule.seeProductList') }}">
                     <button class="btn btn-lg btn-danger"  >Descartar</button>
                 </form></div>
         </div>
@@ -407,12 +407,6 @@
             var metrica = document.getElementById("productMetric");
             var origem = document.getElementById("productOrigin");
             var seccao = document.getElementById("productDepartment");
-
-            console.log("{{produtoFront.photoPath}}");
-            
-            ivaValue = {{produtoFront.iva_id}};
-
-
             
             $( document ).ready(
                 iva[0].setAttribute("disabled", true),
@@ -420,8 +414,7 @@
                 origem[0].setAttribute("disabled", true),
                 seccao[0].setAttribute("disabled", true),
 
-                iva[ivaValue].setAttribute("selected", true),
-
+                iva[{{produtoFront.iva_id}}].setAttribute("selected", true),
                 metrica[{{produtoFront.unMedida_id}}].setAttribute("selected", true),
                 origem[{{produtoFront.origem_id}}].setAttribute("selected", true),
                 seccao[{{produtoFront.secção_id}}].setAttribute("selected", true)

@@ -54,7 +54,7 @@ class EditProductForm(FlaskForm):
     metric = SelectField('Inserir a Unidade de Medida', coerce=str, validators=[DataRequired()])        
     origin = SelectField(label='Inserir a Origem do Produto', coerce=str, validators=[DataRequired()])
     department = SelectField('Inserir a Secção do Produto', coerce=str, validators=[DataRequired()])  
-    photoURI = StringField(validators=[InputRequired()])
+    photoURI = StringField()
     photoFile = FileField('Image', validators=[ FileAllowed(['jpg', 'png'], 'Apenas imagens JPG e PNG são permitidas.')])
     editProduct = SubmitField(label="Alterar Produto")
 
@@ -81,4 +81,5 @@ class NutritionTableForm(FlaskForm):
 class ProductsListForm(FlaskForm):
     productId = IntegerField('productID')
     productIdBtn = SubmitField('productIdBtn')
+    department = SelectField('Filtrar por Secção', coerce=str)  
 

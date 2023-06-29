@@ -94,23 +94,27 @@
         <div class="row my-5">
             <div class="container gx-0 bg-light rounded-2 col-4 ">
                 <div class="input-group input-group-lg ">
-                    <input type="text" class="form-control col-10" placeholder="Inserir Nome Produto" aria-label="" aria-describedby="">
+                    <input type="text" class="form-control col-10" placeholder="Inserir Nome Produto" id="nomeProduto">
                 </div>    
             </div>
 
-            <div class="container gx-0 bg-light rounded-2 col-3">
-                <div class="input-group input-group-lg ">
-                    <input type="text" class="form-select col-10" placeholder="Selecionar Secção" aria-label="" aria-describedby="">
-                </div>    
+            <fieldset class="container gx-0 bg-light rounded-2 col-3">
+                <div class="from-group">
+                    <div class="input-group input-group-lg " id="groupDepartment">
+                        {{listFormFront.department(class="form-select col-10", id="productDepartment")}}
+                    </div>
+                </div>
+            </fieldset >
+
+            <div class="col-2">
+                <div action="" class="text-center">
+                    <button class="btn btn-lg btn-info"  value="Log Out" id="filterBtn">Filtrar Produtos</button>
+                </div>
             </div>
             <div class="col-2">
-                <form action="" class="text-center">
-                    <button class="btn btn-lg btn-info" type="submit" value="Log Out">Filtrar Produtos</button>
-                </form></div>
-            <div class="col-2">
-                <form action=""class="text-center">
-                    <button class="btn btn-lg btn-grey" type="submit" value="Log Out">Limpar Filtro</button>
-                </form>
+                <div action=""class="text-center">
+                    <button class="btn btn-lg btn-grey"  value="Log Out" id="clearFilterBtn">Limpar Filtro</button>
+                </div>
             </div>   
         </div>
 
@@ -136,16 +140,11 @@
                                         <td>{{product[0].preço}}€</td>
                                         <td>{{product[1].nome}}</td>
                                         <td> 
-                                      
                                             <button class="btn btn-sm btn-primary ms-1 Editar" id="{{product[0].id}}" type="submit">
                                                 <i class="fa fa-pencil text-white"></i>
                                             </button>
-                                            
-                                            
-                                            
                                         </td>
-                                    
-                                        
+
                                         <td>
                                             <div class="form-check ms-4">
                                                 <input class="form-check-input" type="checkbox" value="{{product[0].id}}" id="flexCheckDefault">
@@ -186,7 +185,36 @@
 
     {% block scripts %}
     <script>
-   
+    	var nameElement = document.getElementById("nomeProduto");
+    	var selectElement = document.getElementById("productDepartment");
+        var idMapaSubmit = document.getElementById("idMapaSubmit")
+        var filterBtn = document.getElementById("filterBtn")
+        var clearFilterBtn = document.getElementById("clearFilterBtn")
+
+        var table = $('#tabela').DataTable();
+        table.destroy()
+
+        $(filterBtn).click(function(e){
+            var nameValue = nameElement.value;
+            var selectedOption = selectElement.options[selectElement.selectedIndex];
+            var selectedText = selectedOption.text;
+
+           if(nameValue !== '')
+                table.search( nameValue ).draw()
+            
+           if(selectElement.value !== ' ')
+                table.search( selectedText ).draw()
+          
+        })
+
+        $(clearFilterBtn).click(function(e){
+            $( document ).ready(
+                nameElement.value = '',
+                selectElement.value = ' '
+            );
+            table.search('').draw()
+        }) 
+
 
         $(".Editar").click(function(e){
             console.log($(this));
@@ -202,9 +230,7 @@
             console.log(productIdField.value);
 
             // Envie o formulário
-            $("form").submit();
-            
-           
+            $("form").submit()
         })
      </script>
     
