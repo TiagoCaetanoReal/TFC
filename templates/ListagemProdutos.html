@@ -159,7 +159,7 @@
                     </div>
                 </div> 
                 <div hidden>
-                    {{listFormFront.productId(id="idProduto")}}
+                    {{ listFormFront.productId(id="idProduto") }}
                 </div>
             </form>
         </div>
@@ -194,25 +194,31 @@
         var table = $('#tabela').DataTable();
         table.destroy()
 
+        
         $(filterBtn).click(function(e){
             var nameValue = nameElement.value;
             var selectedOption = selectElement.options[selectElement.selectedIndex];
             var selectedText = selectedOption.text;
 
            if(nameValue !== '')
-                table.search( nameValue ).draw()
+                table.column(0).search( nameValue ).draw()
             
            if(selectElement.value !== ' ')
-                table.search( selectedText ).draw()
+                table.column(2).search( selectedText ).draw()
           
         })
 
         $(clearFilterBtn).click(function(e){
+            // não estava a conseguir colocar a tabela com os valores pre-definidos pq estava a usar
+            // table.search('').draw() ao inves de table.search('').columns().search('').draw() e
+            // a tabela não estava a para redefinir a pesquisa em todas as colunas da tabela
+            // https://www.youtube.com/watch?v=7nTVWt89--I 
+            
             $( document ).ready(
                 nameElement.value = '',
-                selectElement.value = ' '
-            );
-            table.search('').draw()
+                selectElement.value = ' ',
+                table.search('').columns().search('').draw()
+               );
         }) 
 
 

@@ -2,6 +2,9 @@ import { Expositor } from './expositor.js';
 import { TextBlock } from './textblock.js';
 import { Quadro } from './quadro.js';
 
+
+
+
 // https://www.youtube.com/watch?v=7PYvx8u_9Sk
 
 // var myModal = new bootstrap.Modal(document.getElementById('instructionsModal'), {})
@@ -27,7 +30,7 @@ document.getElementById("rotateExpositor").onmousedown = (event) =>{
         }
         else if(canvas.selectedText){
             
-            // tentando mudar a seleção do texto, para que quando este rode, a seleção do rato se adapte à rotação ln-120 de quadro.js
+            // tentando mudar a seleção do texto, para que quando este roda, a seleção do rato se adapte à rotação ln-120 de quadro.js
             var text = canvas.getTexts()[canvas.getSelected(canvas.getTexts())];
             canvas.rotateText(text)
         }
@@ -89,21 +92,12 @@ document.getElementById("detailExpositor").onmousedown = (event) =>{
 
             let capacity = document.getElementById('selectCapacity')
 
-            console.log(selectedExpositor.capacity)
-            console.log(capacity)
-
-            // resolver problema de caso expo não tenha produtos, da segunda vez q se entra nele, os campos estão vazios
-
-            console.log(selectedExpositor.capacity === 0)
 
             if(selectedExpositor.capacity === 0){
-                console.log("1")
                 capacity.value = selectedExpositor.capacity;
-                document.getElementById("addProdutos").innerHTML = '';
                 selectedExpositor.products = [];
                 
             }else{
-                console.log("2")
                 capacity.value = selectedExpositor.capacity;
 
                 createProductSpaces(capacity.value);
@@ -120,7 +114,7 @@ document.getElementById("detailExpositor").onmousedown = (event) =>{
             }
         
             if(selectedExpositor.storeSection === 0){
-                document.getElementById('selectSector').value = "0";
+                document.getElementById('selectSector').value = ' ';
             }else{
                 document.getElementById('selectSector').value =  selectedExpositor.storeSection.toString(); 
             }
@@ -135,7 +129,6 @@ document.getElementById("detailExpositor").onmousedown = (event) =>{
             throw new TypeError('');
     } catch (error) {
         window.alert("Selecione um expositor para realizar esta ação");
-        console.log('6')
     }  
 
     
@@ -151,7 +144,9 @@ document.getElementById("detailExpositor").onmousedown = (event) =>{
         selectedExpositor.capacity = parseInt(inputText);
 
         createProductSpaces(inputText);
- 
+        
+        // modifica comment abaixo, vou fazer o seguinte, fazer fetch dos produtos, quando se tiver a capacidade e a secção, 
+        // caso contrario não chama o metodo acho createProductSpaces
 
         //nesta parte após serem criados os selects dos produtos, tem de ser mandado do backend um array ou string com os produtos, possivelmente um array
     }
@@ -159,8 +154,20 @@ document.getElementById("detailExpositor").onmousedown = (event) =>{
     
     document.getElementById('selectSector').onchange = (event) => {
         var inputText = event.target.value;
+
         selectedExpositor.storeSection = parseInt(inputText);
-        selectedExpositor.give_colorSection('blue');
+        console.log(inputText);
+
+        fetch("/fetchColor?seccaoId=" + inputText)
+        .then(response => response.json())
+        .then(data => {
+            var cor = data.cor;
+            console.log(cor); // Acessando a cor no frontend
+
+            selectedExpositor.give_colorSection(cor);
+        });
+
+        
     }
     
     document.getElementById('selectDivision').onchange = (event) => {

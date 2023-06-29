@@ -21,29 +21,30 @@ def seeProductList():
     
     departemant = db.session.query(Secção).filter(Secção.id==active_user.secção_id).first()
     employee = [active_user.nome,active_user.cargo,departemant.nome]
-
-     #query para a secção
-    departmentQuery = db.session.query(Secção).all()
-    department_group_list=[(str(i.id), i.nome) for i in departmentQuery]
-    department_presets_group_list = [(' ',"Selecionar Secção")]
-
-
-    for department in department_group_list:    
-        department_presets_group_list.append(department)
-
-    listForm.department.choices = department_presets_group_list
-
+    
     if(active_user.is_authenticated):
+        #query para a secção
+        departmentQuery = db.session.query(Secção).all()
+        department_group_list=[(str(i.id), i.nome) for i in departmentQuery]
+        department_presets_group_list = [(' ',"Selecionar Secção")]
+
+
+        for department in department_group_list:    
+            department_presets_group_list.append(department)
+
+        listForm.department.choices = department_presets_group_list
+
+    
         storeID = active_user.loja_id
         
         produtos = db.session.query(Produto, Secção).filter(Produto.loja_id == storeID, Produto.secção_id == Secção.id).all()
 
+        if produtos:
+            if request.method == 'POST':
+                idproduto = listForm.productId.data
+                session['produto'] = idproduto
 
-        if request.method == 'POST':
-            idproduto = listForm.productId.data
-            session['produto'] = idproduto
-
-            return redirect('/EditProduct')
+                return redirect('/EditProduct')
 
 
     else:

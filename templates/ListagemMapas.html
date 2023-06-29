@@ -95,7 +95,7 @@
     {% block content %}
         <div class="container gx-0 bg-light rounded-2 col-10 col-sm-8 col-md-6 col-lg-5 col-xl-4 end-0 me-2 my-5">
             <div class="input-group input-group-lg ">
-                <input type="text" class="form-control col-9" placeholder="Inserir ID do Mapa" aria-label="mapa" aria-describedby="button-addon2" id="idMapaSubmit">
+                <input type="text" class="form-control col-9" placeholder="Inserir Criador do Mapa" aria-label="mapa" aria-describedby="button-addon2" id="mapCreator">
                 <button class="btn btn-outline-secondary bg-light col-2" type="submit" id="butSubmit">
                     <i class="fa fa-search text-secondary"></i>
                 </button>
@@ -154,10 +154,10 @@
                 <button class="btn btn-lg btn-info" type="submit" value="Log Out">Imprimir Listagem</button>
             </form>
         </div>
-        <div class="col-2">
-            <form action=""class="text-center">
-                <button class="btn btn-lg btn-warning" type="submit" value="" >Criar Mapa</button>
-            </form>
+        <div class="col-2 text-center">
+            <a href="{{url_for('MapsModule.CreateStoreMap')}}">
+                <button class="btn btn-lg btn-warning" type="button" onclick="">Criar Mapa</button> 
+            </a>
         </div>
         <div class="col-2">
             <form action="">
@@ -170,28 +170,23 @@
     
     {% block scripts %}
         <script>
-            idMapaSubmit = document.getElementById("idMapaSubmit")
+            criadorMapa = document.getElementById("mapCreator")
             butSubmit = document.getElementById("butSubmit")
 
             var table = $('#tabela').DataTable();
             table.destroy()
-
-
-            $(document).ready(function() {
-                $(butSubmit).on('click', function() {
-                    var value = idMapaSubmit.value;
-                    console.log(value)
-                    table.search( value ).draw();
-                   
-                }),
-
-                $(butSubmit).on('click', function(){});
-                console.log($("#flexCheckDefault").val())
-                
-            });
-
             
+            $(butSubmit).click(function(e){
+                var nameValue = criadorMapa.value;
+
+                if(nameValue !== '')
+                    table.column(1).search( nameValue ).draw()
+                else{
+                    nameValue.value = ' ',
+                    table.search('').columns().search('').draw()
+                }
             
+            })
         </script>
     {% endblock scripts %}
 

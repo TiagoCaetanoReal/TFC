@@ -45,15 +45,6 @@ class Iva (db.Model):
 
     def __repr__(self) -> str:
         return '<Iva %r>' % self.id   
-
-
-class Foto (db.Model):
-    __tablename__= 'Foto'
-    id = db.Column(db.Integer, primary_key=True)
-    caminhoFot = db.Column(db.String(75), unique=True, nullable=False)
-
-    def __repr__(self) -> str:
-        return '<Foto %r>' % self.id   
     
 
 class Origem (db.Model):
@@ -89,6 +80,7 @@ class Produto (db.Model):
     loja_id = db.Column('Loja_id', db.ForeignKey('Loja.id'), nullable=False)
     loja = db.relationship('Loja', backref='Produto')
     photoPath = db.Column(db.String(), unique=True, nullable=False)
+    data_registo = db.Column(db.DateTime, default=datetime.now)
 
     def __repr__(self) -> str:
         return f"Produto " + self.nome + " " + str(self.id)
@@ -101,6 +93,7 @@ class Favorito (db.Model):
     produto = db.relationship('Produto', backref='Favorito')
     cliente_id = db.Column('Cliente_id', db.ForeignKey('Cliente.id'), nullable=False)
     cliente = db.relationship('Cliente', backref='Favorito')
+    data_registo = db.Column(db.DateTime, default=datetime.now)
 
     def __repr__(self) -> str:
         return '<Favorito %r>' % self.id  
@@ -119,6 +112,7 @@ class TabelaNutricional100gr (db.Model):
     sal = db.Column(db.Integer, unique=False, nullable=False)
     produto_id = db.Column('Produto_id', db.ForeignKey('Produto.id'), nullable=False)
     produto = db.relationship('Produto', backref='TabelaNutricional100gr')
+    data_registo = db.Column(db.DateTime, default=datetime.now)
 
     def __repr__(self) -> str:
         return '<TabelaNutricional100gr %r>' % self.id  
@@ -137,6 +131,7 @@ class TabelaNutricionalDR (db.Model):
     sal = db.Column(db.Integer, unique=False, nullable=False)
     produto_id = db.Column('Produto_id', db.ForeignKey('Produto.id'), nullable=False)
     produto = db.relationship('Produto', backref='TabelaNutricionalDR')
+    data_registo = db.Column(db.DateTime, default=datetime.now)
 
     def __repr__(self) -> str:
         return '<TabelaNutricionalDR %r>' % self.id  
@@ -181,6 +176,7 @@ class Mapa (db.Model):
     EsperaAprovação = db.Column(db.Boolean(), default=True) 
     Aprovado = db.Column(db.Boolean(), default=False)
     Usando = db.Column(db.Boolean(), default=False)
+    data_registo = db.Column(db.DateTime, default=datetime.now)
 
     def __repr__(self) -> str:
         return '<Admin %r>' % self.id    
@@ -196,8 +192,31 @@ class Expositor (db.Model):
     secção = db.relationship('Secção', backref='Expositor')
     mapa_id = db.Column('Mapa_id', db.ForeignKey('Mapa.id'), nullable=False)
     mapa = db.relationship('Mapa', backref='Expositor')
-    produto_id = db.Column('Produto_id', db.ForeignKey('Produto.id'), nullable=False)
-    produto = db.relationship('Produto', backref='Expositor')
+    data_registo = db.Column(db.DateTime, default=datetime.now)
+
+    def __repr__(self) -> str:
+        return '<Admin %r>' % self.id 
+    
+
+class ConteudoExpositor (db.Model):
+    __tablename__= 'ConteudoExpositor'
+    id = db.Column(db.Integer, primary_key=True)
+    Expositor_id = db.Column('Expositor_id', db.ForeignKey('Expositor.id'), nullable=False)
+    expositor = db.relationship('Expositor', backref='ConteudoExpositor')
+
+    produto1_id = db.Column('Produto1_id', db.ForeignKey('Produto.id'), nullable=False)
+    produto2_id = db.Column('Produto2_id', db.ForeignKey('Produto.id'), nullable=True)
+    produto3_id = db.Column('Produto3_id', db.ForeignKey('Produto.id'), nullable=True)
+    produto4_id = db.Column('Produto4_id', db.ForeignKey('Produto.id'), nullable=True)
+    produto5_id = db.Column('Produto5_id', db.ForeignKey('Produto.id'), nullable=True)
+    produto6_id = db.Column('Produto6_id', db.ForeignKey('Produto.id'), nullable=True)
+    
+    produto1 = db.relationship('Produto', foreign_keys=[produto1_id])
+    produto2 = db.relationship('Produto', foreign_keys=[produto2_id])
+    produto3 = db.relationship('Produto', foreign_keys=[produto3_id])
+    produto4 = db.relationship('Produto', foreign_keys=[produto4_id])
+    produto5 = db.relationship('Produto', foreign_keys=[produto5_id])
+    produto6 = db.relationship('Produto', foreign_keys=[produto6_id])
 
     def __repr__(self) -> str:
         return '<Admin %r>' % self.id 

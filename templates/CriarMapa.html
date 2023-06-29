@@ -1,6 +1,6 @@
 {% extends 'indexBackOffice.html'%}
     {% block styles %}
-        <link href="../static/css/toolsExpositor.css" rel="stylesheet">
+        <link rel="stylesheet" href="{{url_for('static', filename='css/toolsExpositor.css')}}"> 
     {% endblock styles %}
 
     {% block pageTitle %}
@@ -16,7 +16,7 @@
     {% block navOptions %}
 
         <li class="sidebar-item pt-2 pb-0 px-0 ">
-            <a class="sidebar-link bg-secondary px-2" href="{{url_for('MapsModule.seeMapList')}}>
+            <a class="sidebar-link bg-secondary px-2" href="{{url_for('MapsModule.seeMapList')}}">
                 <div class="row">
                     <div class="col-2 pe-0">
                         <i class="fa fa-list my-2 text-white" aria-hidden="true"></i>
@@ -135,69 +135,68 @@
 
         <!-- Modal Detalhes -->
         <div class="modal modal-lg fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h3 class="modal-title" id="staticBackdropLabel"></h3>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body"> 
-                        <h4>Atributos</h4>
-                        <div class="row">
-                            <div class="col-6">
-                                <div  class="input-group my-1 needs-validation py-2" >
-                                    <select id="selectCapacity" class="form-select"  required>
-                                        <option class="is-invalid" disabled selected value="0">Selecionar Capacidade</option>
-                                        <option value="1">1</option>
-                                        <option value="2">2</option>
-                                        <option value="3">3</option>
-                                        <option value="4">4</option>
-                                        <option value="5">5</option>
-                                        <option value="6">6</option>
-                                    </select> 
-                                    <div class="invalid-feedback">
-                                        Por Favor insira Secção
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-6">
-                                <div  class="input-group my-1 needs-validation py-2" >
-                                    <select id="selectSector" class="form-select"  required>
-                                        <option class="is-invalid" disabled selected value="0">Selecionar Secção</option>
-                                        <option value="1">Peixaria</option>
-                                    </select> 
-                                    <div class="invalid-feedback">
-                                        Por Favor insira Secção
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-6">
-                                <div  class="input-group my-1 needs-validation py-2" >
-                                    <select id="selectDivision" class="form-select"  id="numParteleiras" required>
-                                        <option class="is-invalid" disabled selected value="0">Indicar Parteleiras/Divisorias</option>
-                                        <option value="1">1</option>
-                                        <option value="2">2</option>
-                                        <option value="3">3</option>
-                                        <option value="4">4</option>
-                                    </select> 
-                                    <div class="invalid-feedback">
-                                        Por Favor insira Secção
-                                    </div>
-                                </div>
-                            </div>
+            <form method="POST" action="" novalidate enctype="multipart/form-data">
+                {{ createFormFront.csrf_token }}
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3 class="modal-title" id="staticBackdropLabel"></h3>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
-                        
-                        <h4 class="pt-4">Produtos</h4>
-                        <div class="row" id="addProdutos">
+                        <div class="modal-body"> 
+                            <h4>Atributos</h4>
+                            <div class="row">
+                                <div class="col-6">
+                                    <div  class="input-group my-1 needs-validation py-2" >
+                                        <select id="selectCapacity" class="form-select"  required>
+                                            <option class="is-invalid" disabled selected value="0">Selecionar Capacidade</option>
+                                            <option value="1">1</option>
+                                            <option value="2">2</option>
+                                            <option value="3">3</option>
+                                            <option value="4">4</option>
+                                            <option value="5">5</option>
+                                            <option value="6">6</option>
+                                        </select> 
+                                        <div class="invalid-feedback">
+                                            Por Favor insira Secção
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-6">
+                                    <div class="input-group my-1 py-2" id="groupDepartment">
+                                        {{createFormFront.departments(class="form-select", id="selectSector")}}
+                                    </div>
+                                </div >
+
+                                <div class="col-6">
+                                    <div  class="input-group my-1 needs-validation py-2" >
+                                        <select id="selectDivision" class="form-select"  id="numParteleiras" required>
+                                            <option class="is-invalid" disabled selected value="0">Indicar Parteleiras/Divisorias</option>
+                                            <option value="1">1</option>
+                                            <option value="2">2</option>
+                                            <option value="3">3</option>
+                                            <option value="4">4</option>
+                                        </select> 
+                                        <div class="invalid-feedback">
+                                            Por Favor insira Secção
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                             
+                            <h4 class="pt-4">Produtos</h4>
+                            <div class="row" id="addProdutos">
+                                
+                            </div>
                         </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="discardExpoInfo">Cancelar</button>
-                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Guardar</button>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="discardExpoInfo">Cancelar</button>
+                            <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Guardar</button>
+                        </div>
                     </div>
                 </div>
-            </div>
+            </form>
         </div>
 
         <!-- Modal AddText -->
@@ -267,7 +266,7 @@
                 <canvas id="canvas" class="h-100 w-100" ></canvas>
         </div>
 
-        <div class="row m-5">
+        <div class="row mt-5">
             <div class="col-8"></div>
             <div class="col-2">
                 <form  class="text-center">
@@ -283,5 +282,9 @@
 	
     
     {% block scripts %}
-        <script src="../static/js/criarMapaMain.js" type="module"></script> 
+        <script type="module" src="{{url_for('static', filename='js/criarMapaMain.js')}}"></script>
+        <script>
+            var seccao = document.getElementById("selectSector");
+            seccao[0].setAttribute("disabled","selected")
+        </script>
     {% endblock scripts %}

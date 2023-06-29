@@ -83,3 +83,9 @@ class ProductsListForm(FlaskForm):
     productIdBtn = SubmitField('productIdBtn')
     department = SelectField('Filtrar por Secção', coerce=str)  
 
+
+class CreateMapForm(FlaskForm):
+    departments = SelectField('Secção do Produto', coerce=str)  
+    products = SelectField('Produtos', coerce=str)  
+    map = StringField()  
+    createMap = SubmitField(label="Criar Mapa")
