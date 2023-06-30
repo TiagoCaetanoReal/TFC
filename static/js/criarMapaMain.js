@@ -2,7 +2,24 @@ import { Expositor } from './expositor.js';
 import { TextBlock } from './textblock.js';
 import { Quadro } from './quadro.js';
 
+// elementos html
+var addExpo = document.getElementById("addExpositor")
+var rotateExpo = document.getElementById("rotateExpositor")
+var excludeExpo = document.getElementById("excludeExpositor")
+var resizeExpo = document.getElementById("resizeExpositor")
+var detailExpo = document.getElementById("detailExpositor")
+var capacity = document.getElementById("selectCapacity")
+var departmants = document.getElementById("selectSector")
+var divisions = document.getElementById("selectDivision")
+var produtos = document.getElementById("addProdutos")
+var texts = document.getElementById("addText")
+var createMap = document.getElementById("CreateMap")
+var deleteMap = document.getElementById("DeleteMap")
+var discardExpoInfo = document.getElementById("discardExpoInfo")
+var saveExpoInfo = document.getElementById("saveExpoInfo")
 
+
+let selectedExpositor;
 
 
 // https://www.youtube.com/watch?v=7PYvx8u_9Sk
@@ -19,11 +36,11 @@ let sizeY = canvas.canvas_height;
 // window.addEventListener("resize", canvas.resizeCanvas, false);
 
 
-document.getElementById("addExpositor").onmousedown = (event) =>{
+addExpo.onmousedown = (event) =>{
     canvas.addExpositores(new Expositor(canvas.shapes.length,sizeX/2,sizeY/2, 20, 60, 'grey'));
 }
 
-document.getElementById("rotateExpositor").onmousedown = (event) =>{
+rotateExpo.onmousedown = (event) =>{
     try {
         if(canvas.selectedExpo){
             canvas.getShapes()[canvas.getSelected(canvas.getShapes())].rotate_expositor();
@@ -46,7 +63,7 @@ document.getElementById("rotateExpositor").onmousedown = (event) =>{
     canvas.draw_shapes();
 }
 
-document.getElementById("excludeExpositor").onmousedown = (event) =>{ 
+excludeExpo.onmousedown = (event) =>{ 
     try {
         if(canvas.selectedExpo){
             canvas.excludeExpositores(canvas.getSelected(canvas.getShapes()))
@@ -68,7 +85,7 @@ document.getElementById("excludeExpositor").onmousedown = (event) =>{
     canvas.draw_shapes();
 }
 
-document.getElementById("resizeExpositor").onmousedown = (event) =>{
+resizeExpo.onmousedown = (event) =>{
     try {
         if(canvas.selectedExpo){
             let selectedExpositor = canvas.getSelected(canvas.getShapes())
@@ -84,15 +101,66 @@ document.getElementById("resizeExpositor").onmousedown = (event) =>{
     canvas.draw_shapes();
 }
 
-document.getElementById("detailExpositor").onmousedown = (event) =>{
-    let selectedExpositor;
+detailExpo.onmousedown = (event) =>{
+
+
+    // ver o frango a 6:20, começou 5:45
+
+
+    produtos.innerHTML = '';
+    
     try {
         if(canvas.selectedExpo){
             selectedExpositor = canvas.getCurrentExpositor();
 
-            let capacity = document.getElementById('selectCapacity')
-
-
+            capacity.onchange = (event) => {
+                var inputText = event.target.value;
+                
+                selectedExpositor.capacity = parseInt(inputText);
+        
+        
+                createProductSpaces(inputText);
+        
+                // tou a ter problemas de que os campos ficam salvos do expo anterio no novo
+                
+                // modifica comment abaixo, vou fazer o seguinte, fazer fetch dos produtos, quando se tiver a capacidade e a secção, 
+                // caso contrario não chama o metodo acho createProductSpaces
+                //nesta parte após serem criados os selects dos produtos, tem de ser mandado do backend um array ou string com os produtos, possivelmente um array
+            }
+        
+            
+            departmants.onchange = (event) => {
+                // https://www.youtube.com/watch?v=exRAM1ZWm_s
+                var inputText = event.target.value;
+                selectedExpositor.storeSection = parseInt(inputText);
+        
+                fetch("/fetchColor?seccaoId=" + inputText)
+                .then(response => response.json())
+                .then(data => {
+                    var cor = data.cor;
+        
+                    selectedExpositor.give_colorSection(cor);
+                });
+        
+                createProductSpaces(capacity.value);
+            }
+            
+            divisions.onchange = (event) => {
+                var inputText = event.target.value;
+                selectedExpositor.divisions = parseInt(inputText);
+            }
+        
+            produtos.onchange = (event) => {
+                var inputSpaceNumber = event.target.id.charAt(event.target.id.length - 1)
+        
+                if( selectedExpositor.products[inputSpaceNumber] !== ' '){
+                    selectedExpositor.products[inputSpaceNumber] = event.target.value;
+                }else{
+                    selectedExpositor.products.push(event.target.value) ;
+                }
+        
+            }
+                        
             if(selectedExpositor.capacity === 0){
                 capacity.value = selectedExpositor.capacity;
                 selectedExpositor.products = [];
@@ -100,29 +168,29 @@ document.getElementById("detailExpositor").onmousedown = (event) =>{
             }else{
                 capacity.value = selectedExpositor.capacity;
 
+
                 createProductSpaces(capacity.value);
 
 
-                for (let index = 0; index < parseInt(capacity.value); index++) {
-                    var productSpace = document.getElementById('selectProduct'+index);
+                // for (let index = 0; index < parseInt(capacity.value); index++) {
+                //     var productSpace = document.getElementById('selectProduct'+index);
 
-                    var ExpositorProduct = selectedExpositor.products[index];
-                    console.log(ExpositorProduct)
-                    if(ExpositorProduct !== undefined)
-                        productSpace.value = ExpositorProduct.toString();
-                }
+                //     var ExpositorProduct = selectedExpositor.products[index];
+                //     // console.log(ExpositorProduct)
+                //     // if(ExpositorProduct !== undefined)
+                //     //     productSpace.value = ExpositorProduct.toString();
+                // }
             }
         
             if(selectedExpositor.storeSection === 0){
-                document.getElementById('selectSector').value = ' ';
+                departmants.value = ' ';
             }else{
-                document.getElementById('selectSector').value =  selectedExpositor.storeSection.toString(); 
+                departmants.value =  selectedExpositor.storeSection.toString(); 
             }
-        
             if(selectedExpositor.divisions === 0){
-                document.getElementById('selectDivision').value = "0";
+                divisions.value = "0";
             }else{
-                document.getElementById('selectDivision').value =  selectedExpositor.divisions.toString();
+                divisions.value =  selectedExpositor.divisions.toString();
             }
         }
         else
@@ -131,7 +199,7 @@ document.getElementById("detailExpositor").onmousedown = (event) =>{
         window.alert("Selecione um expositor para realizar esta ação");
     }  
 
-    
+
     const myModal = new bootstrap.Modal(document.getElementById('staticBackdrop'));
     const myModalTitle = new bootstrap.Modal(document.getElementById('staticBackdropLabel'));
 
@@ -139,81 +207,103 @@ document.getElementById("detailExpositor").onmousedown = (event) =>{
 
 
 
-    document.getElementById('selectCapacity').onchange = (event) => {
-        var inputText = event.target.value;
-        selectedExpositor.capacity = parseInt(inputText);
-
-        createProductSpaces(inputText);
-        
-        // modifica comment abaixo, vou fazer o seguinte, fazer fetch dos produtos, quando se tiver a capacidade e a secção, 
-        // caso contrario não chama o metodo acho createProductSpaces
-
-        //nesta parte após serem criados os selects dos produtos, tem de ser mandado do backend um array ou string com os produtos, possivelmente um array
-    }
-
-    
-    document.getElementById('selectSector').onchange = (event) => {
-        var inputText = event.target.value;
-
-        selectedExpositor.storeSection = parseInt(inputText);
-        console.log(inputText);
-
-        fetch("/fetchColor?seccaoId=" + inputText)
-        .then(response => response.json())
-        .then(data => {
-            var cor = data.cor;
-            console.log(cor); // Acessando a cor no frontend
-
-            selectedExpositor.give_colorSection(cor);
-        });
-
-        
-    }
-    
-    document.getElementById('selectDivision').onchange = (event) => {
-        var inputText = event.target.value;
-        selectedExpositor.divisions = parseInt(inputText);
-    }
-
-    document.getElementById("addProdutos").onchange = (event) => {
-        var inputSpaceNumber = event.target.id.charAt(event.target.id.length - 1)
-
-        if( selectedExpositor.products[inputSpaceNumber] != ''){
-            selectedExpositor.products[inputSpaceNumber] = event.target.value;
-        }else{
-            selectedExpositor.products.push(event.target.value) ;
-        }
-    }
+    // function createProductSpaces(numProducts) {
+    //     let node = '';
+    //     const selectOptions = [];
+      
+    //     fetch("/fetchProducts?seccaoId=" + selectedExpositor.storeSection)
+    //       .then(response => response.json())
+    //       .then(data => {
+    //         const products = data.products;
+      
+    //         for (let i = 0; i < numProducts; i++) {
+    //           const options = products.map(product => `<option value="${product.id}">${product.nome}</option>`);
+    //           selectOptions.push(options);
+    //         }
+      
+    //         for (let i = 0; i < numProducts; i++) {
+    //             node += `
+    //                 <div class="col-6">
+    //                 <div class="input-group my-1 needs-validation py-2">
+    //                     <select id="selectProduct${i}" class="form-select" required>
+    //                         <option class="is-invalid" disabled selected value=" ">Selecionar Produto</option>
+    //                         ${selectOptions[i].join('')}
+    //                     </select>
+    //                     <div class="invalid-feedback">Por Favor selecione um produto</div> 
+    //                 </div>
+    //                 </div>
+    //             `;
+    //         }
+      
+    //         produtos.innerHTML = node;
+    //       });
+    //   }
 
 
-    function createProductSpaces(inputText) {
-        var produtcs = [{"id": "10","value": "Salmão"},{"id": "3","value": "Corvina"},{"id": "6","value": "Pescada"},{"id": "30","value": "Sardinha"}]
 
-        document.getElementById("addProdutos").innerHTML = '';
 
-        for(let i = 0; i<inputText; i++ ){
-            const node = `
-                <div class="col-6">
-                    <div class="input-group my-1 needs-validation py-2">
-                        <select id="selectProduct${i}" class="form-select" required> 
-                            <option class="is-invalid" disabled selected value="">Selecionar Produto</option>
-                        </select><div class="invalid-feedback">Por Favor selecione um produto</div> 
-                    </div>
-                </div>
-            `; 
 
-            document.getElementById("addProdutos").innerHTML += node
-        }
 
-        var numChilds =  document.getElementById("addProdutos").childElementCount;
+    function createProductSpaces(numProducts) {
+        const node = ''
 
-        for (let index = 0; index < numChilds; index++) {
-            var selector = document.getElementById("selectProduct"+index);
+        if(capacity.value !== '0' && departmants.value !== ' '){
+            fetch("/fetchProducts?seccaoId=" + selectedExpositor.storeSection)
+            .then(response => response.json())
+            .then(data => {
+                var products = data.products;
 
-            produtcs.forEach(element => {
-                let newOption = new Option(element.value, element.id);
 
-                selector.add(newOption,undefined);
+                produtos.innerHTML = '';
+                    
+                for(let i = 0; i<numProducts; i++ ){
+                    const node = `
+                        <div class="col-6">
+                            <div class="input-group my-1 needs-validation py-2">
+                                <select id="selectProduct${i}" class="form-select" required> 
+                                    <option class="is-invalid" disabled selected value=' '>Selecionar Produto</option>
+                                </select><div class="invalid-feedback">Por Favor selecione um produto</div> 
+                            </div>
+                        </div>
+                    `; 
+
+                    produtos.innerHTML += node
+                }
+
+                var numChilds =  produtos.childElementCount;
+
+
+                for (let index = 0; index < numChilds; index++) {
+                    var selector = document.getElementById("selectProduct"+index);
+
+                    products.forEach(element => {
+                        console.log(element.id);
+                        console.log(element.nome);
+                        let newOption = new Option(element.nome, element.id);
+
+                        selector.add(newOption,undefined);
+                    });
+                }
+                
+                console.log(selectedExpositor.products);
+
+                var numChildsAssigned = selectedExpositor.products.length;
+
+
+                if(numChildsAssigned > 0){
+                    for(let i = 0; i<numChildsAssigned; i++ ){
+                        document.getElementById("selectProduct"+i).value = [selectedExpositor.products[i]]
+                    }
+                        
+                }  
+                
+                else{
+                    for(let i = 0; i<numChildsAssigned; i++ ){
+                        document.getElementById("selectProduct"+i).value = 0
+                    }
+            
+                }              
+                
             });
         }
     }
@@ -221,7 +311,8 @@ document.getElementById("detailExpositor").onmousedown = (event) =>{
     myModal.toggle();
     myModal.show();
 
-    discardExpoInfo.onclick = (event) =>{
+    discardExpoInfo.onclick = (event) =>{ 
+        produtos.innerHTML = '';
         selectedExpositor.products = [];
         selectedExpositor.capacity = 0;
         selectedExpositor.divisions = 0;
@@ -229,12 +320,14 @@ document.getElementById("detailExpositor").onmousedown = (event) =>{
         selectedExpositor.storeSectionColor = '';
 
     }
+
+
 }
 
 
 
 
-document.getElementById("addText").onmousedown = (event) =>{
+texts.onmousedown = (event) =>{
     const myModal = new bootstrap.Modal(document.getElementById('addTextBackdrop'));
     const addTextBtn = document.getElementById('addTextBtn')
     const textInput = document.getElementById('textInput')
@@ -255,7 +348,7 @@ document.getElementById("addText").onmousedown = (event) =>{
 
 
 
-document.getElementById("CreateMap").onmousedown = (event) =>{
+createMap.onmousedown = (event) =>{
     let array = []
     let index = 0
 
@@ -291,7 +384,7 @@ document.getElementById("CreateMap").onmousedown = (event) =>{
     }
 }
 
-    document.getElementById("DeleteMap").onmousedown = (event) =>{
+deleteMap.onmousedown = (event) =>{
         const myModal = new bootstrap.Modal(document.getElementById('saveDeleteMap'));
         const myModalTitle = new bootstrap.Modal(document.getElementById('saveDeleteMapTitle'));
     

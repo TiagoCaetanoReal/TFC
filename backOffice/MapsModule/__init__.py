@@ -1,7 +1,7 @@
 from flask import Blueprint, flash, request, jsonify
 from flask import redirect, render_template, url_for
 from forms import MapListForm, CreateMapForm
-from models import db, Funcionario, Loja, Secção, Mapa
+from models import db, Funcionario, Loja, Secção, Mapa, Produto
 from flask_login import login_user, logout_user, current_user
 from datetime import datetime, timedelta
 
@@ -87,6 +87,36 @@ def fetchSectionColor():
 
     # Retorne a cor como resposta em formato JSON
     return jsonify({'cor': cor})
+
+
+@MapsModule.route("/fetchProducts", methods=['GET'])
+def fetchProducts():
+    # Obter o seccaoId dos parâmetros da solicitação
+    seccao_id = request.args.get('seccaoId')
+
+    print(seccao_id)
+
+    productsQuery = db.session.query(Produto).filter(Produto.secção_id == seccao_id).all()
+ 
+    # products_group_list=[(str(i.id), i.nome) for i in productsQuery]
+    # products_presets_group_list = []
+
+
+    # for department in products_group_list:    
+    #     products_presets_group_list.append(department)
+
+    # products = products_presets_group_list
+
+    products = [
+        {"id": str(product.id), "nome": product.nome}
+        for product in productsQuery
+    ]
+
+    # Retorne os produtos como resposta em formato JSON
+    return jsonify({'products': products})
+
+    # Retorne a cor como resposta em formato JSON
+    return jsonify({'products': products})
 
 
 @MapsModule.route("/EditMap", methods=['GET', 'POST'])
