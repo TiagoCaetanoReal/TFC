@@ -1,4 +1,4 @@
-from flask import Blueprint, flash, request, jsonify
+from flask import Blueprint, flash, request, jsonify, json
 from flask import redirect, render_template, url_for
 from forms import MapListForm, CreateMapForm
 from models import db, Funcionario, Loja, Secção, Mapa, Produto
@@ -61,6 +61,49 @@ def CreateStoreMap():
             department_presets_group_list.append(department)
 
         createForm.departments.choices = department_presets_group_list
+
+        print("bread")
+        if request.method == 'POST':
+            print("hi")
+            print(createForm.map.data)
+
+            mapa = json.loads(createForm.map.data)
+
+            # ober numero de expos
+            numExpos = mapa[0]['numExpos']
+
+            # ober numero de textos
+            numLabels = mapa[0]['numLabels']
+
+            # adicionar a ambas as tabelas mapa, expo as dimenssões destes
+            # verificar se esta a guarda o id da secção
+            # fazer um ciclo for para cada um dos de cimas onda da add a bd e depois no fim dá commit
+
+            print(numExpos)
+
+            # const numExpos = array[0].numExpos;
+            # let index = 0
+            # array.shift();
+
+            # array.forEach(element => {
+            #     if(index < numExpos){
+            #         console.log(element);
+            #         if(element.storeSection === 0){
+            #             canvas.addExpositores(new Expositor(element.id, element.posX , element.posY , element.width, element.height, element.color.toString()));
+            #             console.log(canvas.getShapes());
+            #         }
+            #         else{
+            #             canvas.addExpositores(new Expositor(element.id, element.posX, element.posY,  element.width, element.height, element.color.toString(), 
+            #                 element.products, element.capacity, element.divisions, element.storeSection, element.storeSectionColor.toString())); 
+                            
+            #             console.log(canvas.getShapes());
+            #         }
+            #     }
+            # else{
+            #         canvas.addTextBlock(new TextBlock(element.id, element.posX, element.posY, element.value, element.angle));
+            # }
+            # index++;
+            # });
     
     else:
         return redirect('/login')
@@ -74,12 +117,10 @@ def CreateStoreMap():
     return render_template("CriarMapa.html", title = "MakeStoreMap", active_user = employee, createFormFront = createForm)
 
 
-@MapsModule.route("/fetchColor", methods=['GET'])
+@MapsModule.route("/fetchColor", methods=['GET','POST'])
 def fetchSectionColor():
     # Obter o seccaoId dos parâmetros da solicitação
     seccao_id = request.args.get('seccaoId')
-
-    print(seccao_id)
 
     departmentColorQuery = db.session.query(Secção).filter(Secção.id == seccao_id).first()
 
@@ -89,23 +130,11 @@ def fetchSectionColor():
     return jsonify({'cor': cor})
 
 
-@MapsModule.route("/fetchProducts", methods=['GET'])
+@MapsModule.route("/fetchProducts", methods=['GET','POST'])
 def fetchProducts():
-    # Obter o seccaoId dos parâmetros da solicitação
     seccao_id = request.args.get('seccaoId')
 
-    print(seccao_id)
-
     productsQuery = db.session.query(Produto).filter(Produto.secção_id == seccao_id).all()
- 
-    # products_group_list=[(str(i.id), i.nome) for i in productsQuery]
-    # products_presets_group_list = []
-
-
-    # for department in products_group_list:    
-    #     products_presets_group_list.append(department)
-
-    # products = products_presets_group_list
 
     products = [
         {"id": str(product.id), "nome": product.nome}
@@ -115,8 +144,6 @@ def fetchProducts():
     # Retorne os produtos como resposta em formato JSON
     return jsonify({'products': products})
 
-    # Retorne a cor como resposta em formato JSON
-    return jsonify({'products': products})
 
 
 @MapsModule.route("/EditMap", methods=['GET', 'POST'])

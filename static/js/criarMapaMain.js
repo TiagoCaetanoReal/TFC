@@ -17,8 +17,10 @@ var createMap = document.getElementById("CreateMap")
 var deleteMap = document.getElementById("DeleteMap")
 var discardExpoInfo = document.getElementById("discardExpoInfo")
 var saveExpoInfo = document.getElementById("saveExpoInfo")
+var mapFormField = document.getElementById("mapa")
 
 
+ 
 let selectedExpositor;
 
 
@@ -102,11 +104,6 @@ resizeExpo.onmousedown = (event) =>{
 }
 
 detailExpo.onmousedown = (event) =>{
-
-
-    // ver o frango a 6:20, começou 5:45
-
-
     produtos.innerHTML = '';
     
     try {
@@ -158,7 +155,6 @@ detailExpo.onmousedown = (event) =>{
                 }else{
                     selectedExpositor.products.push(event.target.value) ;
                 }
-        
             }
                         
             if(selectedExpositor.capacity === 0){
@@ -167,19 +163,7 @@ detailExpo.onmousedown = (event) =>{
                 
             }else{
                 capacity.value = selectedExpositor.capacity;
-
-
                 createProductSpaces(capacity.value);
-
-
-                // for (let index = 0; index < parseInt(capacity.value); index++) {
-                //     var productSpace = document.getElementById('selectProduct'+index);
-
-                //     var ExpositorProduct = selectedExpositor.products[index];
-                //     // console.log(ExpositorProduct)
-                //     // if(ExpositorProduct !== undefined)
-                //     //     productSpace.value = ExpositorProduct.toString();
-                // }
             }
         
             if(selectedExpositor.storeSection === 0){
@@ -204,44 +188,6 @@ detailExpo.onmousedown = (event) =>{
     const myModalTitle = new bootstrap.Modal(document.getElementById('staticBackdropLabel'));
 
     myModalTitle._element.innerText = 'Expositor ' + selectedExpositor.id;
-
-
-
-    // function createProductSpaces(numProducts) {
-    //     let node = '';
-    //     const selectOptions = [];
-      
-    //     fetch("/fetchProducts?seccaoId=" + selectedExpositor.storeSection)
-    //       .then(response => response.json())
-    //       .then(data => {
-    //         const products = data.products;
-      
-    //         for (let i = 0; i < numProducts; i++) {
-    //           const options = products.map(product => `<option value="${product.id}">${product.nome}</option>`);
-    //           selectOptions.push(options);
-    //         }
-      
-    //         for (let i = 0; i < numProducts; i++) {
-    //             node += `
-    //                 <div class="col-6">
-    //                 <div class="input-group my-1 needs-validation py-2">
-    //                     <select id="selectProduct${i}" class="form-select" required>
-    //                         <option class="is-invalid" disabled selected value=" ">Selecionar Produto</option>
-    //                         ${selectOptions[i].join('')}
-    //                     </select>
-    //                     <div class="invalid-feedback">Por Favor selecione um produto</div> 
-    //                 </div>
-    //                 </div>
-    //             `;
-    //         }
-      
-    //         produtos.innerHTML = node;
-    //       });
-    //   }
-
-
-
-
 
 
     function createProductSpaces(numProducts) {
@@ -284,11 +230,8 @@ detailExpo.onmousedown = (event) =>{
                         selector.add(newOption,undefined);
                     });
                 }
-                
-                console.log(selectedExpositor.products);
 
                 var numChildsAssigned = selectedExpositor.products.length;
-
 
                 if(numChildsAssigned > 0){
                     for(let i = 0; i<numChildsAssigned; i++ ){
@@ -334,7 +277,6 @@ texts.onmousedown = (event) =>{
     
     addTextBtn.onclick = (event) =>{
         canvas.addTextBlock(new TextBlock(canvas.texts.length,sizeX/2,sizeY/2,textInput.value, 0));
-        console.log(textInput.value);
         textInput.value = '';
     }
 
@@ -361,7 +303,6 @@ createMap.onmousedown = (event) =>{
     myModal.show();
 
     ConfirmSaveDeleteBtn.onclick = (event) =>{
-        console.log("hiiii")
         array[index] = {"width": sizeX,"height": sizeY, "numExpos": canvas.getShapes().length, "numLabels": canvas.getTexts().length};
         index ++;
         
@@ -380,7 +321,14 @@ createMap.onmousedown = (event) =>{
         });
 
         let json = JSON.stringify(array)
-        localStorage.setItem("map",json);
+
+        mapFormField.value = json
+
+        console.log(mapFormField);
+        
+        // Envie o formulário
+        
+        document.getElementById("formulario").submit()
     }
 }
 

@@ -179,7 +179,7 @@ class Mapa (db.Model):
     data_registo = db.Column(db.DateTime, default=datetime.now)
 
     def __repr__(self) -> str:
-        return '<Admin %r>' % self.id    
+        return '<Mapa %r>' % self.id    
 
 
 class Expositor (db.Model):
@@ -195,7 +195,7 @@ class Expositor (db.Model):
     data_registo = db.Column(db.DateTime, default=datetime.now)
 
     def __repr__(self) -> str:
-        return '<Admin %r>' % self.id 
+        return '<Expositor %r>' % self.id 
     
 
 class ConteudoExpositor (db.Model):
@@ -219,4 +219,16 @@ class ConteudoExpositor (db.Model):
     produto6 = db.relationship('Produto', foreign_keys=[produto6_id])
 
     def __repr__(self) -> str:
-        return '<Admin %r>' % self.id 
+        return '<ConteudoExpositor %r>' % self.id 
+    
+class Marcador (db.Model):
+    __tablename__= 'Marcador'
+    id = db.Column(db.Integer, primary_key=True)
+    mapa_id = db.Column('Mapa_id', db.ForeignKey('Mapa.id'), nullable=False)
+    mapa = db.relationship('Mapa', backref='Marcador')
+    angulo = db.Column(db.String(10), unique=False, nullable=False)
+    coordenadas = db.Column(db.String(10), unique=False, nullable=False)
+    texto = db.Column(db.String(10), unique=False, nullable=False)
+   
+    def __repr__(self) -> str:
+        return '<Marcador %r>' % self.id 
