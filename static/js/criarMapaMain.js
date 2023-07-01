@@ -308,9 +308,8 @@ createMap.onmousedown = (event) =>{
         
         canvas.getShapes().forEach(element => {
             array[index] = {"id": element.id, "posX": element.posX, "posY": element.posY, "width": element.width,
-                            "height": element.height, "color": element.color, "products": element.products, 
-                            "capacity": element.capacity, "divisions": element.divisions, 
-                            "storeSection": element.storeSection, "storeSectionColor": element.storeSectionColor};
+                            "height": element.height, "products": element.products, "capacity": element.capacity, 
+                            "divisions": element.divisions, "storeSection": element.storeSection};
             index ++;
         });
 

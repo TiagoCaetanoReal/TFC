@@ -291,10 +291,10 @@ def AlterProduct():
         # tipo dict('nome': 1, 'preço':2) -> ('atributo modelo': posição no form)
 
         if request.method == 'POST':
-            dictProduct  = {'name': 'nome', 'price': 'preço', 'iva': 'iva_id', 'metric': 'unMedida_id', 'origin': 'origem_id', 'department': 'secção_id', 'photoURI': 'photoPath'}
+            # dictProduct  = {'name': 'nome', 'price': 'preço', 'iva': 'iva_id', 'metric': 'unMedida_id', 'origin': 'origem_id', 'department': 'secção_id', 'photoURI': 'photoPath'}
             listProduct  = ['nome', 'preço', 'iva_id','unMedida_id','origem_id', 'secção_id', 'photoPath']
             
-            itens = list(dictProduct.items())
+            # itens = list(dictProduct.items())
 
             if productForm.validate() and productForm.editProduct.data == True:
                 try:

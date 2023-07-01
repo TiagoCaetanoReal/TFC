@@ -26,13 +26,6 @@ class FuncionarioEditForm(FlaskForm):
     department = SelectField('Secção', coerce=str, validators=[InputRequired()])
     Alter = SubmitField(label="Alterar")
 
-    
-class MapListForm(FlaskForm):
-    idMap = StringField(label="Inserir número do Mapa", render_kw={"placeholder": "Inserir número do Mapa"})
-    print = SubmitField(label="Imprimir Listagem")
-    createMap = SubmitField(label="Criar Mapa")
-    deleteMap = SubmitField(label="Eliminar")
-
 
 class CreateProductForm(FlaskForm):
     name = StringField(label="Inserir o Nome do Produto", render_kw={"placeholder": "Baguete"}, validators=[InputRequired(), Length(min=3, max=40)])
@@ -83,6 +76,12 @@ class ProductsListForm(FlaskForm):
     productIdBtn = SubmitField('productIdBtn')
     department = SelectField('Filtrar por Secção', coerce=str)  
 
+class MapListForm(FlaskForm):
+    mapId = IntegerField('mapID')
+    mapIdBtn = SubmitField('mapIdBtn')
+    print = SubmitField(label="Imprimir Listagem")
+    createMap = SubmitField(label="Criar Mapa")
+    deleteMap = SubmitField(label="Eliminar")
 
 class CreateMapForm(FlaskForm):
     departments = SelectField('Secção do Produto', coerce=str)  

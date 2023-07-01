@@ -169,6 +169,8 @@ class Admin (db.Model,UserMixin):
 class Mapa (db.Model):
     __tablename__= 'Mapa'
     id = db.Column(db.Integer, primary_key=True)
+    comprimento = db.Column(db.Numeric(precision=20, scale=6), nullable=False)
+    altura = db.Column(db.Numeric(precision=20, scale=6), nullable=False)
     funcionario_id = db.Column('Funcionario_id', db.ForeignKey('Funcionario.id'), nullable=False)
     funcionario = db.relationship('Funcionario', backref='Mapa') 
     loja_id = db.Column('Loja_id', db.ForeignKey('Loja.id'), nullable=False)
@@ -185,9 +187,12 @@ class Mapa (db.Model):
 class Expositor (db.Model):
     __tablename__= 'Expositor'
     id = db.Column(db.Integer, primary_key=True)
-    capacidade = db.Column(db.Integer, unique=True, nullable=False)
-    divisorias = db.Column(db.Integer, unique=True, nullable=False)
-    coordenadas = db.Column(db.String(10), unique=True, nullable=False)
+    capacidade = db.Column(db.Integer, unique=False, nullable=False)
+    divisorias = db.Column(db.Integer, unique=False, nullable=False)
+    coordenadaX = db.Column(db.Numeric(precision=20, scale=6), nullable=False)
+    coordenadaY = db.Column(db.Numeric(precision=20, scale=6), nullable=False)
+    comprimento = db.Column(db.Numeric(precision=20, scale=6), nullable=False)
+    altura = db.Column(db.Numeric(precision=20, scale=6), nullable=False)
     secção_id = db.Column('Secção_id', db.ForeignKey('Secção.id'), nullable=False)
     secção = db.relationship('Secção', backref='Expositor')
     mapa_id = db.Column('Mapa_id', db.ForeignKey('Mapa.id'), nullable=False)
@@ -227,7 +232,8 @@ class Marcador (db.Model):
     mapa_id = db.Column('Mapa_id', db.ForeignKey('Mapa.id'), nullable=False)
     mapa = db.relationship('Mapa', backref='Marcador')
     angulo = db.Column(db.String(10), unique=False, nullable=False)
-    coordenadas = db.Column(db.String(10), unique=False, nullable=False)
+    coordenadaX = db.Column(db.Numeric(precision=20, scale=6), nullable=False)
+    coordenadaY = db.Column(db.Numeric(precision=20, scale=6), nullable=False)
     texto = db.Column(db.String(10), unique=False, nullable=False)
    
     def __repr__(self) -> str:

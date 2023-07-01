@@ -223,7 +223,6 @@
 
 
         $(".Editar").click(function(e){
-            console.log($(this));
             e.preventDefault();
             let DadosProduto={
                 id: $(this).attr("id"),
@@ -232,8 +231,6 @@
 
             productIdField = document.getElementById('idProduto')
             productIdField.value = DadosProduto.id
-
-            console.log(productIdField.value);
 
             // Envie o formulário
             $("form").submit()

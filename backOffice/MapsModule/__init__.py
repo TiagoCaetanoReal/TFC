@@ -1,7 +1,7 @@
-from flask import Blueprint, flash, request, jsonify, json
+from flask import Blueprint, flash, request, jsonify, json, session
 from flask import redirect, render_template, url_for
 from forms import MapListForm, CreateMapForm
-from models import db, Funcionario, Loja, Secção, Mapa, Produto
+from models import db, Funcionario, Loja, Secção, Mapa, Produto, Marcador, Expositor, ConteudoExpositor
 from flask_login import login_user, logout_user, current_user
 from datetime import datetime, timedelta
 
@@ -15,16 +15,23 @@ def seeMapList():
 
     departemant = db.session.query(Secção).filter(Secção.id==active_user.secção_id).first()
     employee = [active_user.nome,active_user.cargo,departemant.nome]
+
     
     if(active_user.is_authenticated):
-        data = [
-                ['1', 'ferdinade', '22-54-2244'],
-                ['2', 'alo', '24-54-2244'],
-                ['3', 'bread', '4-54-2244'],
-                ['4', 'pão', '25-54-2244']
-            ]
+        maps = db.session.query(Mapa, Funcionario).filter(Mapa.loja_id==active_user.loja_id, Mapa.funcionario_id ==Funcionario.id).all()
 
-        return render_template("ListagemMapas.html", title = "MapList", formFront = form, active_user = employee, data = data)
+        if maps:
+            if request.method == 'POST':
+                idmap = form.mapId.data
+                session['map'] = idmap
+
+                print(idmap)
+
+                return redirect('/EditMap')
+
+        return render_template("ListagemMapas.html", title = "MapList", formFront = form, active_user = employee, mapsList = maps)
+    else:
+        return redirect('/login')
 
 @MapsModule.route("/FilteredList", methods=['GET', 'POST'])
 def FilteredList():
@@ -62,57 +69,60 @@ def CreateStoreMap():
 
         createForm.departments.choices = department_presets_group_list
 
-        print("bread")
+
+        # fazer um ciclo for para cada um dos de cimas onda da add a bd e depois no fim dá commit
+        # testando solução com um dict 
+        # para depois implementar a serio
+
         if request.method == 'POST':
-            print("hi")
-            print(createForm.map.data)
-
             mapa = json.loads(createForm.map.data)
-
-            # ober numero de expos
-            numExpos = mapa[0]['numExpos']
 
             # ober numero de textos
             numLabels = mapa[0]['numLabels']
+            # ober numero de textos
+            numExpos = mapa[0]['numExpos']
 
-            # adicionar a ambas as tabelas mapa, expo as dimenssões destes
-            # verificar se esta a guarda o id da secção
-            # fazer um ciclo for para cada um dos de cimas onda da add a bd e depois no fim dá commit
+            new_Map= Mapa(comprimento = mapa[0]['width'], altura = mapa[0]['height'], funcionario_id = active_user.id, loja_id = active_user.loja_id)    
+            db.session.add(new_Map)
+            db.session.commit()
 
-            print(numExpos)
+            # ir buscar o ultimo mapa a ser criado nesta loja por este funcionario, para utilizar nos commits
+            lastMapa = db.session.query(Mapa).filter(Mapa.funcionario_id==active_user.id, Mapa.loja_id == active_user.loja_id).order_by(Mapa.id.desc()).first()
+            
+            if(numLabels != 0):
+                for element in mapa[1+numExpos:]:
+                    print(element)
+                    lastMapa = db.session.query(Mapa).filter(Mapa.funcionario_id==active_user.id, Mapa.loja_id == active_user.loja_id).order_by(Mapa.id.desc()).first()
+                    new_marker = Marcador(mapa_id = lastMapa.id, angulo = element['angle'], coordenadaX = element['posX'], coordenadaY = element['posY'], texto = element['value'])
+                    db.session.add(new_marker)
+                    db.session.commit()
+                    
+                    
+            for element in mapa[1:numLabels+1]:
+                    new_expo = Expositor(capacidade = element['capacity'], divisorias = element['divisions'], coordenadaX = element['posX'], coordenadaY = element['posY'],
+                                        comprimento = element['width'], altura = element['height'], secção_id = element['storeSection'], mapa_id = lastMapa.id)
+                    db.session.add(new_expo)
+                    db.session.commit()
 
-            # const numExpos = array[0].numExpos;
-            # let index = 0
-            # array.shift();
+                    # ir buscar o ultimo expo a ser criado neste mapa para utilizar na tabela do ConteudoExpositor
+                    lastExpo = db.session.query(Expositor).filter(Expositor.secção_id == element['storeSection'], Expositor.mapa_id == lastMapa.id).order_by(Expositor.id.desc()).first()
+            
+                    if(element['products'] != ''):
+                        listConteudoExpositor  = ['produto1_id', 'produto2_id', 'produto3_id','produto4_id','produto5_id', 'produto6_id']
+                        new_expoContent = ConteudoExpositor( Expositor_id = lastExpo.id)
 
-            # array.forEach(element => {
-            #     if(index < numExpos){
-            #         console.log(element);
-            #         if(element.storeSection === 0){
-            #             canvas.addExpositores(new Expositor(element.id, element.posX , element.posY , element.width, element.height, element.color.toString()));
-            #             console.log(canvas.getShapes());
-            #         }
-            #         else{
-            #             canvas.addExpositores(new Expositor(element.id, element.posX, element.posY,  element.width, element.height, element.color.toString(), 
-            #                 element.products, element.capacity, element.divisions, element.storeSection, element.storeSectionColor.toString())); 
-                            
-            #             console.log(canvas.getShapes());
-            #         }
-            #     }
-            # else{
-            #         canvas.addTextBlock(new TextBlock(element.id, element.posX, element.posY, element.value, element.angle));
-            # }
-            # index++;
-            # });
-    
+                        for i, product in enumerate(listConteudoExpositor):
+                            if i < len(element['products']):
+                                setattr(new_expoContent, f"produto{i+1}_id", element['products'][i])
+                            else:
+                                setattr(new_expoContent, f"produto{i+1}_id", None)
+                        db.session.add(new_expoContent)
+                    db.session.commit()
+
+            return redirect('/MapsList')
+
     else:
         return redirect('/login')
-
-
-    #   departments = SelectField('Secção do Produto', coerce=str)  
-    # products = SelectField('Produtos', coerce=str)  
-    # map = SelectField('Produtos', coerce=str)  
-    # createMap = SubmitField(label="Criar Mapa")
 
     return render_template("CriarMapa.html", title = "MakeStoreMap", active_user = employee, createFormFront = createForm)
 
@@ -152,5 +162,17 @@ def AlterStoreMap():
 
     departemant = db.session.query(Secção).filter(Secção.id==active_user.secção_id).first()
     employee = [active_user.nome,active_user.cargo,departemant.nome]
+    
+    print('hiiiiiiiiiii')
+    print(session)
+
+    # fzer queries para obter dados do mapa e mostra-lo no frontend enviando um json
+    if session.get('map') is not None:
+        map_id = session.get('map')
+        
+        map = db.session.query(Mapa).filter(Mapa.id==map_id).first()
+
+        print('map.data_registo')
+        print(map.data_registo)
 
     return render_template("EditarMapa.html", title = "EditStoreMap", active_user = employee)

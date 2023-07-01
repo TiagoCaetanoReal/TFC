@@ -103,68 +103,71 @@
         </div>
 
         <div class="container mt-4 overflow-auto" style="height: 700px;" id="table">
-            <div class="table-responsive"> 
-                <table class="table table-striped table-hover display nowrap  " id="tabela">
-                    <thead class="bg-primary text-white">
-                        <tr>
-                            <th>Numero do Mapa</th>
-                            <th>Criador</th>
-                            <th>Data Criação</th>
-                            <th>Editar</th>
-                            <th>Selecionar</th>
-                            <th>Em Uso</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for map in data %}
+            <form method="POST" action="" novalidate>    
+                {{formFront.csrf_token()}} 
+                <div class="table-responsive"> 
+                    <table class="table table-striped table-hover display nowrap  " id="tabela">
+                        <thead class="bg-primary text-white">
                             <tr>
-                                <td>{{map[0]}}</td>
-                                <td>{{map[1]}}</td>
-                                <td>{{map[2]}}</td>
-                                <td>
-                                    <button class="btn btn-sm btn-primary ms-1" id="{{map[0]}}">
-                                        <i class="fa fa-pencil"></i>
-                                    </button>
-                                </td>
-                                
-                                <td>
-                                    <div class="form-check ms-4">
-                                        <input class="form-check-input" type="checkbox" value="{{map[0]}}" id="flexCheckDefault">
-                                        <label class="form-check-label" for="flexCheckDefault"></label>
-                                    </div>
-                                    
-                                </td>
-
-                                <td>
-                                    <button class="btn btn-sm btn-primary ms-1" id="{{map[0]}}">
-                                        <i class="fa fa-check"></i>
-                                    </button>
-                                </td>
+                                <th>Numero do Mapa</th>
+                                <th>Criador</th>
+                                <th>Data Criação</th>
+                                <th>Editar</th>
+                                <th>Em Uso</th>
+                                <th>Selecionar</th>
                             </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-                
+                        </thead>
+                        <tbody>
+                            {% for map in mapsList %}
+                                <tr>
+                                    <td>{{map[0].id}}</td>
+                                    <td>{{map[1].nome}}</td>
+                                    <td>{{map[0].data_registo}}</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-primary ms-1 Editar" id="{{map[0].id}}"type="submit">
+                                            <i class="fa fa-pencil text-white"></i>
+                                        </button>
+                                    </td>
+                                     <td>
+                                        <button class="btn btn-sm btn-primary ms-1" id="{{map[0].id}}">
+                                            <i class="fa fa-check"></i>
+                                        </button>
+                                    </td>
+                                    <td>
+                                        <div class="form-check ms-4">
+                                            <input class="form-check-input" type="checkbox" value="{{map[0].id}}" id="flexCheckDefault">
+                                            <label class="form-check-label" for="flexCheckDefault"></label>
+                                        </div>
+                                        
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div hidden>
+                    {{ formFront.mapId(id="mapId") }}
+                </div>
+            </form>
+        </div>
+        <div class="row mt-5">
+            <div class="col-6"></div>
+            <div class="col-2">
+                <form action="" class="text-center">
+                    <button class="btn btn-lg btn-info" type="submit" value="Log Out">Imprimir Listagem</button>
+                </form>
             </div>
-    </div>
-    <div class="row mt-5">
-        <div class="col-6"></div>
-        <div class="col-2">
-            <form action="" class="text-center">
-                <button class="btn btn-lg btn-info" type="submit" value="Log Out">Imprimir Listagem</button>
-            </form>
+            <div class="col-2 text-center">
+                <a href="{{url_for('MapsModule.CreateStoreMap')}}">
+                    <button class="btn btn-lg btn-warning" type="button" onclick="">Criar Mapa</button> 
+                </a>
+            </div>
+            <div class="col-2">
+                <form action="">
+                    <button class="btn btn-lg btn-danger" type="submit" value="Log Out">Apagar</button>
+                </form>
+            </div>
         </div>
-        <div class="col-2 text-center">
-            <a href="{{url_for('MapsModule.CreateStoreMap')}}">
-                <button class="btn btn-lg btn-warning" type="button" onclick="">Criar Mapa</button> 
-            </a>
-        </div>
-        <div class="col-2">
-            <form action="">
-                <button class="btn btn-lg btn-danger" type="submit" value="Log Out">Apagar</button>
-            </form>
-        </div>
-    </div>
     {% endblock content %}
 
     
@@ -186,6 +189,22 @@
                     table.search('').columns().search('').draw()
                 }
             
+            })
+
+
+            $(".Editar").click(function(e){
+                e.preventDefault();
+                let DadosMapa={
+                    id: $(this).attr("id"),
+                    action: "Editar"
+                }
+
+
+                mapIdField = document.getElementById('mapId')
+                mapIdField.value = DadosMapa.id
+
+                // Envie o formulário
+                $("form").submit()
             })
         </script>
     {% endblock scripts %}

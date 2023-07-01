@@ -109,3 +109,9 @@ def doAlteration():
     form.department.choices = department_presets_group_list
 
     return render_template("EditarFunc.html", title = "Login", formFront = form)
+
+# rota para realizar o logout
+@AutenticationModule.route('/logout')
+def logOut():
+   logout_user()
+   return redirect('login')
