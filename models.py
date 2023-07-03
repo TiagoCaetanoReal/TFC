@@ -6,14 +6,15 @@ db = SQLAlchemy()
 
 
 class Cliente(db.Model, UserMixin):
-	__tablename__ = 'Cliente' 
-	id = db.Column(db.Integer, primary_key=True)
-	nome = db.Column(db.String(80), unique=True, nullable=False)
-	password = db.Column(db.String(60), nullable=False)
-	data_registo = db.Column(db.DateTime, default=datetime.now)
+    __tablename__ = 'Cliente' 
+    id = db.Column(db.Integer, primary_key=True)
+    nome = db.Column(db.String(80), unique=True, nullable=False)
+    password = db.Column(db.String(60), nullable=False)
+    data_registo = db.Column(db.DateTime, default=datetime.now)
+    eliminado = db.Column(db.Boolean(), default=False)
 
-	def __repr__(self) -> str:
-		return f"User('{self.nome}',{self.password}','{self.gender}','{self.data_registo}')"
+    def __repr__(self) -> str:
+        return f"User('{self.nome}',{self.password}','{self.gender}','{self.data_registo}')"
 
 
 class Loja (db.Model):
@@ -22,6 +23,7 @@ class Loja (db.Model):
     nome = db.Column(db.String(80), unique=True, nullable=False)
     cidade = db.Column(db.String(80), unique=True, nullable=False)
     morada = db.Column(db.String(80), unique=True, nullable=False)
+    eliminado = db.Column(db.Boolean(), default=False)
 
     def __repr__(self) -> str:
         return '<Loja %r>' % self.id  
@@ -81,6 +83,7 @@ class Produto (db.Model):
     loja = db.relationship('Loja', backref='Produto')
     photoPath = db.Column(db.String(), unique=True, nullable=False)
     data_registo = db.Column(db.DateTime, default=datetime.now)
+    eliminado = db.Column(db.Boolean(), default=False)
 
     def __repr__(self) -> str:
         return f"Produto " + self.nome + " " + str(self.id)
@@ -94,6 +97,7 @@ class Favorito (db.Model):
     cliente_id = db.Column('Cliente_id', db.ForeignKey('Cliente.id'), nullable=False)
     cliente = db.relationship('Cliente', backref='Favorito')
     data_registo = db.Column(db.DateTime, default=datetime.now)
+    eliminado = db.Column(db.Boolean(), default=False)
 
     def __repr__(self) -> str:
         return '<Favorito %r>' % self.id  
@@ -113,6 +117,7 @@ class TabelaNutricional100gr (db.Model):
     produto_id = db.Column('Produto_id', db.ForeignKey('Produto.id'), nullable=False)
     produto = db.relationship('Produto', backref='TabelaNutricional100gr')
     data_registo = db.Column(db.DateTime, default=datetime.now)
+    eliminado = db.Column(db.Boolean(), default=False)
 
     def __repr__(self) -> str:
         return '<TabelaNutricional100gr %r>' % self.id  
@@ -132,6 +137,7 @@ class TabelaNutricionalDR (db.Model):
     produto_id = db.Column('Produto_id', db.ForeignKey('Produto.id'), nullable=False)
     produto = db.relationship('Produto', backref='TabelaNutricionalDR')
     data_registo = db.Column(db.DateTime, default=datetime.now)
+    eliminado = db.Column(db.Boolean(), default=False)
 
     def __repr__(self) -> str:
         return '<TabelaNutricionalDR %r>' % self.id  
@@ -150,6 +156,7 @@ class Funcionario(db.Model, UserMixin):
     EsperaAprovação = db.Column(db.Boolean(), default=True) 
     Aprovado = db.Column(db.Boolean(), default=False) 
     data_registo = db.Column(db.DateTime, default=datetime.now)
+    eliminado = db.Column(db.Boolean(), default=False)
 
     def __repr__(self) -> str:
         return f"Funcionario " + self.nome + " " + self.cargo
@@ -179,6 +186,7 @@ class Mapa (db.Model):
     Aprovado = db.Column(db.Boolean(), default=False)
     Usando = db.Column(db.Boolean(), default=False)
     data_registo = db.Column(db.DateTime, default=datetime.now)
+    eliminado = db.Column(db.Boolean(), default=False)
 
     def __repr__(self) -> str:
         return '<Mapa %r>' % self.id    
@@ -198,6 +206,7 @@ class Expositor (db.Model):
     mapa_id = db.Column('Mapa_id', db.ForeignKey('Mapa.id'), nullable=False)
     mapa = db.relationship('Mapa', backref='Expositor')
     data_registo = db.Column(db.DateTime, default=datetime.now)
+    eliminado = db.Column(db.Boolean(), default=False)
 
     def __repr__(self) -> str:
         return '<Expositor %r>' % self.id 
@@ -222,9 +231,10 @@ class ConteudoExpositor (db.Model):
     produto4 = db.relationship('Produto', foreign_keys=[produto4_id])
     produto5 = db.relationship('Produto', foreign_keys=[produto5_id])
     produto6 = db.relationship('Produto', foreign_keys=[produto6_id])
+    eliminado = db.Column(db.Boolean(), default=False)
 
     def __repr__(self) -> str:
-        return '<ConteudoExpositor %r>' % self.id 
+        return f"ConteudoExpositor " + str(self.id) + " " + str(self.Expositor_id)
     
 class Marcador (db.Model):
     __tablename__= 'Marcador'
@@ -234,7 +244,13 @@ class Marcador (db.Model):
     angulo = db.Column(db.String(10), unique=False, nullable=False)
     coordenadaX = db.Column(db.Numeric(precision=20, scale=6), nullable=False)
     coordenadaY = db.Column(db.Numeric(precision=20, scale=6), nullable=False)
+    comprimento = db.Column(db.Numeric(precision=20, scale=6), nullable=False)
+    altura = db.Column(db.Numeric(precision=20, scale=6), nullable=False)
     texto = db.Column(db.String(10), unique=False, nullable=False)
+    eliminado = db.Column(db.Boolean(), default=False)
    
     def __repr__(self) -> str:
-        return '<Marcador %r>' % self.id 
+        return f"Marcador " + str(self.id) + " " + str(self.mapa_id) + " " + self.texto
+
+
+# adicionar a coluna eleiminado aos outros

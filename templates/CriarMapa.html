@@ -254,7 +254,10 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-danger" data-bs-dismiss="modal" id="CancelSaveDeleteBtn">Cancelar</button>
-                        <button type="submit" class="btn btn-info" data-bs-dismiss="modal" id="ConfirmSaveDeleteBtn" >Confirmar</button>
+                        <button hidden type="submit" class="btn btn-info" data-bs-dismiss="modal" id="ConfirmSaveDeleteBtn" >Confirmar</button>
+                        <form hidden action="{{ url_for('MapsModule.seeMapList') }}" id="discardBtn">
+                            <button class="btn btn-info">Confirmar</button>
+                        </form>
                     </div>
                 </div>
             </div>

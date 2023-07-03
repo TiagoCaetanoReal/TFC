@@ -5,6 +5,8 @@ import { Quadro } from './quadro.js';
 // https://www.youtube.com/watch?v=7PYvx8u_9Sk
 
 
+// em principio é só trocar os docs, e trocar o div das secçõs para jinja e adicionar o fetch para ir buscar as secções  
+
 
 // modal das instruções esta desativado \|/
 // var myModal = new bootstrap.Modal(document.getElementById('instructionsModal'), {})
@@ -14,47 +16,69 @@ let canvas = new Quadro(document.getElementById("canvas"), document.getElementBy
 canvas.detectAction();
 let sizeX = canvas.canvas_width;
 let sizeY = canvas.canvas_height;
+let selectedExpositor;
+let array;
 
-let array = [];
-array = JSON.parse(localStorage.getItem("map") || "[]");
+fetch('/fetchMap')
+    .then(response => response.json())
+    .then(data => {
+        array = data;
 
-const numExpos = array[0].numExpos;
+        const numExpos = array[0].numExpos;
 
-let index = 0
+        let index = 0
 
 
-array.shift();
+        array.shift();
 
-array.forEach(element => {
-    if(index < numExpos){
-        console.log(element);
-        if(element.storeSection === 0){
-            canvas.addExpositores(new Expositor(element.id, element.posX , element.posY , element.width, element.height, element.color.toString()));
-            console.log(canvas.getShapes());
-        }
+        array.forEach(element => {
+            if(index < numExpos){
+                console.log(element);
+                // if(element.storeSection === ''){
+                //     canvas.addExpositores(new Expositor(element.id, element.posX , element.posY , element.width, element.height, element.color.toString()));
+                //     console.log(canvas.getShapes());
+                // }
+                // else{
+                    canvas.addExpositores(new Expositor(element.id, element.posX, element.posY,  element.width, element.height, element.color.toString(), 
+                        element.products, element.capacity, element.divisions, element.storeSection, element.storeSectionColor.toString())); 
+                        
+                    console.log(canvas.getShapes());
+                // }
+            }
         else{
-            canvas.addExpositores(new Expositor(element.id, element.posX, element.posY,  element.width, element.height, element.color.toString(), 
-                element.products, element.capacity, element.divisions, element.storeSection, element.storeSectionColor.toString())); 
-                
-            console.log(canvas.getShapes());
+                canvas.addTextBlock(new TextBlock(element.id, element.posX, element.posY, element.value, element.angle));
         }
-    }
-   else{
-        canvas.addTextBlock(new TextBlock(element.id, element.posX, element.posY, element.value, element.angle));
-   }
-   index++;
-});
+        index++;
+        });
+
+    })
+
+console.log(array);
 
 
 // Adiciona o listener de resize à janela do navegador
 // window.addEventListener("resize", canvas.resizeCanvas, false);
 
+var addExpo = document.getElementById("addExpositor")
+var rotateExpo = document.getElementById("rotateExpositor")
+var excludeExpo = document.getElementById("excludeExpositor")
+var resizeExpo = document.getElementById("resizeExpositor")
+var detailExpo = document.getElementById("detailExpositor")
+var capacity = document.getElementById("selectCapacity")
+var departmants = document.getElementById("selectSector")
+var divisions = document.getElementById("selectDivision")
+var produtos = document.getElementById("addProdutos")
+var texts = document.getElementById("addText")
+var editMap = document.getElementById("EditMap")
+var discardAlteration = document.getElementById("DiscardAlteration")
+var discardExpoInfo = document.getElementById("discardExpoInfo")
+var mapFormField = document.getElementById("mapa")
 
-document.getElementById("addExpositor").onmousedown = (event) =>{
-    canvas.addExpositores(new Expositor(canvas.shapes.length,sizeX/2,sizeY/2, 20, 60, 'grey'));
+addExpo.onmousedown = (event) =>{
+    canvas.addExpositores(new Expositor(canvas.getNewShapeID(),sizeX/2,sizeY/2, 20, 60, 'grey'));
 }
 
-document.getElementById("rotateExpositor").onmousedown = (event) =>{
+rotateExpo.onmousedown = (event) =>{
     try {
         if(canvas.selectedExpo){
             canvas.getShapes()[canvas.getSelected(canvas.getShapes())].rotate_expositor();
@@ -77,7 +101,7 @@ document.getElementById("rotateExpositor").onmousedown = (event) =>{
     canvas.draw_shapes();
 }
 
-document.getElementById("excludeExpositor").onmousedown = (event) =>{ 
+excludeExpo.onmousedown = (event) =>{ 
     try {
         if(canvas.selectedExpo){
             canvas.excludeExpositores(canvas.getSelected(canvas.getShapes()))
@@ -99,7 +123,7 @@ document.getElementById("excludeExpositor").onmousedown = (event) =>{
     canvas.draw_shapes();
 }
 
-document.getElementById("resizeExpositor").onmousedown = (event) =>{
+resizeExpo.onmousedown = (event) =>{
     try {
         if(canvas.selectedExpo){
             let selectedExpositor = canvas.getSelected(canvas.getShapes())
@@ -115,61 +139,83 @@ document.getElementById("resizeExpositor").onmousedown = (event) =>{
     canvas.draw_shapes();
 }
 
-document.getElementById("detailExpositor").onmousedown = (event) =>{
-    let selectedExpositor;
+detailExpo.onmousedown = (event) =>{
+    produtos.innerHTML = ''
+
     try {
         if(canvas.selectedExpo){
             selectedExpositor = canvas.getCurrentExpositor();
-
-            let capacity = document.getElementById('selectCapacity')
-
-            console.log(selectedExpositor.capacity)
-            console.log(capacity)
+            console.log((selectedExpositor));
 
             // resolver problema de caso expo não tenha produtos, da segunda vez q se entra nele, os campos estão vazios
 
-            console.log(selectedExpositor.capacity === 0)
+            capacity.onchange = (event) => {
+                var inputText = event.target.value;
+                selectedExpositor.capacity = parseInt(inputText);
+        
+                createProductSpaces(inputText);
+         
+        
+                //nesta parte após serem criados os selects dos produtos, tem de ser mandado do backend um array ou string com os produtos, possivelmente um array
+            }
+
+            departmants.onchange = (event) => {
+                // https://www.youtube.com/watch?v=exRAM1ZWm_s
+                var inputText = event.target.value;
+                selectedExpositor.storeSection = parseInt(inputText);
+        
+                fetch("/fetchColor?seccaoId=" + inputText)
+                .then(response => response.json())
+                .then(data => {
+                    var cor = data.cor;
+        
+                    selectedExpositor.give_colorSection(cor);
+                });
+        
+                createProductSpaces(capacity.value);
+            }
+
+            
+            divisions.onchange = (event) => {
+                var inputText = event.target.value;
+                selectedExpositor.divisions = parseInt(inputText);
+            }
+
+            produtos.onchange = (event) => {
+                var inputSpaceNumber = event.target.id.charAt(event.target.id.length - 1)
+
+                if( selectedExpositor.products[inputSpaceNumber] != ''){
+                    selectedExpositor.products[inputSpaceNumber] = event.target.value;
+                }else{
+                    selectedExpositor.products.push(event.target.value) ;
+                }
+            }
 
             if(selectedExpositor.capacity === 0){
-                console.log("1")
                 capacity.value = selectedExpositor.capacity;
-                document.getElementById("addProdutos").innerHTML = '';
                 selectedExpositor.products = [];
                 
             }else{
-                console.log("2")
                 capacity.value = selectedExpositor.capacity;
-
                 createProductSpaces(capacity.value);
-
-
-                for (let index = 0; index < parseInt(capacity.value); index++) {
-                    var productSpace = document.getElementById('selectProduct'+index);
-
-                    var ExpositorProduct = selectedExpositor.products[index];
-                    console.log(ExpositorProduct)
-                    if(ExpositorProduct !== undefined)
-                        productSpace.value = ExpositorProduct.toString();
-                }
             }
         
             if(selectedExpositor.storeSection === 0){
-                document.getElementById('selectSector').value = "0";
+                departmants.value = "0";
             }else{
-                document.getElementById('selectSector').value =  selectedExpositor.storeSection.toString(); 
+                departmants.value =  selectedExpositor.storeSection.toString(); 
             }
         
             if(selectedExpositor.divisions === 0){
-                document.getElementById('selectDivision').value = "0";
+                divisions.value = "0";
             }else{
-                document.getElementById('selectDivision').value =  selectedExpositor.divisions.toString();
+                divisions.value =  selectedExpositor.divisions.toString();
             }
         }
         else
             throw new TypeError('');
     } catch (error) {
         window.alert("Selecione um expositor para realizar esta ação");
-        console.log('6')
     }  
 
     
@@ -178,77 +224,74 @@ document.getElementById("detailExpositor").onmousedown = (event) =>{
 
     myModalTitle._element.innerText = 'Expositor ' + selectedExpositor.id;
 
-
-
-    document.getElementById('selectCapacity').onchange = (event) => {
-        var inputText = event.target.value;
-        selectedExpositor.capacity = parseInt(inputText);
-
-        createProductSpaces(inputText);
- 
-
-        //nesta parte após serem criados os selects dos produtos, tem de ser mandado do backend um array ou string com os produtos, possivelmente um array
-    }
-
     
-    document.getElementById('selectSector').onchange = (event) => {
-        var inputText = event.target.value;
-        selectedExpositor.storeSection = parseInt(inputText);
-        selectedExpositor.give_colorSection('blue');
-    }
-    
-    document.getElementById('selectDivision').onchange = (event) => {
-        var inputText = event.target.value;
-        selectedExpositor.divisions = parseInt(inputText);
-    }
+    function createProductSpaces(numProducts) {
+        const node = ''
 
-    document.getElementById("addProdutos").onchange = (event) => {
-        var inputSpaceNumber = event.target.id.charAt(event.target.id.length - 1)
-
-        if( selectedExpositor.products[inputSpaceNumber] != ''){
-            selectedExpositor.products[inputSpaceNumber] = event.target.value;
-        }else{
-            selectedExpositor.products.push(event.target.value) ;
-        }
-    }
+        if(capacity.value !== '0' && departmants.value !== ' '){
+            fetch("/fetchProducts?seccaoId=" + selectedExpositor.storeSection)
+            .then(response => response.json())
+            .then(data => {
+                var products = data.products;
 
 
-    function createProductSpaces(inputText) {
-        var produtcs = [{"id": "10","value": "Salmão"},{"id": "3","value": "Corvina"},{"id": "6","value": "Pescada"},{"id": "30","value": "Sardinha"}]
+                produtos.innerHTML = '';
+                    
+                for(let i = 0; i<numProducts; i++ ){
+                    const node = `
+                        <div class="col-6">
+                            <div class="input-group my-1 needs-validation py-2">
+                                <select id="selectProduct${i}" class="form-select" required> 
+                                    <option class="is-invalid" disabled selected value=' '>Selecionar Produto</option>
+                                </select><div class="invalid-feedback">Por Favor selecione um produto</div> 
+                            </div>
+                        </div>
+                    `; 
 
-        document.getElementById("addProdutos").innerHTML = '';
+                    produtos.innerHTML += node
+                }
 
-        for(let i = 0; i<inputText; i++ ){
-            const node = `
-                <div class="col-6">
-                    <div class="input-group my-1 needs-validation py-2">
-                        <select id="selectProduct${i}" class="form-select" required> 
-                            <option class="is-invalid" disabled selected value="">Selecionar Produto</option>
-                        </select><div class="invalid-feedback">Por Favor selecione um produto</div> 
-                    </div>
-                </div>
-            `; 
+                var numChilds =  produtos.childElementCount;
 
-            document.getElementById("addProdutos").innerHTML += node
-        }
 
-        var numChilds =  document.getElementById("addProdutos").childElementCount;
+                for (let index = 0; index < numChilds; index++) {
+                    var selector = document.getElementById("selectProduct"+index);
 
-        for (let index = 0; index < numChilds; index++) {
-            var selector = document.getElementById("selectProduct"+index);
+                    products.forEach(element => {
+                        console.log(element.id);
+                        console.log(element.nome);
+                        let newOption = new Option(element.nome, element.id);
 
-            produtcs.forEach(element => {
-                let newOption = new Option(element.value, element.id);
+                        selector.add(newOption,undefined);
+                    });
+                }
 
-                selector.add(newOption,undefined);
+                var numChildsAssigned = selectedExpositor.products.length;
+
+                if(numChildsAssigned > 0){
+                    for(let i = 0; i<numChildsAssigned; i++ ){
+                        document.getElementById("selectProduct"+i).value = [selectedExpositor.products[i]]
+                    }
+                        
+                }  
+                
+                else{
+                    for(let i = 0; i<numChildsAssigned; i++ ){
+                        document.getElementById("selectProduct"+i).value = 0
+                    }
+            
+                }              
+                
             });
         }
     }
-    
+
+
     myModal.toggle();
     myModal.show();
 
     discardExpoInfo.onclick = (event) =>{
+        produtos.innerHTML = '';
         selectedExpositor.products = [];
         selectedExpositor.capacity = 0;
         selectedExpositor.divisions = 0;
@@ -261,13 +304,13 @@ document.getElementById("detailExpositor").onmousedown = (event) =>{
 
 
 
-document.getElementById("addText").onmousedown = (event) =>{
+texts.onmousedown = (event) =>{
     const myModal = new bootstrap.Modal(document.getElementById('addTextBackdrop'));
     const addTextBtn = document.getElementById('addTextBtn')
     const textInput = document.getElementById('textInput')
     
     addTextBtn.onclick = (event) =>{
-        canvas.addTextBlock(new TextBlock(canvas.texts.length,sizeX/2,sizeY/2,textInput.value, 0));
+        canvas.addTextBlock(new TextBlock(canvas.getNewTextID(),sizeX/2,sizeY/2,textInput.value, 0));
         console.log(textInput.value);
         textInput.value = '';
     }
@@ -282,7 +325,7 @@ document.getElementById("addText").onmousedown = (event) =>{
 
 
 
-document.getElementById("CreateMap").onmousedown = (event) =>{
+editMap.onmousedown = (event) =>{
     let array = []
     let index = 0
 
@@ -294,6 +337,11 @@ document.getElementById("CreateMap").onmousedown = (event) =>{
     myModal.toggle();
     myModal.show();
 
+    const elemento = document.getElementById('discardBtn');
+    elemento.setAttribute('hidden', 'true');
+
+    ConfirmSaveDeleteBtn.removeAttribute('hidden');
+
     ConfirmSaveDeleteBtn.onclick = (event) =>{
         console.log("hiiii")
         array[index] = {"width": sizeX,"height": sizeY, "numExpos": canvas.getShapes().length, "numLabels": canvas.getTexts().length};
@@ -301,9 +349,8 @@ document.getElementById("CreateMap").onmousedown = (event) =>{
         
         canvas.getShapes().forEach(element => {
             array[index] = {"id": element.id, "posX": element.posX, "posY": element.posY, "width": element.width,
-                            "height": element.height, "color": element.color, "products": element.products, 
-                            "capacity": element.capacity, "divisions": element.divisions, 
-                            "storeSection": element.storeSection, "storeSectionColor": element.storeSectionColor};
+                            "height": element.height, "products": element.products,"capacity": element.capacity, 
+                            "divisions": element.divisions, "storeSection": element.storeSection};
             index ++;
         });
 
@@ -313,27 +360,38 @@ document.getElementById("CreateMap").onmousedown = (event) =>{
             index ++;
         });
 
+
         let json = JSON.stringify(array)
-        localStorage.setItem("map",json);
+
+        mapFormField.value = json
+
+        console.log(mapFormField);
+        
+        // Envie o formulário
+        
+        document.getElementById("formulario").submit()
     }
 }
 
-    document.getElementById("DeleteMap").onmousedown = (event) =>{
-        const myModal = new bootstrap.Modal(document.getElementById('saveDeleteMap'));
-        const myModalTitle = new bootstrap.Modal(document.getElementById('saveDeleteMapTitle'));
-    
-        myModalTitle._element.innerText = "Deseja descartar o mapa criado?"
-    
-        myModal.toggle();
-        myModal.show();
+discardAlteration.onmousedown = (event) =>{
+    const myModal = new bootstrap.Modal(document.getElementById('saveDeleteMap'));
+    const myModalTitle = new bootstrap.Modal(document.getElementById('saveDeleteMapTitle'));
 
-        ConfirmSaveDeleteBtn.onclick = (event) =>{
-            canvas.shapes = [];
-            canvas.texts = [];
-            canvas.draw_shapes();
-        }
-    }
+    myModalTitle._element.innerText = "Deseja descartar o mapa criado?"
 
+    myModal.toggle();
+    myModal.show();
+
+    const elemento = document.getElementById('discardBtn');
+    elemento.removeAttribute('hidden');
+
+    ConfirmSaveDeleteBtn.setAttribute('hidden', 'true');
+}
+
+// adicionar isto pra caso não se queira mais alterar possa-se descartar esta alteração
+// // <form action="{{ url_for('MapsModule.seeMapList') }}">
+// <button class="btn btn-lg btn-danger" id="DiscardAlteration">Descartar Alteração</button>
+// </form>
 
 
 

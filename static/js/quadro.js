@@ -46,6 +46,7 @@ export class Quadro{
         this.draw_shapes(); 
     }
 
+
     excludeExpositores(id){
         var shape = this.getShapes().find(item => item.id === id);
         const index = this.getShapes().indexOf(shape);
@@ -91,6 +92,17 @@ export class Quadro{
 
     getTexts(){
         return this.texts;
+    }
+
+    getNewTextID(){
+        var id  = this.getTexts()[this.getTexts().length - 1].id + 1
+        return id
+    }
+
+    
+    getNewShapeID(){
+        var id  = this.getShapes()[this.getShapes().length - 1].id + 1
+        return id
     }
 
     getSelected(object){

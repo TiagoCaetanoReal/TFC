@@ -88,3 +88,10 @@ class CreateMapForm(FlaskForm):
     products = SelectField('Produtos', coerce=str)  
     map = StringField()  
     createMap = SubmitField(label="Criar Mapa")
+
+
+class EditMapForm(FlaskForm):
+    departments = SelectField('Secção do Produto', coerce=str)  
+    products = SelectField('Produtos', coerce=str)  
+    map = StringField()  
+    editMap = SubmitField(label="Alterar Mapa")

@@ -1,6 +1,6 @@
 from flask import Blueprint, flash, request, jsonify, json, session
 from flask import redirect, render_template, url_for
-from forms import MapListForm, CreateMapForm
+from forms import MapListForm, CreateMapForm, EditMapForm
 from models import db, Funcionario, Loja, Secção, Mapa, Produto, Marcador, Expositor, ConteudoExpositor
 from flask_login import login_user, logout_user, current_user
 from datetime import datetime, timedelta
@@ -24,8 +24,6 @@ def seeMapList():
             if request.method == 'POST':
                 idmap = form.mapId.data
                 session['map'] = idmap
-
-                print(idmap)
 
                 return redirect('/EditMap')
 
@@ -93,12 +91,13 @@ def CreateStoreMap():
                 for element in mapa[1+numExpos:]:
                     print(element)
                     lastMapa = db.session.query(Mapa).filter(Mapa.funcionario_id==active_user.id, Mapa.loja_id == active_user.loja_id).order_by(Mapa.id.desc()).first()
-                    new_marker = Marcador(mapa_id = lastMapa.id, angulo = element['angle'], coordenadaX = element['posX'], coordenadaY = element['posY'], texto = element['value'])
+                    new_marker = Marcador(mapa_id = lastMapa.id, angulo = element['angle'], coordenadaX = element['posX'], coordenadaY = element['posY'], 
+                                         comprimento = element['width'], altura = element['height'], texto = element['value'])
                     db.session.add(new_marker)
                     db.session.commit()
                     
                     
-            for element in mapa[1:numLabels+1]:
+                for element in mapa[1:numLabels+1]:
                     new_expo = Expositor(capacidade = element['capacity'], divisorias = element['divisions'], coordenadaX = element['posX'], coordenadaY = element['posY'],
                                         comprimento = element['width'], altura = element['height'], secção_id = element['storeSection'], mapa_id = lastMapa.id)
                     db.session.add(new_expo)
@@ -162,17 +161,260 @@ def AlterStoreMap():
 
     departemant = db.session.query(Secção).filter(Secção.id==active_user.secção_id).first()
     employee = [active_user.nome,active_user.cargo,departemant.nome]
+
+
+    if(active_user.is_authenticated):
+        editForm = EditMapForm()
+
+        idmap = session.get('map')
+
+        #query para a secção
+        departmentQuery = db.session.query(Secção).all()
+        department_group_list=[(str(i.id), i.nome) for i in departmentQuery]
+        department_presets_group_list = [(' ',"Selecionar Secção")]
+
+
+        for department in department_group_list:    
+            department_presets_group_list.append(department)
+
+        editForm.departments.choices = department_presets_group_list
+
+
+        # fazer um ciclo for para cada um dos de cimas onda da add a bd e depois no fim dá commit
+        # testando solução com um dict 
+        # para depois implementar a serio
+
+        if request.method == 'POST':
+            mapa = json.loads(editForm.map.data)
+            print(str(mapa) + '\n')
+
+            # ober numero de textos
+            numLabels = mapa[0]['numLabels']
+            # ober numero de textos
+            numExpos = mapa[0]['numExpos']
+
+            # ___________________________________working_______________________________________________ 
+            # apartir das tag na db ver quais foram alteradas/removidas e adicionadas
+            if(numLabels != 0):
+                listLabelsTag = ['coordenadaX','coordenadaY','comprimento','altura','angulo','texto']
+                tags = db.session.query(Marcador).filter(Marcador.mapa_id == idmap).all()
+                    
+                # Obtenha os IDs dos marcadores existentes
+                ids_tags = [tag.id for tag in tags]
+
+                editedTag = []
+                
+                ####################################################
+                # verifica se existem tags novas/eliminadas ou modificadas
+                for element in mapa[1+numExpos:]:
+                    # verifica se a tags eliminadas ou modificadas
+                    if element['id'] in ids_tags:
+                        editedTag.append(element['id'])
+
+                        modifiedTag = db.session.query(Marcador).filter(Marcador.id == element['id']).first()
+                        
+                        for index, field in enumerate(element):
+                            if index  > 0:
+                                valor = listLabelsTag[index-1]
+
+                                if str(element[field]) != str(getattr(modifiedTag, valor)):
+                                    setattr(modifiedTag, valor, element[field])
+                        
+                    
+                    # verifica se existem tags novas
+                    else:
+                        editedTag.append(element['id'])
+                    
+                    db.session.commit()  
+                ####################################################
+
+                # tentar verificar pelos ids quais as tag que existem ainda e que foram adicionadas
+                
+                ####################################################
+                # se existirem novos arcadores, estes são adicionados á db
+                newTags = [x for x in editedTag if x not in ids_tags]
+
+                if newTags:
+                    for element in mapa[1+numExpos:]:
+                        for tag in newTags:
+                            if element['id'] == tag:
+                                new_marker = Marcador(mapa_id = idmap, angulo = element['angle'], coordenadaX = element['posX'], coordenadaY = element['posY'], 
+                                                        comprimento = element['width'], altura = element['height'], texto = element['value'])
+                                db.session.add(new_marker)
+                    db.session.commit()
+                ####################################################
+
+
+                ####################################################
+                # se existirem marcadores removidos
+                ids_tags = [x for x in ids_tags if x not in editedTag]
+
+                if ids_tags:
+                    for tag in ids_tags:
+                        deletedTag = db.session.query(Marcador).filter(Marcador.id == tag).first()
+                        deletedTag.eliminado = True
+                    db.session.commit()
+                ####################################################
+
+            #tentar guardar dados novos dos mesmo elementos
+            #^ter cuidado com aqueles que são apagados, ver se id existe caso contrario fazer delete
+            if(numLabels != 0):
+                listLabelsTag = ['coordenadaX','coordenadaY','comprimento','altura','angulo','texto']
+
+                for element in mapa[1+numExpos:]:
+                    
+                    lastMapa = db.session.query(Mapa).filter(Mapa.funcionario_id==active_user.id, Mapa.loja_id == active_user.loja_id).order_by(Mapa.id.desc()).first()
+                    new_marker = Marcador(mapa_id = idmap, angulo = element['angle'], coordenadaX = element['posX'], coordenadaY = element['posY'], 
+                                         comprimento = element['width'], altura = element['height'], texto = element['value'])
+                    
+                    db.session.commit()
+            #####################################################################################################################
+
+            if(numExpos != 0):
+                listLabelsExpositor  = ['coordenadaX', 'coordenadaY', 'comprimento', 'altura','capacidade', 'divisorias',  'secção_id']
+                listConteudoExpositor  = ['produto1_id', 'produto2_id', 'produto3_id','produto4_id','produto5_id', 'produto6_id']
+
+                expos = db.session.query(Expositor).filter(Expositor.mapa_id == idmap).all()
+                ids_expos = [expo.id for expo in expos]
+
+                editedExpos = []
+
+                ####################################################
+                # verifica se existem expos novos/eliminados ou modificados
+                for element in mapa[1:numExpos+1]:  
+
+                    # guarda e processa os expos modificados
+                    if element['id'] in ids_expos:
+                        editedExpos.append(element['id'])
+
+                        modifiedExpo = db.session.query(Expositor).filter(Expositor.id == element['id']).first()
+                        
+                        for index, field in enumerate(element):
+
+                            if index  > 0 and index < 5:
+                                valor = listLabelsExpositor[index-1]
+
+                                if str(element[field]) != str(getattr(modifiedExpo, valor)):
+                                    setattr(modifiedExpo, valor, element[field])
+                                
+                            elif index == 5:
+                                
+                                modifiedExpoContent = db.session.query(ConteudoExpositor).filter(ConteudoExpositor.Expositor_id == element['id']).first()
+
+                                for index, product in enumerate(element[field]):
+                                    valorProduct = listConteudoExpositor[index]
+
+                                    if str(product) != str(getattr(modifiedExpoContent, valorProduct)):
+                                        setattr(modifiedExpoContent, valorProduct, product)
+
+                            elif index  > 5 and index < 9:
+                                valor = listLabelsExpositor[index-2]
+
+                                if str(element[field]) != str(getattr(modifiedExpo, valor)):
+                                    setattr(modifiedExpo, valor, element[field])
+                            
+                    # guarda os expos novos
+                    else:
+                        editedExpos.append(element['id'])
+                    
+                    db.session.commit()  
+                ####################################################
+
+
+                newExpos = [x for x in editedExpos if x not in ids_expos]
+                newExpoIds = []
+                    
+                # Obtenha os IDs dos marcadores existentes
+                # newExpoIds = [newExpoId.id for newExpoId in newExpoIds]
+
+                if newExpos:
+                    for element in mapa[1:numExpos+1]:
+                        for expo in newExpos:
+                            if element['id'] == expo:
+                                new_expo = Expositor(capacidade = element['capacity'], divisorias = element['divisions'], coordenadaX = element['posX'], coordenadaY = element['posY'],
+                                        comprimento = element['width'], altura = element['height'], secção_id = element['storeSection'], mapa_id = idmap)
+                                db.session.add(new_expo)
+                                db.session.commit()
+
+                            lastExpo = db.session.query(Expositor).filter(Expositor.secção_id == element['storeSection'], Expositor.mapa_id == lastMapa.id).order_by(Expositor.id.desc()).first()
+                            newExpoIds.append(lastExpo.id)
+                            
+                            if(element['products'] != ''):    
+                                new_expoContent = ConteudoExpositor( Expositor_id = lastExpo.id)
+
+                                for i, product in enumerate(listConteudoExpositor):
+                                    if i < len(element['products']):
+                                        setattr(new_expoContent, f"produto{i+1}_id", element['products'][i])
+                                    else:
+                                        setattr(new_expoContent, f"produto{i+1}_id", None)
+                                db.session.add(new_expoContent)
+                                print(str(new_expoContent.produto1_id) + " " + str(new_expoContent.produto2_id) + " " + str(new_expoContent.produto3_id) + " " + str(new_expoContent.produto4_id) + " " + str(new_expoContent.produto5_id) + " " + str(new_expoContent.produto6_id))
+
+                            db.session.commit()
+
+
+            # ####################################################
+            # # se existirem expositores e conteudoExpo removidos
+                ids_expos = [x for x in ids_expos if x not in editedExpos]
+                print(ids_expos)
+
+                if ids_expos:
+                    for id in ids_expos:
+                        deletedExpo= db.session.query(Expositor).filter(Expositor.id == id).first()
+                        deletedExpo.eliminado = True
+                        
+                        deletedContent = db.session.query(ConteudoExpositor).filter(ConteudoExpositor.Expositor_id == id).first()
+                        deletedContent.eliminado = True
+                    db.session.commit()
+            ####################################################
+
+            
+            # tentar otimizar isto
+
+            return redirect('/MapsList')
+
+
+
+
+    else:
+        return redirect('/login')
     
-    print('hiiiiiiiiiii')
-    print(session)
+    
+    return render_template("EditarMapa.html", title = "EditStoreMap", active_user = employee, editFormFront = editForm)
+    
+
+
+@MapsModule.route("/fetchMap", methods=['GET','POST'])
+def fetchMap():
 
     # fzer queries para obter dados do mapa e mostra-lo no frontend enviando um json
     if session.get('map') is not None:
         map_id = session.get('map')
+        mapDictList = []
         
         map = db.session.query(Mapa).filter(Mapa.id==map_id).first()
 
-        print('map.data_registo')
-        print(map.data_registo)
+        expos = db.session.query(Expositor).filter(Expositor.mapa_id == map_id, Expositor.eliminado == 0).all()
+        tags = db.session.query(Marcador).filter(Marcador.mapa_id == map_id, Marcador.eliminado == 0).all()
 
-    return render_template("EditarMapa.html", title = "EditStoreMap", active_user = employee)
+        mapDictList.append({"width": float(map.comprimento), "height": float(map.altura), "numExpos": len(expos), "numLabels": len(tags)})
+
+        for expo in expos:
+            produtos = []
+            conteudoExpositores = db.session.query(ConteudoExpositor).filter(ConteudoExpositor.Expositor_id == expo.id, ConteudoExpositor.eliminado == 0).first()
+            for index in range(expo.capacidade):
+                produtos.append(getattr(conteudoExpositores, f"produto{index+1}_id"))
+
+            colorQuery = db.session.query(Secção).filter(Secção.id==expo.secção_id).first()
+            
+            mapDictList.append({"id": expo.id, "posX": float(expo.coordenadaX), "posY": float(expo.coordenadaY), "width": float(expo.comprimento),
+                            "height": float(expo.altura), "color": colorQuery.cor, "products": produtos, 
+                            "capacity": expo.capacidade, "divisions": expo.divisorias, 
+                            "storeSection": expo.secção_id, "storeSectionColor": colorQuery.cor})
+
+        for tag in tags:
+            mapDictList.append( {"id": tag.id, "posX": float(tag.coordenadaX), "posY": float(tag.coordenadaY), "width": float(tag.comprimento),
+                                "height": float(tag.altura), "angle": tag.angulo, "value": tag.texto})
+        
+
+    return mapDictList

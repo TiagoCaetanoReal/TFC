@@ -302,6 +302,12 @@ createMap.onmousedown = (event) =>{
     myModal.toggle();
     myModal.show();
 
+    
+    const elemento = document.getElementById('discardBtn');
+    elemento.setAttribute('hidden', 'true');
+
+    ConfirmSaveDeleteBtn.removeAttribute('hidden');
+
     ConfirmSaveDeleteBtn.onclick = (event) =>{
         array[index] = {"width": sizeX,"height": sizeY, "numExpos": canvas.getShapes().length, "numLabels": canvas.getTexts().length};
         index ++;
@@ -340,11 +346,11 @@ deleteMap.onmousedown = (event) =>{
         myModal.toggle();
         myModal.show();
 
-        ConfirmSaveDeleteBtn.onclick = (event) =>{
-            canvas.shapes = [];
-            canvas.texts = [];
-            canvas.draw_shapes();
-        }
+        
+        const elemento = document.getElementById('discardBtn');
+        elemento.removeAttribute('hidden');
+
+        ConfirmSaveDeleteBtn.setAttribute('hidden', 'true');
     }
 
 
