@@ -128,14 +128,20 @@
                                             <i class="fa fa-pencil text-white"></i>
                                         </button>
                                     </td>
-                                     <td>
-                                        <button class="btn btn-sm btn-primary ms-1" id="{{map[0].id}}">
-                                            <i class="fa fa-check"></i>
-                                        </button>
+                                    <td>
+                                        <div class="form-check ms-4">
+                                            {% if map[0].Usando %}
+                                                <input class="form-check-input checkboxUsing" type="checkbox" id="{{map[0].id}}" checked>
+                                            {% else %}
+                                                <input class="form-check-input checkboxNotUsing" type="checkbox" id="{{map[0].id}}">
+                                            {% endif %}
+                                            <label class="form-check-label" for="flexCheckDefault"></label>
+                                        </div>
+                                        
                                     </td>
                                     <td>
                                         <div class="form-check ms-4">
-                                            <input class="form-check-input" type="checkbox" value="{{map[0].id}}" id="flexCheckDefault">
+                                            <input class="form-check-input deleteMap" type="checkbox" value="{{map[0].id}}" id="flexCheckDefault">
                                             <label class="form-check-label" for="flexCheckDefault"></label>
                                         </div>
                                         
@@ -147,6 +153,28 @@
                 </div>
                 <div hidden>
                     {{ formFront.mapId(id="mapId") }}
+                </div>
+                <div hidden>
+                    {{ formFront.action(id="action") }}
+                </div>
+                <div hidden>
+                    {{ formFront.mapsToDelet(id="mapsDelet") }}
+                </div>
+                
+                 <!-- Modal to change map in client side -->
+                <div class="modal modal fade" id="modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h3 class="modal-title" id="modalTitle"></h3>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-danger" data-bs-dismiss="modal" id="cancelBtn">Cancelar</button>
+                                <button type="submit" class="btn btn-info" data-bs-dismiss="modal" id="confirmBtn">Confirmar</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </form>
         </div>
@@ -161,12 +189,12 @@
             </div>
             <div class="col-2 text-center">
                 <a href="{{url_for('MapsModule.CreateStoreMap')}}">
-                    <button class="btn btn-lg btn-warning" type="button" onclick="">Criar Mapa</button> 
+                    <button class="btn btn-lg btn-warning" type="button">Criar Mapa</button> 
                 </a>
             </div>
             <div class="col-2">
                 <form action="">
-                    <button class="btn btn-lg btn-danger" type="submit" value="Log Out">Apagar</button>
+                    <button class="btn btn-lg btn-danger" type="submit" id="deleteMaps" >Apagar</button>
                 </form>
             </div>
         </div>
@@ -175,8 +203,11 @@
     
     {% block scripts %}
         <script>
-            criadorMapa = document.getElementById("mapCreator")
-            butSubmit = document.getElementById("butSubmit")
+            var criadorMapa = document.getElementById("mapCreator")
+            var butSubmit = document.getElementById("butSubmit")
+            var mapIdField = document.getElementById('mapId')
+            var mapIdAction = document.getElementById('action')
+            var mapsDeleteListField = document.getElementById('mapsDelet')
 
             var table = $('#tabela').DataTable();
             table.destroy()
@@ -193,6 +224,48 @@
             
             })
 
+            
+            $(".checkboxUsing").click(function(e){
+                e.preventDefault();
+                var element = $(this);
+                element.prop('checked', true);
+            })
+
+
+
+            $(".checkboxNotUsing").click(function(e){
+                e.preventDefault();
+
+                idmapa =  $(this).attr("id");
+
+                var cancelBtn = document.getElementById('cancelBtn');
+
+                const myModal = new bootstrap.Modal(document.getElementById('modal'));
+                const myModalTitle = new bootstrap.Modal(document.getElementById('modalTitle'));
+
+                myModalTitle._element.innerText = "Deseja tocar o mapa usado pelos clientes?"
+
+                myModal.toggle();
+                myModal.show();  
+
+                $("#confirmBtn").click(function(e) {
+                    e.preventDefault();
+                    
+                    let DadosMapa = {
+                        id: idmapa,
+                        action: "ChangeMap"
+                    };
+                    
+                    
+                    mapIdField.value = DadosMapa.id 
+                    mapIdAction.value = DadosMapa.action
+                    
+
+                    // Envie o formulário
+                    $("form").submit()
+                })
+            })
+
 
             $(".Editar").click(function(e){
                 e.preventDefault();
@@ -200,31 +273,70 @@
                     id: $(this).attr("id"),
                     action: "Editar"
                 }
-
-
-                mapIdField = document.getElementById('mapId')
-                mapIdField.value = DadosMapa.id
-
+                
+                mapIdField.value = DadosMapa.id 
+                mapIdAction.value = DadosMapa.action 
+                
                 // Envie o formulário
                 $("form").submit()
             })
+            
+            $("#deleteMaps").click(function(e){
+                e.preventDefault();
+ 
+                var deleteMaps = document.getElementsByClassName('deleteMap');
+
+                var itensMarcados = [];
+
+                for (var i = 0; i < deleteMaps.length; i++) {
+                    if (deleteMaps[i].checked) {
+                        itensMarcados.push(deleteMaps[i].value);
+                    }
+                }
+
+                const myModal = new bootstrap.Modal(document.getElementById('modal'));
+                const myModalTitle = new bootstrap.Modal(document.getElementById('modalTitle'));
+
+                myModalTitle._element.innerText = "Deseja eliminar o/os mapa/as?"
+
+                myModal.toggle();
+                myModal.show();  
+
+                $("#confirmBtn").click(function(e) {
+                    e.preventDefault();
+                    
+                    mapsDeleteListField.value = itensMarcados;
+                    mapIdAction.value = "deleteMaps";
+
+                    console.log(mapsDeleteListField.value);
+    
+                    // Envie o formulário
+                    $("form").submit()
+                })
+            })
+
+
+            
         </script>
-        
+
         <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 
         <script>
+            // https://goqr.me/api/ para realizar o qr code da loja 
+
             qrCodeBtn.addEventListener("click", async () => {
                 const qrValue = "{{active_user[3]}}";
                 const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${qrValue}`;
 
                 const response = await fetch(qrCodeUrl);
                 const blob = await response.blob();
-                saveAs(blob, "qrCode.png");
+                saveAs(blob, "StoreQrCode.png");
             });
+
+
 
             
         </script>
 
-    {% endblock scripts %}
 
-    <!-- tentando fazer a datatable com bootstrap -->
+    {% endblock scripts %}

@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, SelectField, IntegerField, FloatField, FileField
+from wtforms import StringField, PasswordField, SubmitField, SelectField, IntegerField, FloatField, FileField, FieldList
 from wtforms.validators import DataRequired, Length, EqualTo, InputRequired, NumberRange
 from flask_wtf.file import FileField, FileAllowed, FileRequired
 
@@ -74,11 +74,16 @@ class NutritionTableForm(FlaskForm):
 class ProductsListForm(FlaskForm):
     productId = IntegerField('productID')
     productIdBtn = SubmitField('productIdBtn')
+    action = StringField('ação')
+    productsToDelet = StringField('productsToDelet')
+
     department = SelectField('Filtrar por Secção', coerce=str)  
 
 class MapListForm(FlaskForm):
     mapId = IntegerField('mapID')
+    action = StringField('ação')
     mapIdBtn = SubmitField('mapIdBtn')
+    mapsToDelet = StringField('mapsToDelet')
     print = SubmitField(label="Imprimir Listagem")
     createMap = SubmitField(label="Criar Mapa")
     deleteMap = SubmitField(label="Eliminar")

@@ -147,7 +147,7 @@
 
                                         <td>
                                             <div class="form-check ms-4">
-                                                <input class="form-check-input" type="checkbox" value="{{product[0].id}}" id="flexCheckDefault">
+                                                <input class="form-check-input deleteProduct" type="checkbox" value="{{product[0].id}}" id="flexCheckDefault">
                                                 <label class="form-check-label" for="flexCheckDefault"></label>
                                             </div>
                                             
@@ -161,13 +161,35 @@
                 <div hidden>
                     {{ listFormFront.productId(id="idProduto") }}
                 </div>
+                <div hidden>
+                    {{ listFormFront.productsToDelet(id="productsDelet") }}
+                </div>
+                <div hidden>
+                    {{ listFormFront.action(id="action") }}
+                </div>
+
+                  <!-- Modal to change map in client side -->
+                  <div class="modal modal fade" id="modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h3 class="modal-title" id="modalTitle"></h3>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-danger" data-bs-dismiss="modal" id="cancelBtn">Cancelar</button>
+                                <button type="submit" class="btn btn-info" data-bs-dismiss="modal" id="confirmBtn">Confirmar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </form>
         </div>
         <div class="row mt-5">
             <div class="col-6"></div>
             <div class="col-2">
                 <form action="" class="text-center">
-                    <button class="btn btn-lg btn-info" type="button" value="" >Imprimir Listagem</button>
+                    <button class="btn btn-lg btn-info" type="button" >Imprimir Listagem</button>
                 </form>
             </div>
             <div class="col-2 text-center">
@@ -177,7 +199,7 @@
             </div>
             <div class="col-2">
                 <form action="">
-                    <button class="btn btn-lg btn-danger" type="submit" value="">Apagar</button>
+                    <button class="btn btn-lg btn-danger" type="submit" id="deleteProducts">Apagar</button>
                 </form>
             </div>
         </div>
@@ -188,8 +210,10 @@
     	var nameElement = document.getElementById("nomeProduto");
     	var selectElement = document.getElementById("productDepartment");
         var idMapaSubmit = document.getElementById("idMapaSubmit")
+        var idAction = document.getElementById('action')
         var filterBtn = document.getElementById("filterBtn")
         var clearFilterBtn = document.getElementById("clearFilterBtn")
+        var productIdField = document.getElementById('idProduto')
 
         var table = $('#tabela').DataTable();
         table.destroy()
@@ -228,13 +252,46 @@
                 id: $(this).attr("id"),
                 action: "Editar"
             }
-
-            productIdField = document.getElementById('idProduto')
+            
             productIdField.value = DadosProduto.id
-
+            idAction.value = DadosMapa.action
+            
             // Envie o formulário
             $("form").submit()
         })
+
+        $("#deleteProducts").click(function(e){
+                e.preventDefault();
+
+                var deleteProducts = document.getElementsByClassName('deleteProduct');
+                var itensMarcados = [];
+
+                
+                for (var i = 0; i < deleteProducts.length; i++) {
+                    if (deleteProducts[i].checked) {
+                        
+                        itensMarcados.push(deleteProducts[i].value);
+                    }
+                }
+
+                const myModal = new bootstrap.Modal(document.getElementById('modal'));
+                const myModalTitle = new bootstrap.Modal(document.getElementById('modalTitle'));
+
+                myModalTitle._element.innerText = "Deseja eliminar o/os produto/os?"
+
+                myModal.toggle();
+                myModal.show();  
+
+                $("#confirmBtn").click(function(e) {
+                    e.preventDefault();
+                    
+                    productsDelet.value = itensMarcados;
+                    idAction.value = "DeleteProducts";
+
+                    // Envie o formulário
+                    $("form").submit()
+                })
+            })
      </script>
     
     {% endblock scripts %}

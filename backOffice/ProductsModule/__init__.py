@@ -37,14 +37,33 @@ def seeProductList():
     
         storeID = active_user.loja_id
         
-        produtos = db.session.query(Produto, Secção).filter(Produto.loja_id == storeID, Produto.secção_id == Secção.id).all()
+        produtos = db.session.query(Produto, Secção).filter(Produto.loja_id == storeID, Produto.secção_id == Secção.id, Produto.eliminado == False).all()
 
         if produtos:
             if request.method == 'POST':
-                idproduto = listForm.productId.data
-                session['produto'] = idproduto
+                acao = listForm.action.data
 
-                return redirect('/EditProduct')
+                if(acao == 'Editar'):
+                    idproduto = listForm.productId.data
+                    session['produto'] = idproduto
+
+                    return redirect('/EditProduct')
+                
+                elif(acao == 'DeleteProducts'):
+                    productsToDelete = listForm.productsToDelet.data.split(",")
+                    print(productsToDelete)
+                    nested_transaction = db.session.begin_nested()
+
+                    for productToDelete in productsToDelete:
+                        print(productToDelete)
+                        product = db.session.query(Produto).filter(Produto.id == productToDelete).first()
+                        product.eliminado = True
+
+                    nested_transaction.commit()
+                    db.session.commit()
+
+                    return redirect('/ProductsList')
+
 
 
     else:

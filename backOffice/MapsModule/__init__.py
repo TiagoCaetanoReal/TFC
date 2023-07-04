@@ -18,14 +18,59 @@ def seeMapList():
 
     
     if(active_user.is_authenticated):
-        maps = db.session.query(Mapa, Funcionario).filter(Mapa.loja_id==active_user.loja_id, Mapa.eliminado == 0).all()
+        maps = db.session.query(Mapa, Funcionario).filter(Mapa.loja_id==active_user.loja_id, Mapa.eliminado == False).all()
 
         if maps:
             if request.method == 'POST':
-                idmap = form.mapId.data
-                session['map'] = idmap
+                acao = form.action.data
 
-                return redirect('/EditMap')
+                if(acao == 'Editar'):
+                    session['map'] = form.mapId.data
+
+                    return redirect('/EditMap')
+                
+                elif(acao == 'ChangeMap'):
+                    map = db.session.query(Mapa).filter(Mapa.loja_id==active_user.loja_id, Mapa.Usando == True).first()
+                    map.Usando = False
+                    db.session.commit()
+                    
+                    map = db.session.query(Mapa).filter(Mapa.id == form.mapId.data).first()
+                    map.Usando = True
+                    db.session.commit()
+                    return redirect('/MapsList')
+                
+                elif(acao == 'deleteMaps'):
+                    mapsToDelete = form.mapsToDelet.data.split(",")
+
+                    nested_transaction = db.session.begin_nested()
+
+                    for mapToDelete in mapsToDelete:
+                        map = db.session.query(Mapa).filter(Mapa.id == mapToDelete).first()
+                        map.eliminado = True
+
+                        exposInMap = db.session.query(Expositor).filter(Expositor.mapa_id == mapToDelete).all()
+
+                        expo_ids = [expo.id for expo in exposInMap]
+
+                        expoContents = db.session.query(ConteudoExpositor).filter(ConteudoExpositor.Expositor_id.in_(expo_ids)).all()
+
+                        tagsInMap = db.session.query(Marcador).filter(Marcador.mapa_id == mapToDelete).all()
+
+                        for expo in exposInMap:
+                            expo.eliminado = True
+
+                        for expoContent in expoContents:
+                            expoContent.eliminado = True
+
+                        for tag in tagsInMap:
+                            tag.eliminado = True
+
+
+                    nested_transaction.commit()
+                    db.session.commit()
+                    return redirect('/MapsList')
+
+
 
         return render_template("ListagemMapas.html", title = "MapList", formFront = form, active_user = employee, mapsList = maps)
     else:

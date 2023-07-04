@@ -388,14 +388,6 @@ discardAlteration.onmousedown = (event) =>{
     ConfirmSaveDeleteBtn.setAttribute('hidden', 'true');
 }
 
-// adicionar isto pra caso não se queira mais alterar possa-se descartar esta alteração
-// // <form action="{{ url_for('MapsModule.seeMapList') }}">
-// <button class="btn btn-lg btn-danger" id="DiscardAlteration">Descartar Alteração</button>
-// </form>
-
-
-
-
 
 
 //https://stackoverflow.com/questions/22785521/how-can-i-drag-a-piece-of-user-generated-text-around-the-html5-canvas
