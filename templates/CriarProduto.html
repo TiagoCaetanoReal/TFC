@@ -380,18 +380,39 @@
                
             </div>
         </div>
-        
-        <div class="row mt-7 pt-7 align-items-end">
+
+
+        <div class="row mt-7 pt-7 mb-2">
             <div class="col-7"></div>
             <div class="col-3">
-                <form action=""class="text-center">
-                    {{productFormFront.createProduct(class="btn btn-lg btn-info", id="createProductBtn")}}
-                </form></div>
+                <button class="btn btn-lg btn-info" data-bs-dismiss="modal" id="SaveBtn">Alterar</button>
+            </div>
             <div class="col-2">
-                <form action="{{ url_for('ProductsModule.seeProductList') }}">
-                    <button class="btn btn-lg btn-danger">Descartar</button>
-                </form></div>
+                <button class="btn btn-lg btn-danger" data-bs-dismiss="modal" id="DeleteBtn">Descartar</button>
+            </div>
         </div>
+
+        <!-- Modal to confirm deletion or saving of map -->
+        <div class="modal modal fade" id="saveDeleteMap" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 class="modal-title" id="saveDeleteMapTitle"></h3>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal" id="CancelSaveDeleteBtn">Cancelar</button>
+                        <form hidden action="">
+                            {{productFormFront.createProduct(class="btn btn-info", id="createProductBtn")}}
+                        </form>
+                        <form hidden action="{{ url_for('ProductsModule.seeProductList') }}" id="discardBtn">
+                            <button class="btn btn-info">Confirmar</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+               
                 
     </form>
            
@@ -478,6 +499,42 @@
                 canvas.height = Math.floor(height);
 
                 context.drawImage(activeImage, 0, 0, Math.floor(width), Math.floor(height));
+            }
+
+
+            // botões para o modal
+            var SaveBtn = document.getElementById('SaveBtn');
+            var DeleteBtn = document.getElementById('DeleteBtn');
+            var saveProductBtn = document.getElementById('createProductBtn');
+
+            SaveBtn.onmousedown = (event) =>{ 
+                const myModal = new bootstrap.Modal(document.getElementById('saveDeleteMap'));
+                const myModalTitle = new bootstrap.Modal(document.getElementById('saveDeleteMapTitle'));
+
+                myModalTitle._element.innerText = "Deseja guardar alteração do produto?"
+
+                myModal.toggle();
+                myModal.show();
+
+                const discardBtn = document.getElementById('discardBtn');
+                discardBtn.setAttribute('hidden', 'true');
+
+                saveProductBtn.removeAttribute('hidden');
+            }
+
+            DeleteBtn.onmousedown = (event) =>{
+                const myModal = new bootstrap.Modal(document.getElementById('saveDeleteMap'));
+                const myModalTitle = new bootstrap.Modal(document.getElementById('saveDeleteMapTitle'));
+
+                myModalTitle._element.innerText = "Deseja descartar a alteração do produto?"
+
+                myModal.toggle();
+                myModal.show();
+
+                const discardBtn = document.getElementById('discardBtn');
+                discardBtn.removeAttribute('hidden');
+ 
+                saveProductBtn.setAttribute('hidden', 'true');
             }
 
         </script>

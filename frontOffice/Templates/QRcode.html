@@ -36,26 +36,16 @@
         
         
         Html5Qrcode.getCameras().then(devices => {
-            /**
-             * devices would be an array of objects of type:
-             * { id: "id", label: "label" }
-             */
             if (devices && devices.length) {
                 var cameraId = devices[0].id;
-                // .. use this to start scanning.
             }
-        }).catch(err => {
-            // handle err
         });
 
         const html5QrCode = new Html5Qrcode("reader");
         console.log(html5QrCode)
-
     
         const config = { fps: 10, qrbox: { width: 250, height: 250 } };
         
-
-
         if(!touchDevice){
             //colocar icon invisivel
             console.log(html5QrCode)
@@ -66,10 +56,8 @@
             
             // Select front camera or fail with `OverconstrainedError`.
             html5QrCode.start({ facingMode: { exact: "user"} }, config, success,error);
-           
-            
-
         }
+        
         else{
             console.log("hi")
             console.log(html5QrCode.getState())
@@ -109,22 +97,17 @@
             document.getElementById("readerContainer").style.opacity = "0";
 
             document.getElementById('result').innerHTML = `
-            <h2 class="text-light">Loja Encontrada!</h2>
-            <button class="btn btn-secondary mt-5" type="submit" onclick="clicarBotao()">Ver Mapa</button>
-        
+                <h2 class="text-light">Loja Encontrada!</h2>
+                <button class="btn btn-secondary mt-5" type="submit" onclick="clicarBotao()">Ver Mapa</button>
             `;
 
             document.getElementById('buttons').style.opacity = "0";
             html5QrCode.stop()
 
-            document.getElementById('reader').remove();
-            // Removes reader element from DOM since no longer needed
-    
+            document.getElementById('reader').remove();  
         }
 
         function error(err) {
-            // console.error(err);
-            
             document.getElementById('scanIcon').style.display = "none";
             document.getElementById('result').innerHTML = `<h2 class="text-light">Loja Não Encontrada!</h2>`;
         }
@@ -133,8 +116,6 @@
             console.log("Hi");
             console.log(page);
             window.location.href = page;
-        }   
-
-
+        }    
     </script>
 </html>

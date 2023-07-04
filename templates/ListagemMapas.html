@@ -153,9 +153,11 @@
         <div class="row mt-5">
             <div class="col-6"></div>
             <div class="col-2">
-                <form action="" class="text-center">
-                    <button class="btn btn-lg btn-info" type="submit" value="Log Out">Imprimir Listagem</button>
-                </form>
+                <div action="" class="text-center">
+                    <button class="btn btn-lg btn-info" src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={{active_user[3]}};format=png"  id="qrCodeBtn">
+                        Criar QrCode
+                    </button>
+                </div>
             </div>
             <div class="col-2 text-center">
                 <a href="{{url_for('MapsModule.CreateStoreMap')}}">
@@ -207,6 +209,22 @@
                 $("form").submit()
             })
         </script>
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+
+        <script>
+            qrCodeBtn.addEventListener("click", async () => {
+                const qrValue = "{{active_user[3]}}";
+                const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${qrValue}`;
+
+                const response = await fetch(qrCodeUrl);
+                const blob = await response.blob();
+                saveAs(blob, "qrCode.png");
+            });
+
+            
+        </script>
+
     {% endblock scripts %}
 
     <!-- tentando fazer a datatable com bootstrap -->

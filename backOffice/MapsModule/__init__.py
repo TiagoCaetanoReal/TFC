@@ -14,11 +14,11 @@ def seeMapList():
     active_user = current_user
 
     departemant = db.session.query(Secção).filter(Secção.id==active_user.secção_id).first()
-    employee = [active_user.nome,active_user.cargo,departemant.nome]
+    employee = [active_user.nome,active_user.cargo,departemant.nome, active_user.loja_id]
 
     
     if(active_user.is_authenticated):
-        maps = db.session.query(Mapa, Funcionario).filter(Mapa.loja_id==active_user.loja_id, Mapa.funcionario_id ==Funcionario.id).all()
+        maps = db.session.query(Mapa, Funcionario).filter(Mapa.loja_id==active_user.loja_id, Mapa.eliminado == 0).all()
 
         if maps:
             if request.method == 'POST':
@@ -85,12 +85,10 @@ def CreateStoreMap():
             db.session.commit()
 
             # ir buscar o ultimo mapa a ser criado nesta loja por este funcionario, para utilizar nos commits
-            lastMapa = db.session.query(Mapa).filter(Mapa.funcionario_id==active_user.id, Mapa.loja_id == active_user.loja_id).order_by(Mapa.id.desc()).first()
+            lastMapa = db.session.query(Mapa).filter(Mapa.funcionario_id==active_user.id, Mapa.loja_id == active_user.loja_id, Mapa.eliminado == 0).order_by(Mapa.id.desc()).first()
             
             if(numLabels != 0):
                 for element in mapa[1+numExpos:]:
-                    print(element)
-                    lastMapa = db.session.query(Mapa).filter(Mapa.funcionario_id==active_user.id, Mapa.loja_id == active_user.loja_id).order_by(Mapa.id.desc()).first()
                     new_marker = Marcador(mapa_id = lastMapa.id, angulo = element['angle'], coordenadaX = element['posX'], coordenadaY = element['posY'], 
                                          comprimento = element['width'], altura = element['height'], texto = element['value'])
                     db.session.add(new_marker)
@@ -104,7 +102,7 @@ def CreateStoreMap():
                     db.session.commit()
 
                     # ir buscar o ultimo expo a ser criado neste mapa para utilizar na tabela do ConteudoExpositor
-                    lastExpo = db.session.query(Expositor).filter(Expositor.secção_id == element['storeSection'], Expositor.mapa_id == lastMapa.id).order_by(Expositor.id.desc()).first()
+                    lastExpo = db.session.query(Expositor).filter(Expositor.secção_id == element['storeSection'], Expositor.mapa_id == lastMapa.id, Expositor.eliminado == 0).order_by(Expositor.id.desc()).first()
             
                     if(element['products'] != ''):
                         listConteudoExpositor  = ['produto1_id', 'produto2_id', 'produto3_id','produto4_id','produto5_id', 'produto6_id']
@@ -197,7 +195,7 @@ def AlterStoreMap():
             # apartir das tag na db ver quais foram alteradas/removidas e adicionadas
             if(numLabels != 0):
                 listLabelsTag = ['coordenadaX','coordenadaY','comprimento','altura','angulo','texto']
-                tags = db.session.query(Marcador).filter(Marcador.mapa_id == idmap).all()
+                tags = db.session.query(Marcador).filter(Marcador.mapa_id == idmap, Marcador.eliminado == 0).all()
                     
                 # Obtenha os IDs dos marcadores existentes
                 ids_tags = [tag.id for tag in tags]
@@ -211,7 +209,7 @@ def AlterStoreMap():
                     if element['id'] in ids_tags:
                         editedTag.append(element['id'])
 
-                        modifiedTag = db.session.query(Marcador).filter(Marcador.id == element['id']).first()
+                        modifiedTag = db.session.query(Marcador).filter(Marcador.id == element['id'], Marcador.eliminado == 0).first()
                         
                         for index, field in enumerate(element):
                             if index  > 0:
@@ -251,7 +249,7 @@ def AlterStoreMap():
 
                 if ids_tags:
                     for tag in ids_tags:
-                        deletedTag = db.session.query(Marcador).filter(Marcador.id == tag).first()
+                        deletedTag = db.session.query(Marcador).filter(Marcador.id == tag, Marcador.eliminado == 0).first()
                         deletedTag.eliminado = True
                     db.session.commit()
                 ####################################################
@@ -263,7 +261,7 @@ def AlterStoreMap():
 
                 for element in mapa[1+numExpos:]:
                     
-                    lastMapa = db.session.query(Mapa).filter(Mapa.funcionario_id==active_user.id, Mapa.loja_id == active_user.loja_id).order_by(Mapa.id.desc()).first()
+                    lastMapa = db.session.query(Mapa).filter(Mapa.funcionario_id==active_user.id, Mapa.loja_id == active_user.loja_id, Mapa.eliminado == 0).order_by(Mapa.id.desc()).first()
                     new_marker = Marcador(mapa_id = idmap, angulo = element['angle'], coordenadaX = element['posX'], coordenadaY = element['posY'], 
                                          comprimento = element['width'], altura = element['height'], texto = element['value'])
                     
@@ -274,7 +272,7 @@ def AlterStoreMap():
                 listLabelsExpositor  = ['coordenadaX', 'coordenadaY', 'comprimento', 'altura','capacidade', 'divisorias',  'secção_id']
                 listConteudoExpositor  = ['produto1_id', 'produto2_id', 'produto3_id','produto4_id','produto5_id', 'produto6_id']
 
-                expos = db.session.query(Expositor).filter(Expositor.mapa_id == idmap).all()
+                expos = db.session.query(Expositor).filter(Expositor.mapa_id == idmap, Expositor.eliminado == 0).all()
                 ids_expos = [expo.id for expo in expos]
 
                 editedExpos = []
@@ -287,7 +285,7 @@ def AlterStoreMap():
                     if element['id'] in ids_expos:
                         editedExpos.append(element['id'])
 
-                        modifiedExpo = db.session.query(Expositor).filter(Expositor.id == element['id']).first()
+                        modifiedExpo = db.session.query(Expositor).filter(Expositor.id == element['id'], Expositor.eliminado == 0).first()
                         
                         for index, field in enumerate(element):
 
@@ -299,7 +297,7 @@ def AlterStoreMap():
                                 
                             elif index == 5:
                                 
-                                modifiedExpoContent = db.session.query(ConteudoExpositor).filter(ConteudoExpositor.Expositor_id == element['id']).first()
+                                modifiedExpoContent = db.session.query(ConteudoExpositor).filter(ConteudoExpositor.Expositor_id == element['id'], ConteudoExpositor.eliminado == 0).first()
 
                                 for index, product in enumerate(element[field]):
                                     valorProduct = listConteudoExpositor[index]
@@ -336,7 +334,7 @@ def AlterStoreMap():
                                 db.session.add(new_expo)
                                 db.session.commit()
 
-                            lastExpo = db.session.query(Expositor).filter(Expositor.secção_id == element['storeSection'], Expositor.mapa_id == lastMapa.id).order_by(Expositor.id.desc()).first()
+                            lastExpo = db.session.query(Expositor).filter(Expositor.secção_id == element['storeSection'], Expositor.mapa_id == lastMapa.id, Expositor.eliminado == 0).order_by(Expositor.id.desc()).first()
                             newExpoIds.append(lastExpo.id)
                             
                             if(element['products'] != ''):    
@@ -360,10 +358,10 @@ def AlterStoreMap():
 
                 if ids_expos:
                     for id in ids_expos:
-                        deletedExpo= db.session.query(Expositor).filter(Expositor.id == id).first()
+                        deletedExpo= db.session.query(Expositor).filter(Expositor.id == id, Expositor.eliminado == 0).first()
                         deletedExpo.eliminado = True
                         
-                        deletedContent = db.session.query(ConteudoExpositor).filter(ConteudoExpositor.Expositor_id == id).first()
+                        deletedContent = db.session.query(ConteudoExpositor).filter(ConteudoExpositor.Expositor_id == id, ConteudoExpositor.eliminado == 0).first()
                         deletedContent.eliminado = True
                     db.session.commit()
             ####################################################
