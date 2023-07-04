@@ -76,19 +76,6 @@ def seeMapList():
     else:
         return redirect('/login')
 
-@MapsModule.route("/FilteredList", methods=['GET', 'POST'])
-def FilteredList():
-    value = request.form.get('value')
-
-    # Processar os dados correspondentes com base no valor recebido
-
-    # Exemplo: retornar uma lista de dados
-    data = [
-        ['Nome 1', 'Descrição 1'],
-        ['Nome 2', 'Descrição 2']
-    ]
-
-    return jsonify(data)
 
 @MapsModule.route("/MakeMap", methods=['GET', 'POST'])
 def CreateStoreMap():

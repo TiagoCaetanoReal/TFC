@@ -27,7 +27,7 @@ def doLogin():
                 if(user.password == form.password_funcionario.data):
                     login_user(user)
                     print(current_user.id)
-                    return redirect('/ProductsList')
+                    return redirect('/MapsList')
                 else:
                     l = list(form.password_funcionario.errors)
                     l.append("Incorrect Password")
