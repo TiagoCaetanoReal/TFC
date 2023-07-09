@@ -1,0 +1,130 @@
+{% extends 'indexClient.html'%}
+
+{% block styles %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.4/html5-qrcode.min.js" integrity="sha512-k/KAe4Yff9EUdYI5/IAHlwUswqeipP+Cp5qnrsUjTPCgl51La2/JhyyjNciztD7mWNKLSXci48m7cctATKfLlQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+   
+    <link rel="stylesheet" href="{{url_for('static', filename='css/comum.css')}}"> 
+    <link rel="stylesheet" href="{{url_for('static', filename='css/qrcode.css')}}"> 
+{% endblock styles %}
+
+{% block header %}
+    <img src="{{url_for('static', filename='logo.png')}}" class="img-fluid">
+{% endblock header %}
+
+{% block formulary %}
+    <div id="readerContainer" class="container border border-2 border-primary rounded-2 col-11 col-md-9 col-lg-8 col-xl-6 mt-5">
+        <div id="scanIcon" class="text-center p-5 top-50" >
+            <img src="{{url_for('static', filename='scanningQrCode.png')}}" width="100" style="border-radius: 20%;" >
+        </div>
+        <div id="reader"></div>
+    </div>
+        
+    <div class="row" id="buttons" hidden>
+        <div class="col-1"></div>
+        <button class="btn btn-secondary my-2 col-4" type="submit" onclick="chooseCamera('user')">Camara Frontal</button>
+        <div class="col-2"></div>
+        <button class="btn btn-secondary my-2 col-4" type="submit" onclick="chooseCamera('environment')">Camara Traseira</button>
+        <div class="col-1"></div>
+    </div>
+
+    <form hidden class=" w-100 col-6" method="POST" action="" novalidate id="formulario">
+        {{formFront.hidden_tag()}} 
+        <div id="result"></div> 
+
+        <div hidden>
+            {{ formFront.storeID(id="storeID") }}
+        </div>
+    </form>
+
+    <div id="textContainer" class="container col-11 col-md-9 col-lg-8 col-xl-6 p-3">
+        <h2 class="text-center text-light pt-5">Leia o codigo da loja com a sua camara para aceder ao mapa</h2>
+    </div>
+{% endblock formulary %}
+
+{% block scripts %}
+    <script>
+        var page = '';
+        var touchDevice = ('ontouchstart' in document.documentElement);
+
+        var isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+        // ...
+
+        
+    
+        var goToMapBtn = document.getElementById('goToMap');
+        var storeID = document.getElementById('storeID');
+        var scanResult = document.getElementById('result');
+        var scanIcon = document.getElementById('scanIcon');
+        var divButtons = document.getElementById('buttons');
+        
+        Html5Qrcode.getCameras().then(devices => {
+            if (devices && devices.length) {
+                var cameraId = devices[0].id;
+            }
+        });
+
+        const html5QrCode = new Html5Qrcode("reader");
+        const config = { fps: 10, qrbox: { width: 250, height: 250 } };
+        
+        if(!touchDevice){
+            // If you want to prefer front camera
+            html5QrCode.start({ facingMode: "user" }, config, success,error);
+
+            // Select front camera or fail with `OverconstrainedError`.
+            html5QrCode.start({ facingMode: { exact: "user"} }, config, success,error);
+        }
+        
+        else{
+            divButtons.removeAttribute('hidden');
+        }
+       
+        function chooseCamera(direction){
+            //colocar icon invisivel
+            scanIcon.style.display = "none";
+
+            // If you want to prefer front camera
+            console.log(direction)
+            html5QrCode.start({ facingMode: direction }, config, success, error);
+            
+            // Select front camera or fail with `OverconstrainedError`.
+            html5QrCode.start({ facingMode: { exact: direction} }, config, success, error);
+            
+        }
+
+        
+        function success(result) {
+            value = result;
+            storeID.value = value;
+            
+            scanIcon.style.display = "none";
+            document.getElementById("textContainer").style.opacity = "0";
+            document.getElementById("readerContainer").style.opacity = "0";
+
+            document.getElementById("formulario").removeAttribute('hidden');
+
+
+            document.getElementById('result').innerHTML = `
+                <h2 class="text-light">Loja Encontrada!</h2>
+                {{formFront.goToMap(class="btn btn-primary", id="goToMap")}}
+            `;
+
+            document.getElementById('buttons').style.opacity = "0";
+            html5QrCode.stop()
+
+            document.getElementById('reader').remove();
+
+        }
+
+        function error(err, result) {
+            console.log(err)
+            console.log(result)
+            scanIcon.style.display = "none";
+            scanResult.innerHTML = `<h2 class="text-light">Loja Não Encontrada!</h2>`;
+        }
+        
+    </script>
+{% endblock scripts %}
+
+
+<!-- organizer este html melhor -->

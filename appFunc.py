@@ -1,14 +1,15 @@
 from flask import Flask
-from models import db, Funcionario
+from models import db, bcrypt, Funcionario
 from flask_login import LoginManager
 from flask_babel import Babel
 
-from backOffice.AutenticationModule import AutenticationModule
+from backOffice.AutenticationModule import AutenticationFuncModule
 from backOffice.MapsModule import MapsModule
 from backOffice.ProductsModule import ProductsModule
 from backOffice.AnalisysModule import AnalisysModule
 from backOffice.ApprovalsModule import ApprovalsModule
 
+# trocar os nomes dos modulos nas rotas
 
 
 def create_app(config_filename):
@@ -16,6 +17,7 @@ def create_app(config_filename):
 	app.config.from_object(config_filename)
 	
 	db.init_app(app)
+	bcrypt.init_app(app)
 
 	with app.app_context():
 		db.create_all()
@@ -28,7 +30,7 @@ def create_app(config_filename):
 	def load_user(user_id):
 		return Funcionario.query.get(int(user_id))
 
-	app.register_blueprint(AutenticationModule)
+	app.register_blueprint(AutenticationFuncModule)
 	app.register_blueprint(MapsModule)
 	app.register_blueprint(ProductsModule)
 	app.register_blueprint(ApprovalsModule)
@@ -39,5 +41,5 @@ def create_app(config_filename):
 	return app
 
 if __name__ == "__main__":
-	app = create_app("config.DevelopmentConfig")
+	app = create_app("configFunc.DevelopmentConfig")
 	app.run(debug=True)

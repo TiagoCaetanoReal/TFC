@@ -254,44 +254,44 @@
             }
             
             productIdField.value = DadosProduto.id
-            idAction.value = DadosMapa.action
+            idAction.value = DadosProduto.action
             
             // Envie o formulário
             $("form").submit()
         })
 
         $("#deleteProducts").click(function(e){
-                e.preventDefault();
+            e.preventDefault();
 
-                var deleteProducts = document.getElementsByClassName('deleteProduct');
-                var itensMarcados = [];
+            var deleteProducts = document.getElementsByClassName('deleteProduct');
+            var itensMarcados = [];
 
-                
-                for (var i = 0; i < deleteProducts.length; i++) {
-                    if (deleteProducts[i].checked) {
-                        
-                        itensMarcados.push(deleteProducts[i].value);
-                    }
-                }
-
-                const myModal = new bootstrap.Modal(document.getElementById('modal'));
-                const myModalTitle = new bootstrap.Modal(document.getElementById('modalTitle'));
-
-                myModalTitle._element.innerText = "Deseja eliminar o/os produto/os?"
-
-                myModal.toggle();
-                myModal.show();  
-
-                $("#confirmBtn").click(function(e) {
-                    e.preventDefault();
+            
+            for (var i = 0; i < deleteProducts.length; i++) {
+                if (deleteProducts[i].checked) {
                     
-                    productsDelet.value = itensMarcados;
-                    idAction.value = "DeleteProducts";
+                    itensMarcados.push(deleteProducts[i].value);
+                }
+            }
 
-                    // Envie o formulário
-                    $("form").submit()
-                })
+            const myModal = new bootstrap.Modal(document.getElementById('modal'));
+            const myModalTitle = new bootstrap.Modal(document.getElementById('modalTitle'));
+
+            myModalTitle._element.innerText = "Deseja eliminar o/os produto/os?"
+
+            myModal.toggle();
+            myModal.show();  
+
+            $("#confirmBtn").click(function(e) {
+                e.preventDefault();
+                
+                productsDelet.value = itensMarcados;
+                idAction.value = "DeleteProducts";
+
+                // Envie o formulário
+                $("form").submit()
             })
+        })
      </script>
     
     {% endblock scripts %}

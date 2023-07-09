@@ -38,20 +38,27 @@
 <body>
     <nav class="navbar navbar-expand bg-primary navbar-bg ">
         <div class="navbar-collapse collapse ">
+		   <a class="nav-link d-none d-sm-inline-block " href="#">
+				<img
+					src="../static/logo.png"
+					alt=""
+					class="border border-2"
+					width="90px"
+					height="60px"
+				/>
+			</a>
+
             {% block pageTitle %}
             {% endblock pageTitle %}
-
-            <ul class="navbar-nav navbar-align">
-                <a class="nav-link d-none d-sm-inline-block " href="#">
-                    <img
-                        src="../static/logo.png"
-                        alt=""
-                        class="border border-2"
-                        width="60px"
-                        height="60px"
-                    />
-                </a>
+			
                 
+            <ul class="navbar-nav navbar-align">
+				<div class="text-center">
+                    <form action="{{ url_for('AutenticationFuncModule.logOut') }}">
+                        <button class="btn btn-lg btn-outline-light" type="submit" value="Log Out">Log Out</button>
+                    </form>
+                </div>
+             
             </ul>
         </div>
     </nav>
@@ -61,15 +68,17 @@
 			<div class="sidebar-content js-simplebar bg-secondary">
                 <ul class="sidebar-nav">
                     <div class="row">
-                        <div class="col-3">
+                        <a class="col-3" href="{{ url_for('AutenticationFuncModule.doAlteration') }}">
                             <img
+								
                                 src="../static/avatars/avatar-2.jpg"
                                 alt=""
                                 class="border border-2 rounded-circle mt-4 mx-1"
                                 width="60px"
                                 height="60px"
+								
                             />
-                        </div>
+						</a>
                         <div class="col-9">
                             {% block profile %}
 							{% endblock profile %}
@@ -81,12 +90,6 @@
                     {% block navOptions %}
                     {% endblock navOptions %}
                 </ul>
-                
-				<div class="mb-4 mt-0 text-center">
-                    <form action="{{ url_for('AutenticationModule.logOut') }}">
-                        <button class="btn btn-lg btn-outline-light" type="submit" value="Log Out">Log Out</button>
-                    </form>
-                </div>
 			</div>
 
             

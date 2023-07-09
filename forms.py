@@ -3,15 +3,14 @@ from wtforms import StringField, PasswordField, SubmitField, SelectField, Intege
 from wtforms.validators import DataRequired, Length, EqualTo, InputRequired, NumberRange
 from flask_wtf.file import FileField, FileAllowed, FileRequired
 
-
 class FuncionarioLoginForm(FlaskForm):
-    username_funcionario = StringField(label="Nome Usuário", validators=[InputRequired(), Length(min=5, max=40)])
+    username_funcionario = StringField(label="Nome Utilizador", validators=[InputRequired(), Length(min=5, max=40)])
     password_funcionario = PasswordField(label="Password", validators=[InputRequired(), Length(min=5, max=40)])
     login = SubmitField(label="Login")
 
     
 class FuncionarioRegisterForm(FlaskForm):
-    username_funcionario = StringField(label="Nome Usuário", validators=[InputRequired(), Length(min=5, max=40)])
+    username_funcionario = StringField(label="Nome Utilizador", validators=[InputRequired(), Length(min=5, max=40)])
     password_funcionario = PasswordField(label="Password", validators=[InputRequired(), Length(min=5, max=40)])
     confirm_password = PasswordField(label="Confirmar Password", validators=[InputRequired(), EqualTo("password_funcionario")])
     store = SelectField('Loja', coerce=str, validators=[InputRequired()])
@@ -20,11 +19,13 @@ class FuncionarioRegisterForm(FlaskForm):
 
     
 class FuncionarioEditForm(FlaskForm):
-    password_funcionario = PasswordField(label="Password", validators=[InputRequired(), Length(min=5, max=40)])
-    confirm_password = PasswordField(label="Confirmar Password", validators=[InputRequired(), EqualTo("password_funcionario")])
+    oldPassword_funcionario = PasswordField(label="Password Antiga")
+    password_funcionario = PasswordField(label="Password Nova")
+    confirm_password = PasswordField(label="Confirmar Password", validators=[ EqualTo("password_funcionario")])
     store = SelectField('Loja', coerce=str, validators=[InputRequired()])
     department = SelectField('Secção', coerce=str, validators=[InputRequired()])
-    Alter = SubmitField(label="Alterar")
+    alter = SubmitField(label="Alterar")
+    discard = SubmitField(label="Descartar")
 
 
 class CreateProductForm(FlaskForm):
@@ -100,3 +101,36 @@ class EditMapForm(FlaskForm):
     products = SelectField('Produtos', coerce=str)  
     map = StringField()  
     editMap = SubmitField(label="Alterar Mapa")
+
+
+class ClienteLoginForm(FlaskForm):
+    username_cliente = StringField(label="Nome Utilizador", validators=[InputRequired(), Length(min=5, max=40)])
+    password_cliente = PasswordField(label="Password", validators=[InputRequired()])
+    login = SubmitField(label="Login")
+
+
+class ClienteRegisterForm(FlaskForm):
+    username_cliente = StringField(label="Nome Utilizador", validators=[InputRequired(), Length(min=5, max=40)])
+    password_cliente = PasswordField(label="Password", validators=[InputRequired()])
+    confirm_password = PasswordField(label="Confirmar Password", validators=[InputRequired(), EqualTo("password_cliente")])
+    register = SubmitField(label="Registar")
+
+
+class ClienteEditForm(FlaskForm):
+    username_cliente = StringField(label="Nome Utilizador", validators=[InputRequired(), Length(min=5, max=40)])
+    password_cliente = PasswordField(label="Password", validators=[InputRequired()])
+    confirm_password = PasswordField(label="Confirmar Password", validators=[InputRequired(), EqualTo("password_cliente")])
+    edit = SubmitField(label="Confirmar Alterações")
+    goBack = SubmitField(label="goBack")
+
+class ClienteScanStore(FlaskForm):
+    storeID =  IntegerField('storeID')
+    goToMap = SubmitField(label="Ver Mapa")
+
+class ClienteStoreMap(FlaskForm):
+    expoID =  IntegerField('expoID')
+    goToExpo = SubmitField(label="Ver Expositor")
+
+class ClienteExpoDetails(FlaskForm):
+    productID =  IntegerField('productID')
+    seeDetails = SubmitField(label="Ver detalhes")

@@ -182,7 +182,7 @@
             <div class="col-6"></div>
             <div class="col-2">
                 <div action="" class="text-center">
-                    <button class="btn btn-lg btn-info" src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={{active_user[3]}};format=png"  id="qrCodeBtn">
+                    <button class="btn btn-lg btn-info" src="https://quickchart.io/qr?text={{active_user[3]}}"  id="qrCodeBtn">
                         Criar QrCode
                     </button>
                 </div>
@@ -326,7 +326,9 @@
 
             qrCodeBtn.addEventListener("click", async () => {
                 const qrValue = "{{active_user[3]}}";
-                const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${qrValue}`;
+               
+                
+                const qrCodeUrl = `https://quickchart.io/qr?text=${qrValue}`;
 
                 const response = await fetch(qrCodeUrl);
                 const blob = await response.blob();

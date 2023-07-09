@@ -1,4 +1,4 @@
-{% extends 'indexAute.html'%}
+{% extends 'indexAuteFunc.html'%}
 {% block formulary %}
     {{formFront.hidden_tag()}} 
     <div class="text-center pt-4">
@@ -54,7 +54,7 @@
                 {% else %}
                 {% endif %}
             </div>
-            <a href="{{url_for('AutenticationModule.doRegister')}}">
+            <a href="{{url_for('AutenticationFuncModule.doRegister')}}">
                 <h6><dt>Criar Conta</dt></h6>
             </a>
         </fieldset>

@@ -42,7 +42,7 @@ export class Quadro{
     }
     
     addTextBlock(text){
-        this.context.font = "20px arial";
+        this.context.font = "25px arial";
         text.set_height(30);
         text.set_width(this.context.measureText(text.text).width);
         this.texts.push(text);
@@ -115,6 +115,7 @@ export class Quadro{
             const rect = this.canvas.getBoundingClientRect();
             const scaleX = this.canvas.width / rect.width;
             const scaleY = this.canvas.height / rect.height;
+
             return {
                 x: (event.clientX - rect.left) * scaleX,
                 y: (event.clientY - rect.top) * scaleY
@@ -221,7 +222,6 @@ export class Quadro{
                     index++;  
                 }
 
-                this.recolor();
                 this.draw_shapes();
 
               
@@ -245,25 +245,6 @@ export class Quadro{
             }   
         }
         return false;
-    }
-
- 
-    recolor(){
-       
-        for( let shape of this.shapes){
-            if(shape.storeSectionColor === "" && shape.id !== this.current_shape_index){
-                shape.color = 'grey';
-                shape.changeAlpha(1);
-            }
-            else if(shape.id === this.current_shape_index){
-                shape.changeAlpha(0.5);
-            }
-            else if (shape.storeSectionColor !== "" && shape.id !== this.current_shape_index){
-                shape.color = shape.storeSectionColor;
-                shape.changeAlpha(1);
-            }
-                
-        }
     }
 }
 

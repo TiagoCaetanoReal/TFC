@@ -9,8 +9,8 @@ import { Quadro } from './quadro.js';
 
 
 // modal das instruções esta desativado \|/
-// var myModal = new bootstrap.Modal(document.getElementById('instructionsModal'), {})
-// myModal.toggle()
+var myModal = new bootstrap.Modal(document.getElementById('instructionsModal'), {})
+myModal.toggle()
 
 let canvas = new Quadro(document.getElementById("canvas"), document.getElementById("canvas").getContext("2d"));
 canvas.detectAction();
@@ -32,18 +32,10 @@ fetch('/fetchMap')
         array.shift();
 
         array.forEach(element => {
-            if(index < numExpos){
-                console.log(element);
-                // if(element.storeSection === ''){
-                //     canvas.addExpositores(new Expositor(element.id, element.posX , element.posY , element.width, element.height, element.color.toString()));
-                //     console.log(canvas.getShapes());
-                // }
-                // else{
-                    canvas.addExpositores(new Expositor(element.id, element.posX, element.posY,  element.width, element.height, element.color.toString(), 
-                        element.products, element.capacity, element.divisions, element.storeSection, element.storeSectionColor.toString())); 
-                        
-                    console.log(canvas.getShapes());
-                // }
+            if(index < numExpos){  
+                canvas.addExpositores(new Expositor(element.id, element.posX, element.posY,  element.width, element.height, element.color.toString(), 
+                    element.products, element.capacity, element.divisions, element.storeSection, element.storeSectionColor.toString())); 
+                
             }
         else{
                 canvas.addTextBlock(new TextBlock(element.id, element.posX, element.posY, element.value, element.angle));
@@ -52,9 +44,6 @@ fetch('/fetchMap')
         });
 
     })
-
-console.log(array);
-
 
 // Adiciona o listener de resize à janela do navegador
 // window.addEventListener("resize", canvas.resizeCanvas, false);

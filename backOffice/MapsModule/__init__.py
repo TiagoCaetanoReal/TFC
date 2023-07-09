@@ -18,7 +18,7 @@ def seeMapList():
 
     
     if(active_user.is_authenticated):
-        maps = db.session.query(Mapa, Funcionario).filter(Mapa.loja_id==active_user.loja_id, Mapa.eliminado == False).all()
+        maps = db.session.query(Mapa, Funcionario).filter(Mapa.loja_id==active_user.loja_id, Mapa.eliminado == False, Mapa.funcionario_id == Funcionario.id).all()
 
         if maps:
             if request.method == 'POST':
@@ -398,13 +398,7 @@ def AlterStoreMap():
                     db.session.commit()
             ####################################################
 
-            
-            # tentar otimizar isto
-
             return redirect('/MapsList')
-
-
-
 
     else:
         return redirect('/login')

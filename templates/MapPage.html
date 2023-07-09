@@ -1,0 +1,121 @@
+{% extends 'indexClient.html'%}
+
+{% block styles %}
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+{% endblock styles %}
+
+{% block header %}
+    <div class="container gx-0 mt-4 bg-light rounded-2 col-10 col-sm-8 col-md-6 col-lg-5 col-xl-4">
+        <div class="input-group input-group-lg">
+            <input type="text" class="form-control col-9" placeholder="Inserir Produto" aria-label="Produto" aria-describedby="button-addon2">
+            
+            <button class="btn btn-outline-secondary bg-light col-2" type="button" id="but">
+                <i class="fa fa-search text-secondary"></i>
+            </button>
+        </div>    
+    </div>
+{% endblock header %}
+
+{% block formulary %}
+    <div class="container overflow-auto mt-4 col-11 border border-1 rounded-2 h-75 bg-light">
+        <canvas id="canvas" ></canvas>
+    </div>
+
+    <form hidden action="/Store" method="POST">
+        <div>
+            {{formFront.expoID(id="expoID")}}
+        </div>
+        <div>
+            {{formFront.goToExpo(id="goToExpo")}}
+        </div>
+    </form>
+
+    <div class="container mt-3 col-10 col-sm-8 col-md-6 col-lg-5 col-xl-4">
+        <div class="row">
+            <div class="col-3"></div>
+            <div class="col-3 text-center">
+                <button class="btn btn-purple rounded rounded-circle rounded-5 border border-5 border-purple " id="menu-btn">
+                    <i class="fa fa-user my-2 mx-1" aria-hidden="true"></i>
+                </button>
+                <h6 class="text-white ">Perfil</h6>
+            </div>
+            <div class="col-3">
+                <button class="btn btn-purple rounded rounded-circle rounded-5 border border-5 border-purple" id="menu-btn">
+                    <i class="fa fa-list my-2 mx-1" aria-hidden="true"></i>
+                    <i class="fa fa-heart  my-3 position-absolute" aria-hidden="true" style="margin-left: -10px;"></i>
+                </button>
+                <h6 class="text-white ">Favoritos</h6>
+                
+                
+            </div>
+            <div class="col-3"></div>
+        </div>
+    </div>
+{% endblock formulary %}
+
+
+{% block scripts %}
+<script type="module">
+    import { Expositor } from '../static/js/expositor.js';
+    import { TextBlock } from '../static/js/textblock.js';
+    import { Quadro } from '../static/js/verQuadro.js';
+
+    
+    var expoID = document.getElementById("expoID") 
+    var goToExpo = document.getElementById("goToExpo")
+    
+    let canvas
+
+    var id = null;
+
+    
+    fetch('/fetchMap')
+        .then(response => response.json())
+        .then(data => {
+
+            console.log(data);
+            var array = data;
+
+            var canvasLimits = {}
+            canvasLimits = {x:array[0].width, y:array[0].height}
+            const numExpos = array[0].numExpos;
+
+            let index = 0
+           
+            canvas = new Quadro(document.getElementById("canvas"), document.getElementById("canvas").getContext("2d"), canvasLimits);
+
+            array.shift();
+
+            array.forEach(element => {
+                if(index < numExpos){  
+                    canvas.addExpositores(new Expositor(element.id, element.posX, element.posY,  element.width, element.height, element.color.toString(), 
+                        element.products, element.capacity, element.divisions, element.storeSection, element.storeSectionColor.toString())); 
+                    
+                }
+            else{
+                    canvas.addTextBlock(new TextBlock(element.id, element.posX, element.posY, element.value, element.angle));
+            }
+            index++;
+            });
+
+            
+            onmousedown = (event) =>{
+                id = meuMetodo(id).then((expositorId) => {
+                    console.log(expositorId)
+                    var arrayExpos = array.slice(0, numExpos);
+                    var result = arrayExpos.find(item => item.id === expositorId);
+
+                    expoID.value = expositorId 
+                    goToExpo.click()
+
+                });
+            }
+            
+            async function meuMetodo() {
+                id = await canvas.detectAction();
+                return id;
+            }
+        })
+
+</script>
+{% endblock scripts %}

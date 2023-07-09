@@ -1,0 +1,111 @@
+{% extends 'indexClient.html'%}
+
+{% block header %}
+    <img src="../static/logo.png" class="img-fluid">
+{% endblock header %}
+
+{% block formulary %}  
+    <div class="container bg-light rounded-5 shadow-lg col-11 col-md-9 col-lg-8 col-xl-6">
+        <form class=" w-100 col-6" method="POST" action="" novalidate>
+            {{formFront.hidden_tag()}} 
+            
+            <div class="text-center pt-4">
+                <h2 class="">Registar Novo Cliente</h2>
+            </div>
+            
+            <div class="row">
+                <div class="col-1"></div>
+                <fieldset class="py-4 col-10">
+                    <div class="from-group">
+                        {{formFront.username_cliente.label(class="form-control-label")}}
+                        <div class="input-group my-1 py-2" id="groupNameNumb">
+                            <span class="input-group-text bg-primary" id="basic-addon1">                    
+                                <i class="fa fa-user text-white"></i>
+                            </span>
+                            {% if formFront.username_cliente.errors %}
+                                {{formFront.username_cliente(class="form-control is-invalid", id="username", placeholder="ex: Nikola Tesla")}}
+                                {% else %}
+                                {{formFront.username_cliente(class="form-control", id="username",  placeholder="ex: Nikola Tesla")}}
+                            {% endif %}
+                        </div>
+                        {% if formFront.username_cliente.errors %}
+                        {% for error in formFront.username_cliente.errors %}
+                            <span>{{error}}</span>
+                        {% endfor %}
+                        {% else %}
+                        {% endif %}
+                    </div>
+                </fieldset> 
+                <div class="col-1"></div>
+            </div>
+
+            <div class="row">
+                <div class="col-1"></div>
+
+                <fieldset class="py-4 col-10">
+                    <div class="from-group">
+                        {{formFront.password_cliente.label(class="form-control-label")}}
+                        <div class="input-group my-1 py-2" id="groupPass">
+                            <span class="input-group-text bg-primary" id="basic-addon1">                    
+                                <i class="fa fa-key text-white"></i>
+                            </span>
+                            {% if formFront.password_cliente.errors %}
+                                {{formFront.password_cliente(class="form-control is-invalid", id="userPassword", placeholder="ex: effwegg45y5@")}}
+                                {% else %}
+                                {{formFront.password_cliente(class="form-control", id="userPassword",  placeholder="ex: effwegg45y5@")}}
+                            {% endif %}
+                        </div>
+                        {% if formFront.password_cliente.errors %}
+                        {% for error in formFront.password_cliente.errors %}
+                            <span>{{error}}</span>
+                        {% endfor %}
+                        {% else %}
+                        {% endif %}
+                    </div>
+                </fieldset> 
+                <div class="col-1"></div>
+            </div>
+
+            <div class="row">
+                <div class="col-1"></div>
+                <fieldset class="py-4 col-10">
+                    <div class="from-group">
+                        {{formFront.confirm_password.label(class="form-control-label")}}
+                        <div class="input-group my-1 py-2" id="groupPassConf">
+                            <span class="input-group-text bg-primary" id="basic-addon1">                    
+                                <i class="fa fa-key text-white"></i>
+                            </span>
+                            {% if formFront.confirm_password.errors %}
+                                {{formFront.confirm_password(class="form-control is-invalid", id="userPasswordConfirm", placeholder="ex: effwegg45y5@")}}
+                                {% else %}
+                                {{formFront.confirm_password(class="form-control", id="userPasswordConfirm",  placeholder="ex: effwegg45y5@")}}
+                            {% endif %}
+                        </div>
+                        {% if formFront.confirm_password.errors %}
+                        {% for error in formFront.confirm_password.errors %}
+                            <span>{{error}}</span>
+                        {% endfor %}
+                        {% else %}
+                        {% endif %}
+                    </div>
+                    <a href="{{url_for('AutenticationClientModule.doLogin')}}">
+                        <h6><dt>Já tem Conta?</dt></h6>
+                    </a>
+                </fieldset>
+                <div class="col-1"></div>
+            </div>
+            
+
+            <div class="row pb-4">
+                <div class="col-2"></div>
+                <div class="container col-8">
+                    <div class="row">  
+                        <div class="col-1"></div>
+                        {{formFront.register(class="btn btn-primary col-10 my-2", id="LogBtn")}}
+                    </div>
+                </div>
+                <div class="col-2"></div>
+            </div>
+        </form>
+    </div>
+{% endblock formulary %}

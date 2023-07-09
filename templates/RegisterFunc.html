@@ -1,4 +1,4 @@
-{% extends 'indexAute.html'%}
+{% extends 'indexAuteFunc.html'%}
 {% block formulary %}
     {{formFront.hidden_tag()}}
     <div class="text-center pt-4">
@@ -102,7 +102,7 @@
                     {% else %}
                 {% endif %}
              </div> 
-             <a href="{{url_for('AutenticationModule.doLogin')}}">
+             <a href="{{url_for('AutenticationFuncModule.doLogin')}}">
                 <h6><dt>Já tem Conta?</dt></h6>
             </a>
         </fieldset>
@@ -142,7 +142,7 @@
 {% endblock formulary %}
 
 {% block scripts %}
-    <script  type=text/javascript>
+    <script type=text/javascript>
         var store = document.getElementById("selectloja");
         var department = document.getElementById("selectdepartment");
 

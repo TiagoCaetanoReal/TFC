@@ -247,112 +247,125 @@ def AlterProduct():
     employee = [active_user.nome,active_user.cargo,departemant.nome]
 
 
-    #query para o iva 
-    ivaQuery = db.session.query(Iva).all()
-    iva_group_list=[(str(i.id), str(i.percentagem)+'%') for i in ivaQuery]
-    iva_presets_group_list = [(' ',"Selecionar Iva")]
+    if(active_user.is_authenticated):
+        #query para o iva 
+        ivaQuery = db.session.query(Iva).all()
+        iva_group_list=[(str(i.id), str(i.percentagem)+'%') for i in ivaQuery]
+        iva_presets_group_list = [(' ',"Selecionar Iva")]
 
-    for iva in iva_group_list:    
-        iva_presets_group_list.append(iva)
+        for iva in iva_group_list:    
+            iva_presets_group_list.append(iva)
 
-    productForm.iva.choices = iva_presets_group_list
-
-
-    #query para a unidade de medida
-    metricQuery = db.session.query(Medida).all()
-    metric_group_list=[(str(i.id), i.unMedida) for i in metricQuery]
-    metric_presets_group_list = [(' ',"Selecionar Unidade de Medida")]
-
-    for metric in metric_group_list:    
-        metric_presets_group_list.append(metric)
-
-    productForm.metric.choices = metric_presets_group_list
+        productForm.iva.choices = iva_presets_group_list
 
 
-    #query para a origem 
-    originQuery = db.session.query(Origem).all()
-    origin_group_list=[(str(i.id), i.Pais) for i in originQuery]
-    origin_presets_group_list = [(' ',"Selecionar Origem")]
+        #query para a unidade de medida
+        metricQuery = db.session.query(Medida).all()
+        metric_group_list=[(str(i.id), i.unMedida) for i in metricQuery]
+        metric_presets_group_list = [(' ',"Selecionar Unidade de Medida")]
 
-    for origin in origin_group_list:    
-        origin_presets_group_list.append(origin)
+        for metric in metric_group_list:    
+            metric_presets_group_list.append(metric)
 
-    productForm.origin.choices = origin_presets_group_list
-
-
-    #query para a secção
-    departmentQuery = db.session.query(Secção).all()
-    department_group_list=[(str(i.id), i.nome) for i in departmentQuery]
-    department_presets_group_list = [(' ',"Selecionar Secção")]
+        productForm.metric.choices = metric_presets_group_list
 
 
+        #query para a origem 
+        originQuery = db.session.query(Origem).all()
+        origin_group_list=[(str(i.id), i.Pais) for i in originQuery]
+        origin_presets_group_list = [(' ',"Selecionar Origem")]
 
-    for department in department_group_list:    
-        department_presets_group_list.append(department)
+        for origin in origin_group_list:    
+            origin_presets_group_list.append(origin)
 
-    productForm.department.choices = department_presets_group_list
-
-    if session.get('produto') is not None:
-        product_id = session.get('produto')
-        produto = db.session.query(Produto).filter(Produto.id==product_id).first()
-
-        tabela100gr = db.session.query(TabelaNutricional100gr).filter(TabelaNutricional100gr.produto_id==product_id).first()
-        tabelaDR = db.session.query(TabelaNutricionalDR).filter(TabelaNutricionalDR.produto_id==product_id).first()
+        productForm.origin.choices = origin_presets_group_list
 
 
-        # tentar realizar a procura de campos preenchidos de forma dinamica e ao fazer-lo inserir no dado da query para fazer o update 
-        #  provavelmente terei de ter os nomes iguais dos dois lados, ou... ou ...
-        #  posso fazer um dicionario com as posiçoes dos campos do modelo ou do form
-       
-        # tentado o debaixo para fazer um dict com as posicçoes dos campos do modelo para 
-        # fazer um ciclo pelos campos do form e caso esse campo tenha sido preenchido 
-        # verifica com o dict o atributo do modelo e troca o seu valor
-        # tipo dict('nome': 1, 'preço':2) -> ('atributo modelo': posição no form)
+        #query para a secção
+        departmentQuery = db.session.query(Secção).all()
+        department_group_list=[(str(i.id), i.nome) for i in departmentQuery]
+        department_presets_group_list = [(' ',"Selecionar Secção")]
 
-        if request.method == 'POST':
-            listProduct  = ['nome', 'preço', 'iva_id','unMedida_id','origem_id', 'secção_id', 'photoPath']
 
-            # tentar adicionar o modal na parte da frente
-            
-            if productForm.validate() and productForm.editProduct.data == True:
-                try:
-                    for index, field in enumerate(productForm):
-                        if index < 7:
-                            valor = listProduct[index]
-                            
-                            if str(field.data) != str(getattr(produto, valor)) and str(field.data) != '':
-                                # if(valor == 'nome'):
-                                #     novo_nome = "Image.png"
 
-                                #     print(produto.photoPath)
+        for department in department_group_list:    
+            department_presets_group_list.append(department)
 
-                                #     # guarda imagem mas não subscreve, depois disso é só fazer as tabela e a edição fica pronta
+        productForm.department.choices = department_presets_group_list
 
-                                #     productForm.photoURI.data = os.rename(produto.photoPath, field.data + novo_nome)
+        if session.get('produto') is not None:
+            product_id = session.get('produto')
+            produto = db.session.query(Produto).filter(Produto.id==product_id).first()
 
-                                #     print(productForm.photoURI.data)
+            tabela100gr = db.session.query(TabelaNutricional100gr).filter(TabelaNutricional100gr.produto_id==product_id).first()
+            tabelaDR = db.session.query(TabelaNutricionalDR).filter(TabelaNutricionalDR.produto_id==product_id).first()
 
-                                if(valor == 'photoPath'):
-                                    field.data = save_photo(produto)
-                                    print(field.data)
-                                setattr(produto, valor, field.data)
-
-                    # problema commit não esta a funcionar
-                    # solução  remover atributos[valor] e utilizar  setattr(produto, valor, field.data) 
-                    # para armazenar o valor modificado objeto da db
-                    db.session.commit()
-
-                    return redirect('/ProductsList')
-                except SQLAlchemyError as e:
-                    print(f'Erro ao editar o produto: {str(e)}')
-                finally:
-                    print("Após o commit")
-                    print("Objeto modificado:", produto.nome)
-                    
-                    
+            # tentar realizar a procura de campos preenchidos de forma dinamica e ao fazer-lo inserir no dado da query para fazer o update 
+            #  provavelmente terei de ter os nomes iguais dos dois lados, ou... ou ...
+            #  posso fazer um dicionario com as posiçoes dos campos do modelo ou do form
         
+            # tentado o debaixo para fazer um dict com as posicçoes dos campos do modelo para 
+            # fazer um ciclo pelos campos do form e caso esse campo tenha sido preenchido 
+            # verifica com o dict o atributo do modelo e troca o seu valor
+            # tipo dict('nome': 1, 'preço':2) -> ('atributo modelo': posição no form)
+
+            if request.method == 'POST':
+                listProduct  = ['nome', 'preço', 'iva_id','unMedida_id','origem_id', 'secção_id', 'photoPath']
+                nutritionalList = ['kcal', 'kj', 'lipidos', 'hidratos', 'açúcares','fibras', 'proteinas', 'sal']
+
+                # tentar adicionar o modal na parte da frente
+                
+                if productForm.validate() and productForm.editProduct.data == True:
+                    try:
+                        for index, field in enumerate(productForm):
+                            if index < 7:
+                                valor = listProduct[index]
+                                
+                                if str(field.data) != str(getattr(produto, valor)) and str(field.data) != '':
+                                    # if(valor == 'nome'):
+                                    #     novo_nome = "Image.png"
+
+                                    #     print(produto.photoPath)
+
+                                    #     # guarda imagem mas não subscreve, depois disso é só fazer as tabela e a edição fica pronta
+
+                                    #     productForm.photoURI.data = os.rename(produto.photoPath, field.data + novo_nome)
+
+                                    #     print(productForm.photoURI.data)
+
+                                    if(valor == 'photoPath'):
+                                        field.data = save_photo(produto)
+
+                                    setattr(produto, valor, field.data)
+
+                        for index, field in enumerate(nutritionForm):
+                            print('\n')
+                            print(field.name)
+                            if index < 8 :   
+                                valor = nutritionalList[index]
+                                if str(field.data) != str(getattr(tabela100gr, valor)) and str(field.data) != '':
+                                    setattr(tabela100gr, valor, field.data)
+                                
+                            if index >= 8 and index < 16:    
+                                valor = nutritionalList[index-8]
+                                if str(field.data) != str(getattr(tabelaDR, valor)) and str(field.data) != '':
+                                    setattr(tabelaDR, valor, field.data)
+
+
+                        # problema commit não esta a funcionar
+                        # solução  remover atributos[valor] e utilizar  setattr(produto, valor, field.data) 
+                        # para armazenar o valor modificado objeto da db
+                        db.session.commit()
+                        return redirect('/ProductsList')
+                    
+                    except SQLAlchemyError as e:
+                        print(f'Erro ao editar o produto: {str(e)}')
+            
         return render_template('EditarProduto.html', title="EditProduct", active_user=employee, produtoFront = produto, tabela100grFront = tabela100gr, 
-                               tabelaDRFront = tabelaDR, productFormFront = productForm, nutritionFormFront=nutritionForm)
+            tabelaDRFront = tabelaDR, productFormFront = productForm, nutritionFormFront=nutritionForm)
+        
+    else:
+        return redirect('/login')
     
     
  

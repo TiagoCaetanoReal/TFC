@@ -1,8 +1,10 @@
 from flask_login import UserMixin
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
+from flask_bcrypt import Bcrypt
 
 db = SQLAlchemy()
+bcrypt = Bcrypt()
 
 
 class Cliente(db.Model, UserMixin):
@@ -11,7 +13,7 @@ class Cliente(db.Model, UserMixin):
     nome = db.Column(db.String(80), unique=True, nullable=False)
     password = db.Column(db.String(60), nullable=False)
     data_registo = db.Column(db.DateTime, default=datetime.now)
-    eliminado = db.Column(db.Boolean(), default=False)
+    eliminado = db.Column(db.Boolean(), default = False)
 
     def __repr__(self) -> str:
         return f"User('{self.nome}',{self.password}','{self.gender}','{self.data_registo}')"

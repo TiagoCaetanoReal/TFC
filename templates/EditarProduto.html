@@ -228,7 +228,7 @@
                         <tr>
                             <th scope="col"></th>
                             <th scope="col">Por 100gr</th>
-                            <th scope="col">%DR</th>
+                            <th scope="col">%DR (Dose Referêcia)</th>
                         </tr>
                         </thead>
                         <tbody class="overflow-auto" >
@@ -360,7 +360,6 @@
                         {{productFormFront.photoFile(class="is-invalid", type="file", accept="image/*", id="imageFile", style="display: none;", onchange="loadFile(event)") }}
                     {% else %}
                         {{productFormFront.photoFile(type="file", accept="image/*", id="imageFile", style="display: none;", onchange="loadFile(event)") }}
-                         <!-- <img src="{{produtoFront.photoPath}}" id="oi2" alt=""> -->
                     {% endif %}   
                 </div>
                 {% if productFormFront.photoFile.errors %}
@@ -399,7 +398,6 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h3 class="modal-title" id="saveDeleteMapTitle"></h3>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-danger" data-bs-dismiss="modal" id="CancelSaveDeleteBtn">Cancelar</button>

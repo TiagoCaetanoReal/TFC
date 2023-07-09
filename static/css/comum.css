@@ -539,3 +539,20 @@ box-shadow: -1px 1px 5px rgba(0, 0, 0, 0.2);
   box-shadow: 0 0 0 0.2rem var(--gray);
 }
 
+.border-primary {
+  border-color: rgba(var(--achameDark), 2) !important;
+}
+
+.border-secondary {
+  border-color: rgba(var(--achameLight), 2) !important;
+}
+
+.border-purple{
+  border-color: rgba(104, 136, 187,1) !important;
+}
+
+.btn-purple {
+  color: rgba(var(--gray_0), 1);
+  background-color: rgba(104, 136, 187, 1);
+  border-color: rgba(104, 136, 187, 1);
+}

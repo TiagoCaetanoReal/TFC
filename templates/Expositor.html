@@ -1,0 +1,140 @@
+{% extends 'indexClient.html'%}
+
+
+{% block styles %}
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+{% endblock styles %}
+
+{% block header %}
+    <div class="row align-items-center">
+        <div class="col-2">   
+            
+            <a class="col-2 mx-3" id="seta"  style="cursor:pointer" href="{{url_for('StoreClientModule.seeStoreMap')}}"> 
+                <div class="fa fa-2xl fa-arrow-rotate-back text-primary" ></div> 
+            </a>   
+        </div>
+        <div class="col-8"> 
+            <div class="m-2 d-flex justify-content-center ">
+                <h2 class="my-1 fw-bold text-white">Expositor</h2>
+            </div>
+            <div class="m-2 d-flex justify-content-center ">
+                <h2 class="my-1 fw-bold text-white">{{department.nome}}</h2>
+            </div>
+        </div>
+    </div>
+{% endblock header %}
+
+{% block formulary %}
+    <div class="container h-75 mt-4 col-11 border border-0 overflow-scroll" >
+        <form method="POST" action="" novalidate>    
+            <div class="row " >
+                {% for product in products %}
+                    <div class="col-6 col-md-4 pt-2">
+                        <div class="card align-items-center">
+                            <img class="card-img-top w-50" src={{product[0].photoPath}} data-holder-rendered="true">
+                            <div class="card-body">
+                                <h2 class="text-center" style="height: 90px;">{{product[0].nome}}</h2>
+                                <h3 class="text-center">{{product[0].preço}}€/{{product[1].unMedida}}</h3>
+                                <div class="row pt-2">
+                                    <div class="col-5  mt-2 g-0">
+                                        <div class="text-center favoritar" id="{{product[0].id}}" style="cursor:pointer">
+                                            <i class="fa fa-2xl fa-regular fa-heart text-secondary"></i>
+                                            <h7>Favorito</h7>
+                                        </div>
+                                    </div>
+                                    <div class="col-1"></div>
+                                    <div class="col-5 mt-2 g-0">
+                                        <div class="text-center detalhes" id="{{product[0].id}}" value="{{product[0].nome}}" style="cursor:pointer">
+                                            <i class="fa fa-2xl fa-circle-info text-secondary"></i>
+                                            <h7>Detalhes</h7>
+                                        </div>
+                                    </div>
+                                </div>            
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            
+            <div hidden>
+                {{formFront.productID(id="productID")}}
+            </div>
+            <div hidden>
+                {{formFront.seeDetails(id="seeDetails")}}
+            </div>
+        </form>
+    </div>
+
+    <!-- Modal Detalhes -->
+    <div class="modal modal-lg fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title" id="staticBackdropLabel"></h3>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body"> 
+                    <ul>
+                        <li>Origem: </li>
+                        <li>Iva: </li>
+                        <li>Origem: </li>
+                        <li>Origem: </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock formulary %}
+
+
+{% block scripts %}
+<script type=text/javascript>
+    
+    var productID = document.getElementById("productID") 
+    var seeDetails = document.getElementById("seeDetails")
+
+    $(".detalhes").click(function(e){
+        
+        e.preventDefault();
+        var id = $(this).attr("id")
+        console.log(id);
+
+        
+        productID.value = id 
+        seeDetails.click()
+        // tentar não utilizar fetch
+        fetch('/fetchProduct')
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+
+                const myModal = new bootstrap.Modal(document.getElementById('staticBackdrop'));
+                const myModalTitle = new bootstrap.Modal(document.getElementById('staticBackdropLabel'));
+                 
+                myModalTitle._element.innerText = 'nome';
+                
+                myModal.toggle();
+                myModal.show();
+        })
+
+    })
+
+
+
+
+    $(".favoritar").click(function(e){
+        e.preventDefault();
+        let DadosMapa={
+            id: $(this).attr("id"),
+            action: "favoritar"
+        }
+        
+        mapIdField.value = DadosMapa.id 
+        mapIdAction.value = DadosMapa.action 
+        
+        // Envie o formulário
+        $("form").submit()
+    })
+
+</script>
+{% endblock scripts %}
