@@ -117,9 +117,10 @@ class ClienteRegisterForm(FlaskForm):
 
 
 class ClienteEditForm(FlaskForm):
-    username_cliente = StringField(label="Nome Utilizador", validators=[InputRequired(), Length(min=5, max=40)])
-    password_cliente = PasswordField(label="Password", validators=[InputRequired()])
-    confirm_password = PasswordField(label="Confirmar Password", validators=[InputRequired(), EqualTo("password_cliente")])
+    username_cliente = StringField(label="Nome Utilizador")
+    oldPassword_cliente = PasswordField(label="Password Antiga")
+    password_cliente = PasswordField(label="Password")
+    confirm_password = PasswordField(label="Confirmar Password", validators=[EqualTo("password_cliente")])
     edit = SubmitField(label="Confirmar Alterações")
     goBack = SubmitField(label="goBack")
 
@@ -127,10 +128,13 @@ class ClienteScanStore(FlaskForm):
     storeID =  IntegerField('storeID')
     goToMap = SubmitField(label="Ver Mapa")
 
-class ClienteStoreMap(FlaskForm):
+class ClienteStoreMap(FlaskForm): 
+    searchProduct = StringField("Inserir Produto")
+    submitProduct = SubmitField(label='<i class="fa fa-search text-secondary"></i>')
     expoID =  IntegerField('expoID')
     goToExpo = SubmitField(label="Ver Expositor")
 
 class ClienteExpoDetails(FlaskForm):
     productID =  IntegerField('productID')
     seeDetails = SubmitField(label="Ver detalhes")
+    enjoyProduct = SubmitField()

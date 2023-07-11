@@ -48,8 +48,8 @@ class Iva (db.Model):
     percentagem = db.Column(db.Integer, nullable=False)
 
     def __repr__(self) -> str:
-        return '<Iva %r>' % self.id   
-    
+        return f"Iva " + str(self.id) + " " + str(self.percentagem)  + "%"
+ 
 
 class Origem (db.Model):
     __tablename__= 'Origem'
@@ -217,7 +217,7 @@ class Expositor (db.Model):
 class ConteudoExpositor (db.Model):
     __tablename__= 'ConteudoExpositor'
     id = db.Column(db.Integer, primary_key=True)
-    Expositor_id = db.Column('Expositor_id', db.ForeignKey('Expositor.id'), nullable=False)
+    expositor_id = db.Column('Expositor_id', db.ForeignKey('Expositor.id'), nullable=False)
     expositor = db.relationship('Expositor', backref='ConteudoExpositor')
 
     produto1_id = db.Column('Produto1_id', db.ForeignKey('Produto.id'), nullable=False)
@@ -236,7 +236,7 @@ class ConteudoExpositor (db.Model):
     eliminado = db.Column(db.Boolean(), default=False)
 
     def __repr__(self) -> str:
-        return f"ConteudoExpositor " + str(self.id) + " " + str(self.Expositor_id)
+        return f"ConteudoExpositor " + str(self.id) + " " + str(self.expositor_id)
     
 class Marcador (db.Model):
     __tablename__= 'Marcador'

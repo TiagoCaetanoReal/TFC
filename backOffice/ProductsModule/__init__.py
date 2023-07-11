@@ -74,6 +74,14 @@ def seeProductList():
 
 
 
+
+
+# tentar repara o expos na tela de edição, ver se o problema é o id q não é reconhecido
+
+
+
+
+
 @ProductsModule.route("/MakeProduct", methods=['GET', 'POST'])
 def CreateProduct():
     productForm = CreateProductForm()
@@ -133,14 +141,13 @@ def CreateProduct():
 
 
         if request.method == 'POST':
-           
             if productForm.validate() and productForm.createProduct.data == True:
                 produto = db.session.query(Produto).filter(Produto.loja_id == store.id, Produto.nome == productForm.name.data).first()
 
                 if(produto == None):
                     seccao = dict(productForm.department.choices).get(productForm.department.data)
 
-                    saveImgDir = './static/productPhotos/'+str(store.id)+'/'+ str(seccao)+'/'
+                    saveImgDir = './static/productPhotos/'+str(store.id)+'/'+ str(seccao).replace(' ', '_')+'/'
 
                     # alterar o sitio onde é guardada foto, e alterar o nome da foto segundo:
                     # https://www.youtube.com/watch?v=ZHQtxITPcAs&list=PLCC34OHNcOtolz2Vd9ZSeSXWc8Bq23yEz&index=38
@@ -149,11 +156,13 @@ def CreateProduct():
                     if not os.path.exists(saveImgDir):
                         os.makedirs(saveImgDir)
 
-
-                    destination = os.path.join(saveImgDir, productForm.name.data + 'Image.png')
+                    destination = os.path.join(saveImgDir, productForm.name.data.replace(' ', '_') + 'Image.png')
                     
-
                     request.files['photoFile'].save(destination)
+
+                    # caso o primeiro elemento do valor seja . em tipo .99 é add 0 ao inicio para ficar 0.99
+                    if str(productForm.price.data)[0] == '.':
+                        productForm.price.data = float(str(0) + str(productForm.price.data))
 
                     try:
                         new_Product = Produto(nome=productForm.name.data, preço = productForm.price.data, 
@@ -375,12 +384,12 @@ def AlterProduct():
 def save_photo(produto):
     departemant = db.session.query(Secção).filter(Secção.id==produto.secção_id).first()
 
-    saveImgDir = './static/productPhotos/'+str(produto.loja_id)+'/'+ str(departemant.nome)+'/'
+    saveImgDir = './static/productPhotos/'+str(produto.loja_id)+'/'+ str(departemant.nome).replace(' ', '_')+'/'
 
     if not os.path.exists(saveImgDir):
         os.makedirs(saveImgDir)
 
-    photoPath = os.path.join(saveImgDir, produto.nome + 'Image.png')
+    photoPath = os.path.join(saveImgDir, produto.nome.replace(' ', '_') + 'Image.png')
     print(photoPath)
 
     request.files['photoFile'].save(photoPath)

@@ -149,7 +149,6 @@ export class Quadro{
     draw_shapes(){
         this.context.clearRect(0, 0, this.canvas_width, this.canvas_height);
 
-        console.log(this.context.fillStyle)
         for(let shape of this.shapes){
             this.context.save();
             this.context.globalAlpha = shape.colorAlpha;

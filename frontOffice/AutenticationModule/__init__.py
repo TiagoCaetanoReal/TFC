@@ -36,6 +36,7 @@ def doLogin():
     return render_template("LoginClient.html", title = "Login", formFront = form)
 
 
+
 @AutenticationClientModule.route("/register", methods=['GET', 'POST'])
 def doRegister():
     form = ClienteRegisterForm()
@@ -65,14 +66,6 @@ def doRegister():
     return render_template("RegisterClient.html", title = "Login", formFront = form)
 
 
-# fazer o scan do codigo, que não esta a permitir a leitura, possivelmente pelo tipo de codigo
-
-@AutenticationClientModule.route("/editClient", methods=['GET', 'POST'])
-def doAlteration():
-    form = ClienteEditForm()
-
-    return render_template("/client/editarPerfil.html", title = "Login", formFront = form)
-
 
 @AutenticationClientModule.route("/ScanStore", methods=['GET', 'POST'])
 def scanStore():
@@ -90,3 +83,74 @@ def scanStore():
         return redirect('\login')
 
     return render_template("QRcode.html", title = "Login", formFront = form)
+
+
+
+@AutenticationClientModule.route("/editClient", methods=['GET', 'POST'])
+def doAlteration():
+    active_user = current_user
+    form = ClienteEditForm()
+    
+    if(active_user.is_authenticated):
+        userData = db.session.query(Cliente).filter(Cliente.id == active_user.id).first()
+
+        if(request.method == 'POST'):
+            if form.validate_on_submit():
+                try:
+                    if form.username_cliente.data != '': 
+                        if db.session.query(Cliente).filter(Cliente.nome == form.username_cliente.data).first() is None:
+                            if form.username_cliente.data != userData.nome:
+                                setattr(userData, 'nome', form.username_cliente.data)
+                        else:
+                            l = list(form.username_cliente.errors)
+                            l.append("Utilizador já existe, use outro nome")
+                            form.username_cliente.errors = tuple(l)
+                                
+
+                    if form.oldPassword_cliente.data != '':                         
+                        if bcrypt.check_password_hash(userData.password, form.oldPassword_cliente.data) == True:
+                            if form.password_cliente.data != '' and form.confirm_password.data != '' :
+
+                                if(len(form.password_cliente.data) < 5 or len(form.password_cliente.data) > 20):
+                                    l = list(form.password.errors)
+                                    l.append("Campo deve conter entre 5 e 20 caracteres")
+                                    form.password.errors = tuple(l)
+
+                                elif(len(form.confirm_password.data) < 5 or len(form.confirm_password.data) > 20):
+                                    l = list(form.confirm_password.errors)
+                                    l.append("Campo deve conter entre 5 e 20 caracteres")
+                                    form.confirm_password.errors = tuple(l) 
+                                
+                                if(form.password_cliente.data == form.confirm_password.data):
+                                    print("FFFFFFFFFFFFFFFFFFFFF")
+                                    encrypted_password = bcrypt.generate_password_hash(form.confirm_password.data).decode('UTF-8')
+                                    userData.password = encrypted_password
+                                    print(encrypted_password)
+
+                            elif form.password_cliente.data == '' :
+                                l = list(form.password_cliente.errors)
+                                l.append("Campo tem de ser preenchido")
+                                form.password_cliente.errors = tuple(l)  
+
+                                if form.confirm_password.data == '' :
+                                    l = list(form.confirm_password.errors)
+                                    l.append("Campo tem de ser preenchido")
+                                    form.confirm_password.errors = tuple(l)    
+
+                        elif(bcrypt.check_password_hash(userData.password, form.oldPassword_cliente.data) != True):
+                            l = list(form.oldPassword_cliente.errors)
+                            l.append("Palavra-Passe Inválida")
+                            form.oldPassword_cliente.errors = tuple(l)    
+
+                    if not form.username_cliente.errors and not form.password_cliente.data and not form.confirm_password.data:
+                        db.session.commit()
+                        return redirect('/Store')
+
+                except Exception as e:
+                    return f'Erro ao salvar o edição: {str(e)}'
+        
+
+        return render_template("EditClient.html", title = "Login", formFront = form, username = userData.nome)
+    
+    else:
+        return redirect('\login')

@@ -7,6 +7,7 @@ export class Quadro{
         
         this.texts = [];
         this.shapes = []; 
+        this.marker;
         
         this.canvas.width = limits.x;
         this.canvas.height = limits.y;
@@ -48,6 +49,11 @@ export class Quadro{
         this.texts.push(text);
             this.draw_shapes();
     }
+
+    addMarker(marker){
+        this.marker = marker
+        this.draw_shapes();
+    }
     
     getShapes(){
         return this.shapes;
@@ -63,6 +69,19 @@ export class Quadro{
     
     getCurrentExpositor(){
         return this.shapes[this.current_shape_index]
+    }
+    
+    
+    // A expressão (shape) => shape.id === id é uma função de callback usada como argumento para o 
+    // método find(). Ela verifica se o atributo id do objeto shape é igual ao valor da variável id. 
+    // Essa função será executada para cada elemento da lista this.shapes até encontrar um 
+    // elemento cujo id corresponda ao valor desejado.
+    getSpecificExpoPosition(id){
+        const expositor = this.shapes.find((shape) => shape.id === id);
+        if (expositor) {
+            return { posX: expositor.posX, posY: expositor.posY };
+          }
+          return { posX: null, posY: null };
     }
 
 
@@ -93,6 +112,10 @@ export class Quadro{
             this.context.globalAlpha = shape.colorAlpha;
             this.context.fillStyle = shape.color;
             this.context.fillRect(shape.posX, shape.posY, shape.width, shape.height )
+            
+            console.log('this.translateX + " " + this.translateY');
+            console.log(this.translateX + " " + this.translateY);
+            console.log(shape.posX + " " + shape.posY);
             this.context.restore();
         }
 
@@ -103,9 +126,22 @@ export class Quadro{
             this.context.translate(this.translateX, this.translateY);
             this.context.translate(text.posX - text.width / 2, text.posY - text.height / 2);
             this.context.rotate(text.get_angle() * Math.PI / 180);
+            this.context.fillStyle = 'white';
             this.context.fillText(text.text, -text.width / 2,  text.height / 4);
             this.context.restore();
         }
+        
+
+        if (this.marker) {
+            // permite inserir no mapa o marcador da localização do produto pretendido
+            this.context.save();
+            console.log(this.marker.posX);
+            console.log(this.marker.posY);
+            this.marker.markerImg.onload = () => {
+                 this.context.drawImage(this.marker.markerImg, this.marker.posX/2 - 20, this.marker.posY/2 - 25, 50, 50);
+            }; 
+            this.context.restore();
+          }
         
         this.context.restore();
     }
@@ -115,7 +151,8 @@ export class Quadro{
             const rect = this.canvas.getBoundingClientRect();
             const scaleX = this.canvas.width / rect.width;
             const scaleY = this.canvas.height / rect.height;
-
+            console.log(event.clientX);
+            console.log(event.clientY);
             return {
                 x: (event.clientX - rect.left) * scaleX,
                 y: (event.clientY - rect.top) * scaleY

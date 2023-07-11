@@ -434,8 +434,8 @@
                 seccao[0].setAttribute("disabled","selected")
             );
 
-            // realiza a verificação de numero para que fiquem no formato 124.435,54 por exemplo, 
-            // ponto separa os milhares das centenas, e a virgula separa as centenas das dezenas
+            // realiza a verificação de numero para que fiquem no formato 124435.54 por exemplo, 
+            // ponto separa as centenas das dezenas
             function verifyNumber(element) {
                 var valor = element.value
             
@@ -445,10 +445,10 @@
                 if (valor !== '') {
                     valor = parseInt(valor);
                     valor = valor + '';
-                    valor = valor.replace(/([0-9]{2})$/g, ",$1");
+                    valor = valor.replace(/([0-9]{2})$/g, ".$1");
 
                     if (valor.length > 6) {
-                        valor = valor.replace(/([0-9]{3}),([0-9]{2}$)/g, ".$1,$2");
+                        valor = valor.replace(/([0-9]{3}),([0-9]{2}$)/g, "$1.$2");
                     }
                 }
 

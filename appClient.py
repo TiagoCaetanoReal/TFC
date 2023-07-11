@@ -1,8 +1,7 @@
 from flask import Flask
 from models import db, bcrypt, Cliente
 from flask_login import LoginManager
-from flask_babel import Babel
-# from flask_lt import run_with_lt
+from flask_babel import Babel 
 
 from frontOffice.AutenticationModule import AutenticationClientModule
 from frontOffice.StoreClientModule import StoreClientModule

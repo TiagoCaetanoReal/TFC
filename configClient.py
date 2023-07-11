@@ -7,11 +7,12 @@ class Config(object):
     DEBUG = False
     TESTING = False
     CSRF_ENABLED = True
-    SECRET_KEY = 'superSecretPass'
-    # SERVER_NAME = "192.168.1.165:5000"
-    # SERVER_NAME = "localhost:5000"
+    SECRET_KEY = 'superSecretPass' 
     SQLALCHEMY_DATABASE_URI = 'sqlite:///./DataBase/projetoTFC.db'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    
+    BABEL_TRANSLATION_DIRECTORIES = 'wtforms:translations'
+    BABEL_DEFAULT_LOCALE = 'pt'
 
 
 class ProductionConfig(Config):

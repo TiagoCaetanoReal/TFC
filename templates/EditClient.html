@@ -1,18 +1,17 @@
-{% extends 'indexAuteClient.html'%}
+{% extends 'indexClient.html'%}
 
 {% block header %}
-    <div class="row pt-2">
-        <div class="col-2 my-2">
-            <a style="cursor:pointer" > <!--onclick=" verPerfilPage()"-->
-                <button class="fa fa-2xl fa-arrow-rotate-back text-secondary" type="submit" name="goBack" value="EcraPrevio" style=" background-color: transparent; border: none;"></button> 
-            </a>              
+    <div class="row pt-2 my-2 align-items-center">
+        <div class="col-2">    
+            <a class="mx-3" id="seta"  style="cursor:pointer" href="{{url_for('StoreClientModule.seeStoreMap')}}"> 
+                <div class="fa fa-2xl fa-arrow-rotate-back text-primary" ></div> 
+            </a>  
         </div>
-        <div class="col-8 pt-5"> 
-            <div class="justify-content-center ">
+        <div class="col-8"> 
+            <div class="mx-2 d-flex justify-content-center ">
                 <h2 class="fw-bold text-white">Editar Perfil</h2>
             </div>
         </div>
-        <div class="col-2"></div>
     </div>
 {% endblock header %}
 
@@ -32,9 +31,9 @@
                                 <i class="fa fa-user text-white"></i>
                             </span>
                             {% if formFront.username_cliente.errors %}
-                                {{formFront.username_cliente(class="form-control is-invalid", id="username", placeholder="ex: Nikola Tesla")}}
+                                {{formFront.username_cliente(class="form-control is-invalid", id="username", placeholder=username)}}
                                 {% else %}
-                                {{formFront.username_cliente(class="form-control", id="username",  placeholder="ex: Nikola Tesla")}}
+                                {{formFront.username_cliente(class="form-control", id="username", placeholder=username)}}
                             {% endif %}
                         </div>
                         {% if formFront.username_cliente.errors %}
@@ -47,6 +46,31 @@
                 </fieldset> 
 
                 <div class="col-1"></div>
+            </div>
+
+            <div class="row">
+                <div class="col-1"></div>
+                <fieldset class="py-3 col-10">
+                    <div class="from-group">
+                        {{formFront.oldPassword_cliente.label(class="form-control-label")}}
+                        <div class="input-group my-1 py-2" id="groupPass">
+                            <span class="input-group-text bg-primary" id="basic-addon1">                    
+                                <i class="fa fa-key text-white"></i>
+                            </span>
+                            {% if formFront.oldPassword_cliente.errors %}
+                                {{formFront.oldPassword_cliente(class="form-control is-invalid", id="userPassword", placeholder="ex: ffwgg5y@", type="password")}}
+                                {% else %}
+                                {{formFront.oldPassword_cliente(class="form-control", id="userPassword",  placeholder="ex: ffwgg5y@", type="password")}}
+                            {% endif %}
+                        </div>
+                        {% if formFront.oldPassword_cliente.errors %}
+                        {% for error in formFront.oldPassword_cliente.errors %}
+                            <span>{{error}}</span>
+                        {% endfor %}
+                        {% else %}
+                        {% endif %}
+                    </div>
+                </fieldset> 
             </div>
 
 
@@ -103,13 +127,9 @@
             
 
             <div class="row pb-4">
-                <div class="col-2"></div>
-                <div class="container col-8">
-                    <div class="row"> 
-                        {{formFront.edit(class="btn btn-primary col-10 my-2", id="LogBtn")}}
-                    </div>
+                <div class="text-center"> 
+                    {{formFront.edit(class="btn btn-primary my-2", id="LogBtn")}}
                 </div>
-                <div class="col-2"></div>
             </div>
 
         </form>

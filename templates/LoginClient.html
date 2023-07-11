@@ -24,9 +24,9 @@
                                 <i class="fa fa-user text-white"></i>
                             </span>
                             {% if formFront.username_cliente.errors %}
-                                {{formFront.username_cliente(class="form-control is-invalid", id="studentNumber", placeholder="ex: p35465575")}}
+                                {{formFront.username_cliente(class="form-control is-invalid", id="username", placeholder="ex: Nikola Tesla")}}
                                 {% else %}
-                                {{formFront.username_cliente(class="form-control", id="studentNumber",  placeholder="ex: p35465575")}}
+                                {{formFront.username_cliente(class="form-control", id="username",  placeholder="ex: Nikola Tesla")}}
                             {% endif %}
                         </div>
                         {% if formFront.username_cliente.errors %}

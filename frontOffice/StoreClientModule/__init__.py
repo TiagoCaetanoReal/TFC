@@ -1,7 +1,7 @@
-from flask import Blueprint, flash, request, session
+from flask import Blueprint, flash, request, session, jsonify
 from flask import redirect, render_template, url_for
 from forms import ClienteExpoDetails, ClienteLoginForm, ClienteRegisterForm, ClienteEditForm, ClienteStoreMap
-from models import Iva, Medida, Origem, Produto, db, Cliente, bcrypt, Mapa, Expositor, Marcador, ConteudoExpositor, Secção
+from models import Favorito, Iva, Medida, Origem, Produto, TabelaNutricional100gr, TabelaNutricionalDR, db, Cliente, bcrypt, Mapa, Expositor, Marcador, ConteudoExpositor, Secção
 from flask_login import login_user, logout_user, current_user
 from datetime import datetime, timedelta
 
@@ -12,20 +12,25 @@ StoreClientModule = Blueprint("StoreClientModule", __name__)
 def seeStoreMap():
     form = ClienteStoreMap()
     active_user = current_user
+    expo_id = 0
 
     if(active_user.is_authenticated):
+
         if request.method == 'POST':
             print('form.expoID.data')
             print(form.expoID.data)
+            
+            if form.searchProduct.data != None:
+                print(form.searchProduct.data)
+                session['searchingProduct'] = form.searchProduct.data
+                return redirect('/SearchProduct')
 
             if form.expoID.data != None:
                 session['expo'] = form.expoID.data
-
-                print(session)
                 
                 return redirect('/Displayer')
 
-        return render_template("MapPage.html", title = "MapPage", formFront = form)
+        return render_template("MapPage.html", title = "MapPage", formFront = form, wantedExpo = expo_id)
     else:
         return redirect("/login")
     
@@ -34,24 +39,36 @@ def seeStoreMap():
 @StoreClientModule.route("/fetchMap", methods=['GET','POST'])
 def fetchMap():
     print('hi')
-    print('1')
     mapDictList = []
+    expo_id = 0
+    
+    if session.get('wantedExpo') is not None:
+        expo_id = session.get('wantedExpo')
+        print('expo_id')
+        print(expo_id)
+        session.pop('wantedExpo')
     
     # fzer queries para obter dados do mapa e mostra-lo no frontend enviando um json
     if session.get('storeID') is not None:
-        map_id = session.get('storeID')
+        store_id = session.get('storeID')
 
         
-        map = db.session.query(Mapa).filter(Mapa.loja_id==map_id, Mapa.Usando == True).first()
+        map = db.session.query(Mapa).filter(Mapa.loja_id==store_id, Mapa.Usando == True).first()
+        
+        session['map'] = map.id
+        print('map.id')
+        print(map.id)
+        
+        print(expo_id)
 
-        expos = db.session.query(Expositor).filter(Expositor.mapa_id == map_id, Expositor.eliminado == 0).all()
-        tags = db.session.query(Marcador).filter(Marcador.mapa_id == map_id, Marcador.eliminado == 0).all()
+        expos = db.session.query(Expositor).filter(Expositor.mapa_id == map.id, Expositor.eliminado == 0).all()
+        tags = db.session.query(Marcador).filter(Marcador.mapa_id ==  map.id, Marcador.eliminado == 0).all()
 
-        mapDictList.append({"width": float(map.comprimento), "height": float(map.altura), "numExpos": len(expos), "numLabels": len(tags)})
+        mapDictList.append({"width": float(map.comprimento), "height": float(map.altura), "numExpos": len(expos), "numLabels": len(tags), "wantedExpo": expo_id})
 
         for expo in expos:
             produtos = []
-            conteudoExpositores = db.session.query(ConteudoExpositor).filter(ConteudoExpositor.Expositor_id == expo.id, ConteudoExpositor.eliminado == 0).first()
+            conteudoExpositores = db.session.query(ConteudoExpositor).filter(ConteudoExpositor.expositor_id == expo.id, ConteudoExpositor.eliminado == 0).first()
             for index in range(expo.capacidade):
                 produtos.append(getattr(conteudoExpositores, f"produto{index+1}_id"))
 
@@ -65,6 +82,8 @@ def fetchMap():
         for tag in tags:
             mapDictList.append( {"id": tag.id, "posX": float(tag.coordenadaX), "posY": float(tag.coordenadaY), "width": float(tag.comprimento),
                                 "height": float(tag.altura), "angle": tag.angulo, "value": tag.texto})
+            
+        
         
 
         return mapDictList
@@ -81,53 +100,163 @@ def seeDisplayerItems():
     if(active_user.is_authenticated):
         idExpo = session.get('expo')
         products = []
+        preferedProducts = []
 
         expo = db.session.query(Expositor).filter(Expositor.id==idExpo).first()
         department = db.session.query(Secção).filter(Secção.id==expo.secção_id).first() 
-        expoContent = db.session.query(ConteudoExpositor).filter(ConteudoExpositor.Expositor_id==idExpo).first()
+        expoContent = db.session.query(ConteudoExpositor).filter(ConteudoExpositor.expositor_id==idExpo).first()
 
         for index in range(expo.capacidade):
             product = db.session.query(Produto).filter(Produto.id == getattr(expoContent, f"produto{index+1}_id"), Produto.eliminado == 0).first()
             unMedida = db.session.query(Medida).filter(Medida.id == product.unMedida_id).first()
             products.append([product,unMedida])
 
-        if request.method == 'POST':
-            if form.productID.data != None:
-                session['product'] = form.productID.data
+            prefered = db.session.query(Favorito).filter(Favorito.produto_id == product.id, Favorito.cliente_id == active_user.id, Favorito.eliminado == 0).first()
+            
+            if prefered:
+                preferedProducts.append(prefered)
 
-        return render_template("Expositor.html", title = "ExpoPage", department = department, products = products, formFront = form )
+        return render_template("Expositor.html", title = "ExpoPage", department = department, products = products, formFront = form, preferedProducts = preferedProducts )
     
     else:
         return redirect("/login")
     
     
 
-@StoreClientModule.route("/fetchProduct", methods=['GET','POST'])
+@StoreClientModule.route("/fetchProduct", methods=['GET'])
 def fetchProduct():
-    productDictList = []
+    product_id = request.args.get('idProduto') 
     
     # fzer queries para obter dados do mapa e mostra-lo no frontend enviando um json
-    if session.get('product') is not None:
-        product_id = session.get('product')
+    if product_id is not None:
+        productDictList = []
         
         product = db.session.query(Produto).filter(Produto.id == product_id).first()
         metric = db.session.query(Medida).filter(Medida.id == product.unMedida_id).first()
         origin = db.session.query(Origem).filter(Origem.id == product.origem_id).first()
         taxes = db.session.query(Iva).filter(Iva.id == product.iva_id).first()
 
-        nutrition100GR = db.session.query(Iva).filter(Iva.id == product.iva_id).first()
-        nutritionDR = db.session.query(Iva).filter(Iva.id == product.iva_id).first()
-
+        nutrition100GR = db.session.query(TabelaNutricional100gr).filter(TabelaNutricional100gr.produto_id == product.id).first()
+        nutritionDR = db.session.query(TabelaNutricionalDR).filter(TabelaNutricionalDR.produto_id == product.id).first()
+        
+        productDictList.append([product.nome, product.preço])
         productDictList.append(metric.unMedida)
-        productDictList.append(origin.Pais)
+        productDictList.append(origin.Pais) 
         productDictList.append(taxes.percentagem)
 
         if nutrition100GR: 
-            productDictList.append(nutrition100GR)
-            productDictList.append(nutritionDR)
-        
-  
-        return productDictList
+            productDictList.append(["Energia[kcal]", "Energia[kj]", "Lipigos[gr]", "Hidratos carbono[gr]", "Açúcares[gr]", "Fibra[gr]", "Proteínas[gr]", "Sal[gr]"])
+            productDictList.append([nutrition100GR.kcal, nutrition100GR.kj,  nutrition100GR.lipidos, nutrition100GR.hidratos, 
+                                    nutrition100GR.fibras, nutrition100GR.proteinas, nutrition100GR.açúcares, nutrition100GR.sal])
+            productDictList.append([nutritionDR.kcal, nutritionDR.kj, nutritionDR.lipidos, nutritionDR.hidratos, 
+                                   nutritionDR.fibras, nutritionDR.proteinas, nutritionDR.açúcares, nutritionDR.sal])
+            
+        try: 
+            return jsonify(productDictList)
+        except Exception as e:
+                return f'Erro ao enviar dados: {str(e)}'
+
+    
+@StoreClientModule.route("/preferedProduct", methods=['GET'])
+def preferedProduct():
+    active_user = current_user
+    product_id = request.args.get('idProduto') 
+    
+    prefered = db.session.query(Favorito).filter(Favorito.produto_id == product_id, Favorito.cliente_id == active_user.id).first()
+    
+    if prefered is None:
+        new_Favorit = Favorito(produto_id = product_id, cliente_id=active_user.id)
+        db.session.add(new_Favorit)
+
+    elif getattr(prefered, 'eliminado'):
+        setattr(prefered, 'eliminado', False)
     
     else:
-        return redirect('/ScanStore')
+        setattr(prefered, 'eliminado', True)
+                            
+    db.session.commit()
+    
+    try: 
+        return jsonify(getattr(prefered, 'eliminado'))
+    except Exception as e:
+            return f'Erro ao enviar dados: {str(e)}'
+
+
+
+@StoreClientModule.route("/Favorites", methods=['GET', 'POST'])
+def seeFavoritesList():
+    active_user = current_user
+    store_id = session.get('storeID')
+
+    if(active_user.is_authenticated):
+
+        prefereds = db.session.query(Favorito, Produto, Medida).filter(Favorito.cliente_id == active_user.id, Favorito.eliminado == False, 
+                                                                       Produto.loja_id == store_id, Favorito.produto_id  == Produto.id, 
+                                                                       Medida.id == Produto.unMedida_id).all()
+    
+
+        return render_template("Favoritos.html", title = "FavoritesPage", prefereds = prefereds)
+    
+    else:
+        return redirect("/login")
+    
+
+@StoreClientModule.route("/removeFavorite", methods=['GET', 'POST'])
+def removeFavorite():  
+    prefered_id = request.form['idFavorito']  
+    
+    prefered = db.session.query(Favorito).filter(Favorito.id == prefered_id).first()
+    setattr(prefered, 'eliminado', True)
+    db.session.commit()
+    
+    try: 
+        return redirect("/Favorites")
+    except Exception as e:
+            return f'Erro ao enviar dados: {str(e)}'
+    
+@StoreClientModule.route("/locateProduct", methods=['GET', 'POST'])
+def locateProduct():  
+    product_id = request.form['idProduto']  
+    map_id = session.get('map')
+
+    expos = db.session.query(Expositor).filter(Expositor.mapa_id == map_id).all()
+
+    wantedExpo = db.session.query(ConteudoExpositor).filter(
+        (
+            (ConteudoExpositor.produto1_id == product_id) |
+            (ConteudoExpositor.produto2_id == product_id) |
+            (ConteudoExpositor.produto3_id == product_id) |
+            (ConteudoExpositor.produto4_id == product_id) |
+            (ConteudoExpositor.produto5_id == product_id) |
+            (ConteudoExpositor.produto6_id == product_id)
+        ) &
+        (ConteudoExpositor.expositor_id.in_([expo.id for expo in expos]))
+    ).first()
+
+    if wantedExpo:
+        session['wantedExpo'] = wantedExpo.expositor_id
+
+    try: 
+        return redirect("/Store")
+    except Exception as e:
+            return f'Erro ao enviar dados: {str(e)}'
+    
+    
+
+@StoreClientModule.route("/SearchProduct", methods=['GET', 'POST'])
+def seeSearchResult(): 
+    active_user = current_user 
+
+    if(active_user.is_authenticated):
+        searchProduct = session.get('searchingProduct')
+
+        productName = f"%{searchProduct}%"  # Formata o nome para corresponder parcialmente
+
+        # realizar a produca do produtos pertencentes ao mapa atual
+        produtos = Produto.query.filter(Produto.nome.ilike(productName)).all()
+
+        print(produtos)
+
+        return render_template("Resultados.html", title = "MapPage", produtos = produtos)
+    else:
+        return redirect("/login")
