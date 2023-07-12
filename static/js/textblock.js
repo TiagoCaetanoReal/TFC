@@ -30,7 +30,8 @@ export class TextBlock{
     set_angle(angle){
         if(this.angle === 270)
             angle = -270;
-
+        console.log(this.angle);
+        console.log(angle);
         this.angle += angle; 
     }
 

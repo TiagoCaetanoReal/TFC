@@ -1,14 +1,12 @@
 import { Expositor } from './expositor.js';
 import { TextBlock } from './textblock.js';
 import { Quadro } from './quadro.js';
+import * as tools from './ferramentasQuadro.js';
 
 // https://www.youtube.com/watch?v=7PYvx8u_9Sk
 
 
-// em principio é só trocar os docs, e trocar o div das secçõs para jinja e adicionar o fetch para ir buscar as secções  
-
-
-// modal das instruções esta desativado \|/
+// modal das instruções esta ativado \|/
 var myModal = new bootstrap.Modal(document.getElementById('instructionsModal'), {})
 myModal.toggle()
 
@@ -25,7 +23,7 @@ fetch('/fetchMap')
         array = data;
 
         const numExpos = array[0].numExpos;
-
+        console.log(data)
         let index = 0
 
 
@@ -33,16 +31,15 @@ fetch('/fetchMap')
 
         array.forEach(element => {
             if(index < numExpos){  
-                canvas.addExpositores(new Expositor(element.id, element.posX, element.posY,  element.width, element.height, element.color.toString(), 
-                    element.products, element.capacity, element.divisions, element.storeSection, element.storeSectionColor.toString())); 
+                canvas.addExpositores(new Expositor(element.id, element.posX, element.posY,  element.width, element.height, element.color , 
+                    element.products, element.capacity, element.divisions, element.storeSection, element.storeSectionColor )); 
                 
             }
         else{
-                canvas.addTextBlock(new TextBlock(element.id, element.posX, element.posY, element.value, element.angle));
+                canvas.addTextBlock(new TextBlock(element.id, element.posX, element.posY, element.value, parseInt(element.angle)));
         }
         index++;
         });
-
     })
 
 // Adiciona o listener de resize à janela do navegador
@@ -62,6 +59,7 @@ var editMap = document.getElementById("EditMap")
 var discardAlteration = document.getElementById("DiscardAlteration")
 var discardExpoInfo = document.getElementById("discardExpoInfo")
 var mapFormField = document.getElementById("mapa")
+ 
 
 addExpo.onmousedown = (event) =>{
     canvas.addExpositores(new Expositor(canvas.getNewShapeID(),sizeX/2,sizeY/2, 20, 60, 'grey'));
@@ -69,14 +67,14 @@ addExpo.onmousedown = (event) =>{
 
 rotateExpo.onmousedown = (event) =>{
     try {
-        if(canvas.selectedExpo){
-            canvas.getShapes()[canvas.getSelected(canvas.getShapes())].rotate_expositor();
+        if(canvas.selectedExpo){   
+            canvas.getShapes()[canvas.getCurrentExpositorIndex()].rotate_expositor(); 
         }
-        else if(canvas.selectedText){
-            
-            // tentando mudar a seleção do texto, para que quando este rode, a seleção do rato se adapte à rotação ln-120 de quadro.js
-            var text = canvas.getTexts()[canvas.getSelected(canvas.getTexts())];
+        else if(canvas.selectedText){ 
+            // tentando mudar a seleção do texto, para que quando este roda, a seleção do rato se adapte à rotação ln-120 de quadro.js
+            var text = canvas.getTexts()[canvas.getCurrentExpositorIndex()];
             canvas.rotateText(text)
+            console.log(text);
         }
         else
             throw new TypeError('');
@@ -90,33 +88,43 @@ rotateExpo.onmousedown = (event) =>{
     canvas.draw_shapes();
 }
 
+// ainda tenho de ver se guarda bem novos expositores
+// e como reage a eliminar expos e add novos
+
 excludeExpo.onmousedown = (event) =>{ 
     try {
-        if(canvas.selectedExpo){
-            canvas.excludeExpositores(canvas.getSelected(canvas.getShapes()))
+        if(canvas.selectedExpo){ 
+
+            const alteredShapes = tools.excludeExpositores(canvas.getShapes(), canvas.getSelected(canvas.getShapes()));
+            canvas.setShapes(alteredShapes);
             canvas.resizeShapes = [];
         }
-        else if(canvas.selectedText){
-            // var text = canvas.getTexts()[canvas.getSelected(canvas.getTexts())];
-            canvas.excludeText(canvas.getSelected(canvas.getTexts()))
-            
+        else if(canvas.selectedText){ 
+            const alteredTexts = tools.excludeText(canvas.getTexts(),canvas.getSelected(canvas.getTexts()));
+            canvas.setTexts(alteredTexts);          
         }
     
         else
             throw new TypeError('');
 
     } catch (error) {
+        console.log(error);
         window.alert("Selecione um expositor para realizar esta ação"); 
     }
     
     canvas.draw_shapes();
 }
+
 
 resizeExpo.onmousedown = (event) =>{
     try {
         if(canvas.selectedExpo){
             let selectedExpositor = canvas.getSelected(canvas.getShapes())
-            canvas.resizers(selectedExpositor)
+            
+            const [shape, resizers] = tools.resizers(canvas.getShapes(),  canvas.getResizeShapes(), selectedExpositor)
+
+            canvas.setSelectedShape(shape)
+            canvas.setResizeShapes(resizers) 
         }
         else
             throw new TypeError('');
@@ -127,7 +135,7 @@ resizeExpo.onmousedown = (event) =>{
     
     canvas.draw_shapes();
 }
-
+ 
 detailExpo.onmousedown = (event) =>{
     produtos.innerHTML = ''
 
@@ -190,7 +198,7 @@ detailExpo.onmousedown = (event) =>{
             }
         
             if(selectedExpositor.storeSection === 0){
-                departmants.value = "0";
+                departmants.value = " ";
             }else{
                 departmants.value =  selectedExpositor.storeSection.toString(); 
             }

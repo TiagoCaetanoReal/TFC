@@ -31,9 +31,12 @@ def seeMapList():
                 
                 elif(acao == 'ChangeMap'):
                     map = db.session.query(Mapa).filter(Mapa.loja_id==active_user.loja_id, Mapa.Usando == True).first()
-                    map.Usando = False
-                    db.session.commit()
+                    # caso exista uma mapa em uso
+                    if map:
+                        map.Usando = False
+                        db.session.commit()
                     
+                    # colocar mapa em uso
                     map = db.session.query(Mapa).filter(Mapa.id == form.mapId.data).first()
                     map.Usando = True
                     db.session.commit()
@@ -52,7 +55,7 @@ def seeMapList():
 
                         expo_ids = [expo.id for expo in exposInMap]
 
-                        expoContents = db.session.query(ConteudoExpositor).filter(ConteudoExpositor.Expositor_id.in_(expo_ids)).all()
+                        expoContents = db.session.query(ConteudoExpositor).filter(ConteudoExpositor.expositor_id.in_(expo_ids)).all()
 
                         tagsInMap = db.session.query(Marcador).filter(Marcador.mapa_id == mapToDelete).all()
 
@@ -127,7 +130,7 @@ def CreateStoreMap():
                     db.session.commit()
                     
                     
-                for element in mapa[1:numLabels+1]:
+                for element in mapa[1:numExpos+1]:
                     new_expo = Expositor(capacidade = element['capacity'], divisorias = element['divisions'], coordenadaX = element['posX'], coordenadaY = element['posY'],
                                         comprimento = element['width'], altura = element['height'], secção_id = element['storeSection'], mapa_id = lastMapa.id)
                     db.session.add(new_expo)
@@ -138,7 +141,7 @@ def CreateStoreMap():
             
                     if(element['products'] != ''):
                         listConteudoExpositor  = ['produto1_id', 'produto2_id', 'produto3_id','produto4_id','produto5_id', 'produto6_id']
-                        new_expoContent = ConteudoExpositor( Expositor_id = lastExpo.id)
+                        new_expoContent = ConteudoExpositor( expositor_id = lastExpo.id)
 
                         for i, product in enumerate(listConteudoExpositor):
                             if i < len(element['products']):
@@ -308,13 +311,13 @@ def AlterStoreMap():
                 ids_expos = [expo.id for expo in expos]
 
                 editedExpos = []
-
                 ####################################################
                 # verifica se existem expos novos/eliminados ou modificados
                 for element in mapa[1:numExpos+1]:  
 
                     # guarda e processa os expos modificados
                     if element['id'] in ids_expos:
+
                         editedExpos.append(element['id'])
 
                         modifiedExpo = db.session.query(Expositor).filter(Expositor.id == element['id'], Expositor.eliminado == 0).first()
@@ -329,7 +332,7 @@ def AlterStoreMap():
                                 
                             elif index == 5:
                                 
-                                modifiedExpoContent = db.session.query(ConteudoExpositor).filter(ConteudoExpositor.Expositor_id == element['id'], ConteudoExpositor.eliminado == 0).first()
+                                modifiedExpoContent = db.session.query(ConteudoExpositor).filter(ConteudoExpositor.expositor_id == element['id'], ConteudoExpositor.eliminado == 0).first()
 
                                 for index, product in enumerate(element[field]):
                                     valorProduct = listConteudoExpositor[index]
@@ -354,23 +357,28 @@ def AlterStoreMap():
                 newExpos = [x for x in editedExpos if x not in ids_expos]
                 newExpoIds = []
                     
-                # Obtenha os IDs dos marcadores existentes
-                # newExpoIds = [newExpoId.id for newExpoId in newExpoIds]
 
                 if newExpos:
                     for element in mapa[1:numExpos+1]:
                         for expo in newExpos:
                             if element['id'] == expo:
+                                # cria o novo expo
                                 new_expo = Expositor(capacidade = element['capacity'], divisorias = element['divisions'], coordenadaX = element['posX'], coordenadaY = element['posY'],
                                         comprimento = element['width'], altura = element['height'], secção_id = element['storeSection'], mapa_id = idmap)
                                 db.session.add(new_expo)
                                 db.session.commit()
-
-                            lastExpo = db.session.query(Expositor).filter(Expositor.secção_id == element['storeSection'], Expositor.mapa_id == lastMapa.id, Expositor.eliminado == 0).order_by(Expositor.id.desc()).first()
-                            newExpoIds.append(lastExpo.id)
+                                # procura o expo acabado de criar para utilizar na criação dp conteudoExpositor
+                                lastExpo = db.session.query(Expositor).filter(Expositor.mapa_id == idmap).order_by(Expositor.id.desc()).first()
+                              
+                                # 
+                                if lastExpo:
+                                    print(lastExpo.id)
+                                    # armazena o id dos novos expos
+                                    newExpoIds.append(lastExpo.id)
                             
+                        for newExpoId in newExpoIds:
                             if(element['products'] != ''):    
-                                new_expoContent = ConteudoExpositor( Expositor_id = lastExpo.id)
+                                new_expoContent = ConteudoExpositor( expositor_id = newExpoId)
 
                                 for i, product in enumerate(listConteudoExpositor):
                                     if i < len(element['products']):
@@ -393,7 +401,7 @@ def AlterStoreMap():
                         deletedExpo= db.session.query(Expositor).filter(Expositor.id == id, Expositor.eliminado == 0).first()
                         deletedExpo.eliminado = True
                         
-                        deletedContent = db.session.query(ConteudoExpositor).filter(ConteudoExpositor.Expositor_id == id, ConteudoExpositor.eliminado == 0).first()
+                        deletedContent = db.session.query(ConteudoExpositor).filter(ConteudoExpositor.expositor_id == id, ConteudoExpositor.eliminado == 0).first()
                         deletedContent.eliminado = True
                     db.session.commit()
             ####################################################
@@ -425,7 +433,7 @@ def fetchMap():
 
         for expo in expos:
             produtos = []
-            conteudoExpositores = db.session.query(ConteudoExpositor).filter(ConteudoExpositor.Expositor_id == expo.id, ConteudoExpositor.eliminado == 0).first()
+            conteudoExpositores = db.session.query(ConteudoExpositor).filter(ConteudoExpositor.expositor_id == expo.id, ConteudoExpositor.eliminado == 0).first()
             for index in range(expo.capacidade):
                 produtos.append(getattr(conteudoExpositores, f"produto{index+1}_id"))
 
@@ -439,6 +447,5 @@ def fetchMap():
         for tag in tags:
             mapDictList.append( {"id": tag.id, "posX": float(tag.coordenadaX), "posY": float(tag.coordenadaY), "width": float(tag.comprimento),
                                 "height": float(tag.altura), "angle": tag.angulo, "value": tag.texto})
-        
-
-    return mapDictList
+         
+    return jsonify(mapDictList)

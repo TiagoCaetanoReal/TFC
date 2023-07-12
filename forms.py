@@ -129,8 +129,7 @@ class ClienteScanStore(FlaskForm):
     goToMap = SubmitField(label="Ver Mapa")
 
 class ClienteStoreMap(FlaskForm): 
-    searchProduct = StringField("Inserir Produto")
-    submitProduct = SubmitField(label='<i class="fa fa-search text-secondary"></i>')
+    searchProduct = StringField("Inserir Produto") 
     expoID =  IntegerField('expoID')
     goToExpo = SubmitField(label="Ver Expositor")
 
@@ -138,3 +137,7 @@ class ClienteExpoDetails(FlaskForm):
     productID =  IntegerField('productID')
     seeDetails = SubmitField(label="Ver detalhes")
     enjoyProduct = SubmitField()
+
+
+class ClienteSearchProduct(FlaskForm): 
+    searchProduct = StringField("Inserir Produto")

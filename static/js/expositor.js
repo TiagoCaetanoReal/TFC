@@ -53,6 +53,7 @@ export class Expositor{
     }
 
     rotate_expositor(){
+        console.log(this.id);
         let tempSize = this.width;
         this.width = this.height;
         this.height = tempSize;

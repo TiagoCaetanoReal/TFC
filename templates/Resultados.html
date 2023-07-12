@@ -7,9 +7,9 @@
 {% block header %}
     <div class="row align-items-center">
         <div class="col-2">     
-            <div class="col-2 mx-3" id="seta" style="cursor:pointer">
-                <i class="fa fa-2xl fa-arrow-rotate-back text-primary"></i>
-            </div>
+            <a class="col-2 mx-3" id="seta"  style="cursor:pointer" href="{{url_for('StoreClientModule.seeStoreMap')}}"> 
+                <div class="fa fa-2xl fa-arrow-rotate-back text-primary" ></div> 
+            </a>   
         </div>
         <div class="col-8"> 
             <div class="m-2 d-flex justify-content-center ">
@@ -18,13 +18,17 @@
         </div>
     </div>
     <div class="container gx-0 mt-4 bg-light rounded-2 col-11 col-sm-8 col-md-6 col-lg-5 col-xl-4">
-        <div class="input-group input-group-lg">
-            <input type="text" class="form-control col-9" placeholder="Inserir Produto" aria-label="Produto" aria-describedby="button-addon2">
-            
-            <button class="btn btn-outline-secondary bg-light col-2" type="button" id="but">
-                <i class="fa fa-search text-secondary"></i>
-            </button>
-        </div>    
+        <form method="POST" action="" novalidate>
+        {{ formFront.csrf_token }}
+            <div class="input-group input-group-lg">
+                <!-- <input type="text" class="form-control col-9" placeholder="Inserir Produto" aria-label="Produto" aria-describedby="button-addon2"> -->
+                {{formFront.searchProduct(class="form-control col-9", placeholder="Inserir Produto")}}
+
+                <button class="btn btn-outline-secondary bg-light col-2" type="submit" id="but">
+                    <i class="fa fa-search text-secondary"></i>
+                </button>
+            </div>  
+        </form>  
     </div>
 {% endblock header %}
 
@@ -50,22 +54,32 @@
                                             </div>
                                             <div class="col-3">
                                                 <div class="g-0">
-                                                    <div class="text-center"  style="cursor:pointer">
+                                                    <div class="text-center localizar" id="{{produto.id}}" style="cursor:pointer">
                                                         <i class="fa fa-3x fa-location-dot text-secondary"></i>
-                                                        <h7 class=" ">Local</h7>
+                                                        <h6>Local</h6>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="col-4">
-                                            <div class="text-center mt-3 mt-sm-3 mt-md-4"  style="cursor:pointer">
+                                            <div class="text-center mt-3 mt-sm-3 mt-md-4 detalhes" id="{{produto.id}}" style="cursor:pointer">
                                                 <i class="fa fa-2xl fa-circle-info text-secondary"></i>
                                                 <h6>Detalhes</h6>
                                             </div>
-                                            <div class="text-center mt-2 mt-sm-4 mt-md-3 mt-lg-4"  style="cursor:pointer">
-                                                <i class="fa fa-2xl fa-regular fa-heart text-secondary"></i>
-                                                <h6 >Favorito</h6>
+                                
+                                            <div class="text-center mt-2 mt-sm-4 mt-md-3 mt-lg-4 favorito" id="{{produto.id}}" style="cursor:pointer">
+                                                {% if preferedProducts %}
+                                                    {% for prefered in preferedProducts %}
+                                                        {% if produto.id == prefered.produto_id %}
+                                                            <i class="fa fa-2xl fa-solid fa-heart text-secondary"></i>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                {% else %} 
+                                                    <i class="fa fa-2xl fa-regular fa-heart text-secondary"></i>
+                                                {% endif %}
+                                               
+                                                <h6>Favorito</h6>
                                             </div>
                                     </div>
                                 </div>
@@ -76,4 +90,149 @@
             {% endfor %}
         </div>  
     </div>
+
+    <div class="modal modal fade" id="detailsModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title text-center" id="detailsModalTitle"></h3>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body m-3" id="modalBody"> 
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock formulary %}
+
+{% block scripts %}
+<script type=text/javascript>
+    
+    var productID = document.getElementById("productID");
+    var seeDetails = document.getElementById("seeDetails");
+
+    $(".detalhes").click(function(e) {
+        e.preventDefault();
+        var id = $(this).attr("id");
+    
+        $.ajax({
+            url: '/fetchProduct',
+            type: 'GET',
+            data: {
+                idProduto: id
+            },
+            success: function(response) {
+                
+                const myModal = new bootstrap.Modal(document.getElementById('detailsModal'));
+                const myModalTitle = new bootstrap.Modal(document.getElementById('detailsModalTitle'));
+                const myModalBody = new bootstrap.Modal(document.getElementById('modalBody'));
+
+                myModalTitle._element.innerText = response[0][0];
+
+                myModal.toggle();
+                myModal.show();
+                
+                priceBase = parseFloat(response[0][1]) / (1 + (response[3]/100))
+                priceBaseRounded = Math.round(priceBase * 100) / 100
+                myModalBody._element.innerHTML = `
+                    <div>
+                        <h5>Origem: ${response[2]}<\h5>
+                        <h5>Iva do produto: ${response[3]}%<\h5>
+                        <h5>Preço sem Iva: ${priceBaseRounded}€/${response[1]}<\h5>
+                        <h5>Preço com Iva: ${response[0][1]}€/${response[1]}<\h5>
+                    <\div>
+                `;
+                
+                if(response.length > 4){
+                    myModalBody._element.innerHTML += `
+                    <table class="table mt-4">
+                        <thead>
+                        <tr>
+                            <th scope="col"></th>
+                            <th scope="col" class="text-center">Por 100gr</th>
+                            <th scope="col" class="text-center">%DR (Dose Referêcia)</th>
+                        </tr>
+                        </thead>
+                        <tbody class="overflow-auto" id="tableBody">
+                           
+                        </tbody>
+                    </table>
+                    `;
+                    const tableBody = new bootstrap.Modal(document.getElementById('tableBody'));
+
+                    for(index = 0; index < response.length; index++){
+                        tableBody._element.innerHTML += `
+                            <tr>
+                                <td>${response[4][index]}</td>
+                                <td class="text-center">
+                                    ${response[5][index]}gr
+                                </td>
+                                <td class="text-center">
+                                    ${response[6][index]}%
+                                </td>
+                            </tr>
+                        `;
+                    }
+                    
+                }
+    
+            },
+            error: function(xhr, status, error) {
+                console.log(error);
+            }
+        });
+    });
+ 
+    $(".localizar").click(function(e) {
+        e.preventDefault();
+        var id = $(this).attr("id");
+
+        $.ajax({
+            url: '/locateProduct',
+            type: 'POST',
+            data: {
+                idProduto: id
+            },
+            success: function(response) {
+                window.location.href = "{{url_for('StoreClientModule.seeStoreMap')}}";
+            },
+            error: function(xhr, status, error) {
+                console.log(error);
+            }
+        });
+    });
+
+    $(".favorito").click(function(e) {
+        var id = $(this).attr("id");
+        var $elemento = $(this)  
+
+         $.ajax({
+            url: '/preferedProduct',
+            type: 'GET',
+            data: {
+                idProduto: id
+            },
+            success: function(response) {
+                $elemento.innerHTML = ''
+                if(!response){
+                    $elemento[0].innerHTML = `
+                        <i class="fa fa-2xl fa-solid fa-heart text-secondary"></i>
+                        <h7>Favorito</h7> 
+                    `;
+                }
+                else{
+                    $elemento[0].innerHTML = `
+                        <i class="fa fa-2xl fa-regular fa-heart text-secondary"></i>
+                        <h7>Favorito</h7> 
+                    `;
+                }
+            },
+            error: function(xhr, status, error) {
+                console.log(error);
+            }
+        })
+    });
+
+</script>
+
+{% endblock scripts %}

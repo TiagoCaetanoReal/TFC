@@ -5,14 +5,14 @@
 {% endblock styles %}
 
 {% block header %}
-    <h3 class="text-center text-light pt-2">Mapa da Loja</h3>  
+    <h3 class="text-center text-light py-2">Mapa da Loja</h3>  
 
-    <div class="container gx-0   bg-light rounded-2 col-10 col-sm-8 col-md-6 col-lg-5 col-xl-4">
-        <form method="POST" action="" novalidate enctype="multipart/form-data">
+    <div class="container gx-0 bg-light rounded-2 col-10 col-sm-8 col-md-6 col-lg-5 col-xl-4">
+        <form method="POST" action="" novalidate>
             {{ formFront.csrf_token }}
             <div class="input-group input-group-lg">
                 <!-- <input type="text" class="form-control col-9" placeholder="Inserir Produto" aria-label="Produto" aria-describedby="button-addon2"> -->
-                {{formFront.searchProduct(class="form-control col-9")}}
+                {{formFront.searchProduct(class="form-control col-9", placeholder="Inserir Produto")}}
                                    
                 <button class="btn btn-outline-secondary bg-light col-2" type="submit" id="but">
                     <i class="fa fa-search text-secondary"></i>

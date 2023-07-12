@@ -17,13 +17,13 @@ export class Quadro{
         
         this.current_shape_index;
         this.is_dragging;
-        this.is_draggingResizer;
-        this.is_draggingText;
+        // this.is_draggingResizer;
+        // this.is_draggingText;
         
-        this.selectedShape;
+        // this.selectedShape;
 
         this.selectedExpo = false;
-        this.selectedText = false;
+        // this.selectedText = false;
         this.isMouseOverCanvas = false;
 
         
@@ -134,9 +134,7 @@ export class Quadro{
 
         if (this.marker) {
             // permite inserir no mapa o marcador da localização do produto pretendido
-            this.context.save();
-            console.log(this.marker.posX);
-            console.log(this.marker.posY);
+            this.context.save(); 
             this.marker.markerImg.onload = () => {
                  this.context.drawImage(this.marker.markerImg, this.marker.posX/2 - 20, this.marker.posY/2 - 25, 50, 50);
             }; 
@@ -212,10 +210,7 @@ export class Quadro{
         }
 
         this.canvas.addEventListener("wheel", (e) => {
-            // if (!this.isMouseOverCanvas){
-                e.preventDefault();
-            // }
-            // else{
+            e.preventDefault();
             
             var scale = e.deltaY
             if(scale > 0 && this.scale < 1.5){
@@ -225,8 +220,7 @@ export class Quadro{
                 this.scale -= 0.05
             }
             
-            this.draw_shapes();
-            // }
+            this.draw_shapes(); 
         });
  
         return new Promise((resolve, reject) => {

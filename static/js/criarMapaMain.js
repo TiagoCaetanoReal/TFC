@@ -1,6 +1,7 @@
 import { Expositor } from './expositor.js';
 import { TextBlock } from './textblock.js';
 import { Quadro } from './quadro.js';
+import * as tools from './ferramentasQuadro.js';
 
 // elementos html
 var addExpo = document.getElementById("addExpositor")
@@ -19,24 +20,18 @@ var discardExpoInfo = document.getElementById("discardExpoInfo")
 var saveExpoInfo = document.getElementById("saveExpoInfo")
 var mapFormField = document.getElementById("mapa")
 
-
- 
 let selectedExpositor;
 
 
 // https://www.youtube.com/watch?v=7PYvx8u_9Sk
 
-// var myModal = new bootstrap.Modal(document.getElementById('instructionsModal'), {})
-// myModal.toggle()
+var myModal = new bootstrap.Modal(document.getElementById('instructionsModal'), {})
+myModal.toggle()
 
 let canvas = new Quadro(document.getElementById("canvas"), document.getElementById("canvas").getContext("2d"));
 canvas.detectAction();
 let sizeX = canvas.canvas_width;
 let sizeY = canvas.canvas_height;
-
-// Adiciona o listener de resize à janela do navegador
-// window.addEventListener("resize", canvas.resizeCanvas, false);
-
 
 addExpo.onmousedown = (event) =>{
     canvas.addExpositores(new Expositor(canvas.shapes.length,sizeX/2,sizeY/2, 20, 60, 'grey'));
@@ -44,11 +39,10 @@ addExpo.onmousedown = (event) =>{
 
 rotateExpo.onmousedown = (event) =>{
     try {
-        if(canvas.selectedExpo){
-            canvas.getShapes()[canvas.getSelected(canvas.getShapes())].rotate_expositor();
+        if(canvas.selectedExpo){  
+            canvas.getShapes()[canvas.getCurrentExpositorIndex()].rotate_expositor(); 
         }
-        else if(canvas.selectedText){
-            
+        else if(canvas.selectedText){ 
             // tentando mudar a seleção do texto, para que quando este roda, a seleção do rato se adapte à rotação ln-120 de quadro.js
             var text = canvas.getTexts()[canvas.getSelected(canvas.getTexts())];
             canvas.rotateText(text)
@@ -68,19 +62,20 @@ rotateExpo.onmousedown = (event) =>{
 excludeExpo.onmousedown = (event) =>{ 
     try {
         if(canvas.selectedExpo){
-            canvas.excludeExpositores(canvas.getSelected(canvas.getShapes()))
+            const alteredShapes = tools.excludeExpositores(canvas.getShapes(), canvas.getSelected(canvas.getShapes()));
+            canvas.setShapes(alteredShapes);
             canvas.resizeShapes = [];
         }
         else if(canvas.selectedText){
-            // var text = canvas.getTexts()[canvas.getSelected(canvas.getTexts())];
-            canvas.excludeText(canvas.getSelected(canvas.getTexts()))
-            
+            const alteredTexts = tools.excludeText(canvas.getTexts(),canvas.getSelected(canvas.getTexts()));
+            canvas.setTexts(alteredTexts);
         }
     
         else
             throw new TypeError('');
 
     } catch (error) {
+        console.log(error);
         window.alert("Selecione um expositor para realizar esta ação"); 
     }
     
@@ -91,7 +86,13 @@ resizeExpo.onmousedown = (event) =>{
     try {
         if(canvas.selectedExpo){
             let selectedExpositor = canvas.getSelected(canvas.getShapes())
-            canvas.resizers(selectedExpositor)
+            
+            const [shape, resizers] = tools.resizers(canvas.getShapes(),  canvas.getResizeShapes(), selectedExpositor)
+
+            canvas.setSelectedShape(shape)
+            canvas.setResizeShapes(resizers)
+            
+            // canvas.resizers(selectedExpositor)
         }
         else
             throw new TypeError('');
@@ -311,6 +312,8 @@ createMap.onmousedown = (event) =>{
     ConfirmSaveDeleteBtn.onclick = (event) =>{
         array[index] = {"width": sizeX,"height": sizeY, "numExpos": canvas.getShapes().length, "numLabels": canvas.getTexts().length};
         index ++;
+
+        console.log(canvas.getShapes());
         
         canvas.getShapes().forEach(element => {
             array[index] = {"id": element.id, "posX": element.posX, "posY": element.posY, "width": element.width,

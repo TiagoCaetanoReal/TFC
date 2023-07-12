@@ -1,4 +1,4 @@
-import { Expositor } from './expositor.js';
+import * as tools from './ferramentasQuadro.js';
 
 export class Quadro{
     constructor(canvas, context){
@@ -46,46 +46,33 @@ export class Quadro{
         this.draw_shapes(); 
     }
 
-
-    excludeExpositores(id){
-        var shape = this.getShapes().find(item => item.id === id);
-        const index = this.getShapes().indexOf(shape);
-        
-        if (index > -1) {  
-            this.getShapes().splice(index, 1);
-        }
-    }
-    
-    excludeText(id){
-        var text = this.getTexts().find(item => item.id === id);
-        const index = this.getTexts().indexOf(text);
-        
-        if (index > -1) {  
-            this.getTexts().splice(index, 1);
-        }
-    }
-
-    resizers(id){
-        var shape = this.getShapes().find(item => item.id === id);
-        const index = this.getShapes().indexOf(shape);
-        
-        this.selectedShape = shape;
-        this.resizeShapes = [];
-
-        this.resizeShapes.push(
-        new Expositor(0,this.shapes[index].posX+(this.shapes[index].width/2)-5, this.shapes[index].posY-5, 10, 10, 'grey'),
-        new Expositor(1,this.shapes[index].posX-5, this.shapes[index].posY+(this.shapes[index].height/2)-5, 10, 10, 'grey'),
-        new Expositor(2,this.shapes[index].posX+(this.shapes[index].width/2)-5, this.shapes[index].posY+this.shapes[index].height-5, 10, 10, 'grey'),
-        new Expositor(3,this.shapes[index].posX+this.shapes[index].width-5, this.shapes[index].posY+(this.shapes[index].height/2)-5, 10, 10, 'grey'))
-    }
-
     rotateText(selectedText){
         // https://www.youtube.com/watch?v=5vxygxshTQ4
         
         selectedText.set_angle(90);
         this.draw_shapes();
     }
+
+    setShapes(shapes){
+        this.shapes = shapes; 
+    }
+
+    setTexts(texts){
+        this.texts = texts;
+    }
     
+    setResizeShapes(resizers){
+        this.resizeShapes = resizers; 
+    }
+
+    setSelectedShape(selectedShape){
+        this.selectedShape = selectedShape;
+    }
+
+    getResizeShapes(){
+        return this.resizeShapes;
+    }
+
     getShapes(){
         return this.shapes;
     }
@@ -104,15 +91,19 @@ export class Quadro{
         var id  = this.getShapes()[this.getShapes().length - 1].id + 1
         return id
     }
-
-    getSelected(object){
-        return object[this.current_shape_index].id
-    }
     
     getCurrentExpositor(){
         return this.shapes[this.current_shape_index]
     }
 
+    getCurrentExpositorIndex(){
+        return this.current_shape_index
+    }
+    
+    getSelected(object){
+        console.log(this.current_shape_index);
+        return object[this.current_shape_index].id
+    }
 
     is_mouse_in_shape(x, y, shape, type){
         let shape_left;
@@ -158,13 +149,11 @@ export class Quadro{
             this.context.restore();
         }
 
-        console.log(this.context.fillStyle)
         for(let shape of this.resizeShapes){
             this.context.fillStyle = 'black';
             this.context.fillRect(shape.posX, shape.posY, shape.width, shape.height )
         }
  
-        console.log(this.context.fillStyle)
         for(let text of this.texts){
             this.context.fillStyle = '#000';
 
@@ -175,7 +164,6 @@ export class Quadro{
 
             this.context.restore();
         }
-        console.log(this.context.fillStyle)
 
         if(this.resizeShapes!=[] && !this.is_draggingResizer && this.is_dragging || this.is_draggingText){
             this.resizeShapes = [];
@@ -214,6 +202,7 @@ export class Quadro{
 
             for( let shape of this.resizeShapes){
                 if(this.is_mouse_in_shape(this.startX, this.startY, shape, 're')){
+                    console.log(shape.id);
                     this.current_shape_index = shape.id;
                     this.is_dragging = false;
                     this.is_draggingText = false;
@@ -221,8 +210,7 @@ export class Quadro{
                     this.selectedExpo = false;
                     this.selectedText = false;
                     
-                    this.recolor();
-                    shape.changeAlpha(1)
+                    tools.recolor(this.getShapes());
                     return;
                 }
                 else{
@@ -235,6 +223,7 @@ export class Quadro{
     
             for( let shape of this.shapes){
                 if(this.is_mouse_in_shape(this.startX, this.startY, shape, 'exp')){
+                    console.log(shape.id);
                     this.current_shape_index = index;
                     this.is_dragging = true;
                     this.is_draggingText = false;
@@ -242,7 +231,7 @@ export class Quadro{
                     this.selectedExpo = true;
                     this.selectedText = false;
                     
-                    this.recolor();
+                    tools.recolor(this.getShapes());
                     shape.changeAlpha(0.5)
                     return;
                 }
@@ -266,7 +255,7 @@ export class Quadro{
                     this.is_draggingText = true;
                     this.selectedExpo = false;
                     this.selectedText = true;
-                    this.recolor();
+                    tools.recolor(this.getShapes());
                     return
                 }
                 else{
@@ -277,7 +266,7 @@ export class Quadro{
                 index++;
             }
             
-            this.recolor();
+            tools.recolor(this.getShapes());
             this.draw_shapes();
         };
 
@@ -381,16 +370,5 @@ export class Quadro{
         this.startX = pos.x;
         this.startY = pos.y;
     }
-
-    recolor(){
-        for( let shape of this.shapes){
-            if(shape.storeSectionColor === ""){
-                shape.color = 'grey';
-                shape.changeAlpha(1);
-            }
-            else
-                shape.color = shape.storeSectionColor;
-                shape.changeAlpha(1);
-        }
-    }
+ 
 }
