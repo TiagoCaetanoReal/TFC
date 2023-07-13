@@ -4,6 +4,8 @@ from forms import ClienteExpoDetails, ClienteLoginForm, ClienteRegisterForm, Cli
 from models import Favorito, Iva, Medida, Origem, Produto, TabelaNutricional100gr, TabelaNutricionalDR, db, Cliente, bcrypt, Mapa, Expositor, Marcador, ConteudoExpositor, Secção
 from flask_login import login_user, logout_user, current_user
 from datetime import datetime, timedelta
+from sqlalchemy import func
+from unidecode import unidecode
 
 StoreClientModule = Blueprint("StoreClientModule", __name__)
 
@@ -240,13 +242,13 @@ def seeSearchResult():
     if(active_user.is_authenticated):
         map_id = session.get('map')
         searchProduct = ''
-        products = []
+        products = '' 
  
         preferedProducts = []
 
         
         
-        if session.get('storeID') is not None:
+        if session.get('searchingProduct') is not None:
             searchProduct = session.get('searchingProduct') 
             session.pop('searchingProduct')
 
@@ -254,32 +256,32 @@ def seeSearchResult():
             if form.searchProduct.data != None:
                 searchProduct = form.searchProduct.data
 
-
-        expos = db.session.query(Expositor).filter(Expositor.mapa_id == map_id).all()
         
-        for expo in expos:
-            expoContent = db.session.query(ConteudoExpositor).filter(ConteudoExpositor.expositor_id == expo.id).all()
-            print('expoContent')
-            print(expoContent)
-            # for index in range(6):
-            #     print(getattr(expoContent, f"produto{index+1}_id"))
-                # products.append()
-
-
         productName = f"%{searchProduct}%"  # Formata o nome para corresponder parcialmente
+        productName_normalized = unidecode(productName.lower())  
+         
 
-        produtos = ''
-        # procura do produtos pertencentes ao mapa atual
-        produtos = Produto.query.filter(Produto.nome.ilike(productName)).all()
+        # problema não conseguia procurar objetos com acentos
+        # resolução adicionei uma coluna a tabela produtos no qual o nome é escrito com caracteres simples
+        products =  db.session.query(Expositor, ConteudoExpositor, Produto).filter(
+            Expositor.mapa_id == map_id, ConteudoExpositor.expositor_id == Expositor.id,
+            Produto.nomeUnaccented.ilike(productName_normalized), ConteudoExpositor.produto1_id == Produto.id |
+            ConteudoExpositor.produto2_id == Produto.id|ConteudoExpositor.produto3_id == Produto.id|
+            ConteudoExpositor.produto4_id == Produto.id|ConteudoExpositor.produto5_id == Produto.id|
+            ConteudoExpositor.produto6_id == Produto.id).all()
+         
+        
+
+        print(products)
 
           
-        for produto in produtos: 
-            prefered = db.session.query(Favorito).filter(Favorito.produto_id == produto.id, Favorito.cliente_id == active_user.id, Favorito.eliminado == 0).first()
+        for product in products: 
+            prefered = db.session.query(Favorito).filter(Favorito.produto_id == product[2].id, Favorito.cliente_id == active_user.id, Favorito.eliminado == 0).first()
             if prefered:
                 preferedProducts.append(prefered)
  
 
-        return render_template("Resultados.html", title = "MapPage", formFront = form, produtos = produtos, preferedProducts = preferedProducts)
+        return render_template("Resultados.html", title = "MapPage", formFront = form, products = products, preferedProducts = preferedProducts)
     else:
         return redirect("/login")
     

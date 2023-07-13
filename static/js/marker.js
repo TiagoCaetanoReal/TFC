@@ -1,11 +1,14 @@
 export class Marker{
-    constructor(posX, posY){
+    constructor(posX, posY, width, height ){
         this.posX = posX;
         this.posY = posY;
        
         this.addPosX = 0; 
         this.addPosY = 0;
         
+        this.width = width; 
+        this.height = height;
+ 
         this.markerImg = new Image();
         this.markerImg.src = './static/marker.png';
     }

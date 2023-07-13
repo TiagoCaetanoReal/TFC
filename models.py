@@ -2,10 +2,10 @@ from flask_login import UserMixin
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from flask_bcrypt import Bcrypt
+from unidecode import unidecode
 
 db = SQLAlchemy()
-bcrypt = Bcrypt()
-
+bcrypt = Bcrypt() 
 
 class Cliente(db.Model, UserMixin):
     __tablename__ = 'Cliente' 
@@ -73,6 +73,7 @@ class Produto (db.Model):
     id = db.Column(db.Integer, primary_key=True)
     preço = db.Column(db.Integer, unique=False, nullable=False)
     nome = db.Column(db.String(40), unique=False, nullable=False)
+    nomeUnaccented = db.Column(db.String(40), unique=False, nullable=False)
     origem_id = db.Column('Origem', db.ForeignKey('Origem.id'), nullable=False)
     origem = db.relationship('Origem', backref='Produto')
     iva_id = db.Column('Iva', db.ForeignKey('Iva.id'), nullable=False)

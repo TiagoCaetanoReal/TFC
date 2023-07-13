@@ -64,35 +64,31 @@
     </nav>
     
 	<div class="wrapper bg-light">
-		<nav id="sidebar" class="sidebar js-sidebar">
-			<div class="sidebar-content js-simplebar bg-secondary">
-                <ul class="sidebar-nav">
-                    <div class="row">
-                        <a class="col-3" href="{{ url_for('AutenticationFuncModule.doAlteration') }}">
-                            <img
-								
-                                src="../static/avatars/avatar-2.jpg"
-                                alt=""
-                                class="border border-2 rounded-circle mt-4 mx-1"
-                                width="60px"
-                                height="60px"
-								
-                            />
-						</a>
-                        <div class="col-9">
-                            {% block profile %}
-							{% endblock profile %}
-                            
-                        </div>
-                    </div>
-                    
-                    <hr class="border border-2 border-white">
-                    {% block navOptions %}
-                    {% endblock navOptions %}
-                </ul>
-			</div>
-
-            
+		<nav id="sidebar" class="sidebar js-sidebar bg-secondary"> 
+			<ul class="sidebar-nav">
+				<div class="row">
+					<a class="col-3" href="{{ url_for('AutenticationFuncModule.doAlteration') }}">
+						<img
+							
+							src="../static/avatars/avatar-2.jpg"
+							alt=""
+							class="border border-2 rounded-circle mt-4 mx-1"
+							width="60px"
+							height="60px"
+							
+						/>
+					</a>
+					<div class="col-9">
+						{% block profile %}
+						{% endblock profile %}
+						
+					</div>
+				</div>
+				
+				<hr class="border border-2 border-white">
+				{% block navOptions %}
+				{% endblock navOptions %}
+			</ul>  
 		</nav>
 		<div class="container h-75 ">
             {% block content %}

@@ -35,26 +35,26 @@
 {% block formulary %}
     <div class="container h-75 mt-4 col-11 border border-0 overflow-scroll" >
         <div class="row">
-            {% for produto in produtos %}
+            {% for produto in products %}
                 <div class="col-12 col-md-6 pt-2">
                     <div class="card ">
                         <div class="row g-0">
                             <div class="col-2 mt-4">
                                 <div class="card-img ">
-                                    <img src={{produto.photoPath}} class="img-fluid" style="height: 60px;">
+                                    <img src={{produto[2].photoPath}} class="img-fluid" style="height: 60px;">
                                 </div>
                             </div>
                             <div class="col-10">
                                 <div class="row">
                                     <div class="col-8">
-                                        <h3 class="card-title">{{produto.nome}}</h3> 
+                                        <h3 class="card-title">{{produto[2].nome}}</h3> 
                                         <div class="row g-0">
                                             <div class="col-9">
-                                                <h5 class="">{{produto.preço}}€/Kg</h5>
+                                                <h5 class="">{{produto[2].preço}}€/Kg</h5>
                                             </div>
                                             <div class="col-3">
                                                 <div class="g-0">
-                                                    <div class="text-center localizar" id="{{produto.id}}" style="cursor:pointer">
+                                                    <div class="text-center localizar" id="{{produto[2].id}}" style="cursor:pointer">
                                                         <i class="fa fa-3x fa-location-dot text-secondary"></i>
                                                         <h6>Local</h6>
                                                     </div>
@@ -63,12 +63,12 @@
                                         </div>
                                     </div>
                                     <div class="col-4">
-                                            <div class="text-center mt-3 mt-sm-3 mt-md-4 detalhes" id="{{produto.id}}" style="cursor:pointer">
+                                            <div class="text-center mt-3 mt-sm-3 mt-md-4 detalhes" id="{{produto[2].id}}" style="cursor:pointer">
                                                 <i class="fa fa-2xl fa-circle-info text-secondary"></i>
                                                 <h6>Detalhes</h6>
                                             </div>
                                 
-                                            <div class="text-center mt-2 mt-sm-4 mt-md-3 mt-lg-4 favorito" id="{{produto.id}}" style="cursor:pointer">
+                                            <div class="text-center mt-2 mt-sm-4 mt-md-3 mt-lg-4 favorito" id="{{produto[2].id}}" style="cursor:pointer">
                                                 {% if preferedProducts %}
                                                     {% for prefered in preferedProducts %}
                                                         {% if produto.id == prefered.produto_id %}

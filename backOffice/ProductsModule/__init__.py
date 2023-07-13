@@ -8,6 +8,7 @@ from datetime import datetime, timedelta
 from werkzeug.utils import secure_filename
 import shutil
 from sqlalchemy.exc import SQLAlchemyError
+from unidecode import unidecode
 
 ProductsModule = Blueprint("ProductsModule", __name__)
 
@@ -70,6 +71,7 @@ def seeProductList():
         return redirect("/login")
     
     return render_template("ListagemProdutos.html", title = "MapList", active_user = employee, produtos = produtos, listFormFront = listForm)
+ 
 
 
 
@@ -165,7 +167,7 @@ def CreateProduct():
                         productForm.price.data = float(str(0) + str(productForm.price.data))
 
                     try:
-                        new_Product = Produto(nome=productForm.name.data, preço = productForm.price.data, 
+                        new_Product = Produto(nome=productForm.name.data, nomeUnaccented = unidecode(productForm.name.data).lower(), preço = productForm.price.data, 
                                             origem_id = productForm.origin.data, iva_id = productForm.iva.data, 
                                             unMedida_id = productForm.metric.data, secção_id = productForm.department.data, 
                                             photoPath = destination, loja_id = store.id)
@@ -177,6 +179,7 @@ def CreateProduct():
                         if(fullyFilled and not partFilled):
                             db.session.commit()
                             get_produto = db.session.query(Produto).filter(Produto.loja_id == store.id, Produto.nome == productForm.name.data).first()
+
 
                             new_100grTable =  TabelaNutricional100gr(
                                 kcal = nutritionForm.kcal100gr.data, kj = nutritionForm.kj100gr.data,
@@ -331,16 +334,10 @@ def AlterProduct():
                                 valor = listProduct[index]
                                 
                                 if str(field.data) != str(getattr(produto, valor)) and str(field.data) != '':
-                                    # if(valor == 'nome'):
-                                    #     novo_nome = "Image.png"
-
-                                    #     print(produto.photoPath)
-
-                                    #     # guarda imagem mas não subscreve, depois disso é só fazer as tabela e a edição fica pronta
-
-                                    #     productForm.photoURI.data = os.rename(produto.photoPath, field.data + novo_nome)
-
-                                    #     print(productForm.photoURI.data)
+                                    if(valor == 'nome'):
+                                        nomeUnaccented = unidecode(field.data).lower()
+                                        setattr(produto, 'nomeUnaccented', nomeUnaccented)
+ 
 
                                     if(valor == 'photoPath'):
                                         field.data = save_photo(produto)
@@ -348,17 +345,19 @@ def AlterProduct():
                                     setattr(produto, valor, field.data)
 
                         for index, field in enumerate(nutritionForm):
-                            print('\n')
-                            print(field.name)
-                            if index < 8 :   
-                                valor = nutritionalList[index]
-                                if str(field.data) != str(getattr(tabela100gr, valor)) and str(field.data) != '':
-                                    setattr(tabela100gr, valor, field.data)
-                                
-                            if index >= 8 and index < 16:    
-                                valor = nutritionalList[index-8]
-                                if str(field.data) != str(getattr(tabelaDR, valor)) and str(field.data) != '':
-                                    setattr(tabelaDR, valor, field.data)
+                            if tabela100gr and tabelaDR:
+                                print('\n')
+                                print(field.name)  
+                                if index < 8 :   
+                                    valorNutritionalList = nutritionalList[index]
+                                    print(valorNutritionalList) 
+                                    if str(field.data) != str(getattr(tabela100gr, valorNutritionalList)) and str(field.data) != '':
+                                        setattr(tabela100gr, valorNutritionalList, field.data)
+                                    
+                                if index >= 8 and index < 16:    
+                                    valorNutritionalList = nutritionalList[index-8]
+                                    if str(field.data) != str(getattr(tabelaDR, valorNutritionalList)) and str(field.data) != '':
+                                        setattr(tabelaDR, valorNutritionalList, field.data)
 
 
                         # problema commit não esta a funcionar
