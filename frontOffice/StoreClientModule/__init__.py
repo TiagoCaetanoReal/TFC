@@ -19,7 +19,7 @@ def seeStoreMap():
     if(active_user.is_authenticated):
 
         if request.method == 'POST':
-            if form.searchProduct.data != None:
+            if form.searchProduct.data != '':
                 print(form.searchProduct.data)
                 session['searchingProduct'] = form.searchProduct.data
                 return redirect('/SearchProduct')
@@ -256,32 +256,36 @@ def seeSearchResult():
             if form.searchProduct.data != None:
                 searchProduct = form.searchProduct.data
 
-        
-        productName = f"%{searchProduct}%"  # Formata o nome para corresponder parcialmente
-        productName_normalized = unidecode(productName.lower())  
-         
+        if searchProduct != '':
+            productName = f"%{searchProduct}%"  # Formata o nome para corresponder parcialmente
+            productName_normalized = unidecode(productName.lower())  
+            
 
-        # problema não conseguia procurar objetos com acentos
-        # resolução adicionei uma coluna a tabela produtos no qual o nome é escrito com caracteres simples
-        products =  db.session.query(Expositor, ConteudoExpositor, Produto).filter(
-            Expositor.mapa_id == map_id, ConteudoExpositor.expositor_id == Expositor.id,
-            Produto.nomeUnaccented.ilike(productName_normalized), ConteudoExpositor.produto1_id == Produto.id |
-            ConteudoExpositor.produto2_id == Produto.id|ConteudoExpositor.produto3_id == Produto.id|
-            ConteudoExpositor.produto4_id == Produto.id|ConteudoExpositor.produto5_id == Produto.id|
-            ConteudoExpositor.produto6_id == Produto.id).all()
-         
-        
+            # problema não conseguia procurar objetos com acentos
+            # resolução adicionei uma coluna a tabela produtos no qual o nome é escrito com caracteres simples
+            products =  db.session.query(Expositor, ConteudoExpositor, Produto).filter(
+                Expositor.mapa_id == map_id, ConteudoExpositor.expositor_id == Expositor.id,
+                Produto.nomeUnaccented.ilike(productName_normalized), ConteudoExpositor.produto1_id == Produto.id |
+                ConteudoExpositor.produto2_id == Produto.id|ConteudoExpositor.produto3_id == Produto.id|
+                ConteudoExpositor.produto4_id == Produto.id|ConteudoExpositor.produto5_id == Produto.id|
+                ConteudoExpositor.produto6_id == Produto.id).all()
+            
+            
 
-        print(products)
+            print(products)
 
           
-        for product in products: 
-            prefered = db.session.query(Favorito).filter(Favorito.produto_id == product[2].id, Favorito.cliente_id == active_user.id, Favorito.eliminado == 0).first()
-            if prefered:
-                preferedProducts.append(prefered)
+            for product in products: 
+                prefered = db.session.query(Favorito).filter(Favorito.produto_id == product[2].id, Favorito.cliente_id == active_user.id, Favorito.eliminado == 0).first()
+                if prefered:
+                    preferedProducts.append(prefered)
+
+            print(preferedProducts)
  
 
-        return render_template("Resultados.html", title = "MapPage", formFront = form, products = products, preferedProducts = preferedProducts)
+            return render_template("Resultados.html", title = "MapPage", formFront = form, products = products, preferedProducts = preferedProducts)
+        else:
+            return redirect('/Store')
     else:
         return redirect("/login")
     

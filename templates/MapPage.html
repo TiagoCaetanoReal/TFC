@@ -55,6 +55,24 @@
             <div class="col-3"></div>
         </div>
     </div>
+
+
+     <!-- Modal Info -->
+     <div class="modal modal-lg show" id="instructionsModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">Instruções</h3>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body m-3"> 
+                    <p>Nesta tela tem o mapa, o qual pode ser arrastado, com o dedo no telemovel, ou com o rato no computador </p>
+                    <br>
+                    <p>Selecionando um expositor no mapa, verá os seus produtos</p>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock formulary %}
 
 
@@ -68,13 +86,8 @@
     var expoID = document.getElementById("expoID") 
     var goToExpo = document.getElementById("goToExpo")
     var wantedExpo = document.getElementById("wantedExpo")
-    
-    
     let canvas
-
-
     var id = null;
-
     
     fetch('/fetchMap')
         .then(response => response.json())
@@ -108,23 +121,28 @@
 
 
             // utilizado para ir buscar a localização do expositor que contem o produto pretendido               
-            if( wantedExpo !== 0 ){ 
-                console.log(wantedExpo);
+            if( wantedExpo !== 0 ){  
                 var markerPosition = canvas.getSpecificExpoPosition(wantedExpo)
                 console.log(markerPosition);
-                canvas.addMarker(new Marker(markerPosition.posX, markerPosition.posY, 50, 50))}
+                canvas.addMarker(new Marker(markerPosition.posX, markerPosition.posY, 31, 40))}
 
             // falta adicionar botões para saber se cliente encontrou produto
             
             onmousedown = (event) =>{
-                id = meuMetodo(id).then((expositorId) => {
-                    console.log(expositorId)
-                    var arrayExpos = array.slice(0, numExpos);
-                    var result = arrayExpos.find(item => item.id === expositorId);
+                id = meuMetodo(id).then((expositorId) => { 
+                    // mapa atulizava sempre que dava duplo click em sitios que não existisse expositor, 
+                    // ou seja, fazia um post devido ao goToExpo.click()
+                    // para resolver isso foi adicionado este if abaixo para verificar se tinha sido selecionado
+                    // algo expositor, caso contrario não fazia nada
+                    if (id !== null){
+                        console.log(id);
+                        var arrayExpos = array.slice(0, numExpos);
+                        var result = arrayExpos.find(item => item.id === expositorId);
 
-                    expoID.value = expositorId 
-                    goToExpo.click()
-
+                        expoID.value = expositorId 
+                        goToExpo.click() 
+                    }
+                    
                 });
             }
             
@@ -133,6 +151,19 @@
                 return id;
             }
         })
+
+        
+    // guardar no localstorage se o cliente já viu o modal, para que este não estja sempre a aparecer
+    var getModalStorageValue = localStorage.getItem('modal')
+    console.log(getModalStorageValue);
+    
+    if( getModalStorageValue === null){
+        var myModal = new bootstrap.Modal(document.getElementById('instructionsModal'), {})
+        myModal.toggle()
+        localStorage.setItem('modal', 'read');
+    }
+
+    // adicionar 2 botões para perceber se cliente encontrou produto
 
 </script>
 {% endblock scripts %}

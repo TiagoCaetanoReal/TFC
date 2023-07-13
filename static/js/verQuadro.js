@@ -79,7 +79,12 @@ export class Quadro{
     getSpecificExpoPosition(id){
         const expositor = this.shapes.find((shape) => shape.id === id);
         if (expositor) {
-            return { posX: expositor.posX + expositor.width/2, posY: expositor.posY+ expositor.height/2};
+            console.log(expositor.posY - expositor.height);
+            if(expositor.width > expositor.height)
+                return { posX: expositor.posX, posY: expositor.posY + expositor.height/2};
+            
+            else 
+                return { posX: expositor.posX - expositor.width , posY: expositor.posY + expositor.height/2};
           }
           return { posX: null, posY: null};
     }
@@ -112,10 +117,6 @@ export class Quadro{
             this.context.globalAlpha = shape.colorAlpha;
             this.context.fillStyle = shape.color;
             this.context.fillRect(shape.posX, shape.posY, shape.width, shape.height )
-            
-            console.log('this.translateX + " " + this.translateY');
-            console.log(this.translateX + " " + this.translateY);
-            console.log(shape.posX + " " + shape.posY);
             this.context.restore();
         }
 
@@ -133,15 +134,17 @@ export class Quadro{
         
 
         if (this.marker) {
+
+
 // tentar melhorar a localização
 
 
             // permite inserir no mapa o marcador da localização do produto pretendido
             this.context.save(); 
-            console.log(this.marker.posY/2);
-            console.log(this.marker.expoHeight);
-            this.marker.markerImg.onload = () => {
-                 this.context.drawImage(this.marker.markerImg, this.marker.posX/2, this.marker.posY/2, this.marker.width, this.marker.height);
+            this.marker.markerImg.onload = () => { 
+                // this.context.drawImage(this.marker.markerImg, this.marker.posX/2 - this.marker.width/2, this.marker.posY/2 - this.marker.height/2, this.marker.width, this.marker.height);
+           
+                this.context.drawImage(this.marker.markerImg, this.marker.posX/2, this.marker.posY/2 - this.marker.height, this.marker.width, this.marker.height);
             }; 
             this.context.restore();
           }
