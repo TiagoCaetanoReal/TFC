@@ -18,18 +18,18 @@ def seeStoreMap():
 
     if(active_user.is_authenticated):
 
-        if request.method == 'POST':
-            if form.searchProduct.data != '':
-                print(form.searchProduct.data)
+        if request.method == 'POST':  
+            # para nao entrar nos resultados de produtos por engano, é usada arestrição seguinte
+            # no qual o utilizador tem de inserir algo diferente de vazio e espaço
+            if form.searchProduct.data != None and form.searchProduct.data != ' ': 
                 session['searchingProduct'] = form.searchProduct.data
                 return redirect('/SearchProduct')
 
             if form.expoID.data != None:
-                session['expo'] = form.expoID.data
-                
+                session['expo'] = form.expoID.data 
                 return redirect('/Displayer')
 
-        return render_template("MapPage.html", title = "MapPage", formFront = form, wantedExpo = expo_id)
+        return render_template("MapPage.html", title = "MapPage", formFront = form, wantedExpo = expo_id, user = active_user)
     else:
         return redirect("/login")
     
@@ -52,14 +52,14 @@ def fetchMap():
         
         session['map'] = map.id 
 
-        expos = db.session.query(Expositor).filter(Expositor.mapa_id == map.id, Expositor.eliminado == 0).all()
-        tags = db.session.query(Marcador).filter(Marcador.mapa_id ==  map.id, Marcador.eliminado == 0).all()
+        expos = db.session.query(Expositor).filter(Expositor.mapa_id == map.id, Expositor.eliminado == False).all()
+        tags = db.session.query(Marcador).filter(Marcador.mapa_id ==  map.id, Marcador.eliminado == False).all()
 
         mapDictList.append({"width": float(map.comprimento), "height": float(map.altura), "numExpos": len(expos), "numLabels": len(tags), "wantedExpo": expo_id})
 
         for expo in expos:
             produtos = []
-            conteudoExpositores = db.session.query(ConteudoExpositor).filter(ConteudoExpositor.expositor_id == expo.id, ConteudoExpositor.eliminado == 0).first()
+            conteudoExpositores = db.session.query(ConteudoExpositor).filter(ConteudoExpositor.expositor_id == expo.id, ConteudoExpositor.eliminado == False).first()
             for index in range(expo.capacidade):
                 produtos.append(getattr(conteudoExpositores, f"produto{index+1}_id"))
 
@@ -86,10 +86,10 @@ def fetchMap():
 @StoreClientModule.route("/Displayer", methods=['GET', 'POST'])
 def seeDisplayerItems():
     active_user = current_user
-    form = ClienteExpoDetails()
+    form = ClienteExpoDetails() 
 
     if(active_user.is_authenticated):
-        idExpo = session.get('expo')
+        idExpo = session.get('expo')  
         products = []
         preferedProducts = []
 
@@ -107,7 +107,7 @@ def seeDisplayerItems():
             if prefered:
                 preferedProducts.append(prefered)
 
-        return render_template("Expositor.html", title = "ExpoPage", department = department, products = products, formFront = form, preferedProducts = preferedProducts )
+        return render_template("Expositor.html", title = "ExpoPage", department = department, products = products, formFront = form, preferedProducts = preferedProducts, user = active_user)
     
     else:
         return redirect("/login")
@@ -274,16 +274,16 @@ def seeSearchResult():
 
             print(products)
 
-          
-            for product in products: 
-                prefered = db.session.query(Favorito).filter(Favorito.produto_id == product[2].id, Favorito.cliente_id == active_user.id, Favorito.eliminado == 0).first()
-                if prefered:
-                    preferedProducts.append(prefered)
+            if active_user.id != 0:
+                for product in products: 
+                    prefered = db.session.query(Favorito).filter(Favorito.produto_id == product[2].id, Favorito.cliente_id == active_user.id, Favorito.eliminado == 0).first()
+                    if prefered:
+                        preferedProducts.append(prefered)
 
-            print(preferedProducts)
+                print(preferedProducts)
  
 
-            return render_template("Resultados.html", title = "MapPage", formFront = form, products = products, preferedProducts = preferedProducts)
+            return render_template("Resultados.html", title = "MapPage", formFront = form, products = products, preferedProducts = preferedProducts, user = active_user)
         else:
             return redirect('/Store')
     else:

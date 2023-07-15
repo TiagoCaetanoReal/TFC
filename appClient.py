@@ -1,11 +1,10 @@
 from flask import Flask
-from models import db, bcrypt, Cliente
 from flask_login import LoginManager
-from flask_babel import Babel 
+from flask_babel import Babel
+from models import db, bcrypt, Cliente
 
 from frontOffice.AutenticationModule import AutenticationClientModule
 from frontOffice.StoreClientModule import StoreClientModule
- 
 
 def create_app(config_filename):
 	app = Flask(__name__)

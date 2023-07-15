@@ -107,6 +107,7 @@ class ClienteLoginForm(FlaskForm):
     username_cliente = StringField(label="Nome Utilizador", validators=[InputRequired(), Length(min=5, max=40)])
     password_cliente = PasswordField(label="Password", validators=[InputRequired()])
     login = SubmitField(label="Login")
+    loginGuest = SubmitField(label="Entrar como Visitante")
 
 
 class ClienteRegisterForm(FlaskForm):

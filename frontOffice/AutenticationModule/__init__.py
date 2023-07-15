@@ -16,7 +16,7 @@ def doLogin():
     form = ClienteLoginForm()
 
     if request.method == 'POST':
-        if form.validate_on_submit():
+        if form.validate_on_submit() and form.login.data == True:
             try:
                 user = db.session.query(Cliente).filter(Cliente.nome == form.username_cliente.data).first()
                 
@@ -30,6 +30,16 @@ def doLogin():
                     else:
                         form.password_cliente.errors.append("Palavra-Passe Incorreta")
 
+            except Exception as e:
+                return f'Erro ao iniciar sessão: {str(e)}'
+            
+        elif form.loginGuest.data == True:   
+            try:
+                user = db.session.query(Cliente).filter(Cliente.id == 0).first() 
+                login_user(user)
+                
+                return redirect('/ScanStore')
+                      
             except Exception as e:
                 return f'Erro ao iniciar sessão: {str(e)}'
             

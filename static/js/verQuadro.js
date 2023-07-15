@@ -54,6 +54,11 @@ export class Quadro{
         this.marker = marker
         this.draw_shapes();
     }
+
+    removeMarker(){
+        this.marker = ''
+        this.draw_shapes();
+    }
     
     getShapes(){
         return this.shapes;

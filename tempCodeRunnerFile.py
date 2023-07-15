@@ -1,1 +1,1 @@
-flask_lt
+flask_babel

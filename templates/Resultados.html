@@ -54,7 +54,11 @@
                                         <div class="col-3">
                                             <div class="g-0 position-absolute bottom-0">
                                                 <div class="text-center localizar" id="{{produto[2].id}}" style="cursor:pointer">
-                                                    <i class="fa fa-4x fa-location-dot text-secondary"></i>
+                                                    {% if  user.id != 0 %} 
+                                                        <i class="fa fa-4x fa-location-dot text-secondary"></i>
+                                                    {% else %}
+                                                        <i class="fa fa-3x fa-location-dot text-secondary"></i>
+                                                    {% endif %}
                                                     <h6>Local</h6>
                                                 </div>
                                             </div>
@@ -62,11 +66,12 @@
                                         
                                     
                                         <div class="col-4">
-                                                <div class="text-center mt-3 mt-sm-3 mt-md-4 detalhes" id="{{produto[2].id}}" style="cursor:pointer">
-                                                    <i class="fa fa-2xl fa-circle-info text-secondary"></i>
-                                                    <h6>Detalhes</h6>
-                                                </div>
-                                    
+                                            <div class="text-center mt-3 mt-sm-3 mt-md-4 detalhes" id="{{produto[2].id}}" style="cursor:pointer">
+                                                <i class="fa fa-2xl fa-circle-info text-secondary"></i>
+                                                <h6>Detalhes</h6>
+                                            </div>
+                                                
+                                            {% if  user.id != 0 %} 
                                                 <div class="text-center mt-2 mt-sm-4 mt-md-3 mt-lg-4 favorito" id="{{produto[2].id}}" style="cursor:pointer">
                                                     {% if preferedProducts %}
                                                         {% for prefered in preferedProducts %}
@@ -80,6 +85,7 @@
                                                 
                                                     <h6>Favorito</h6>
                                                 </div>
+                                            {% endif %}
                                         </div>
                                     </div>
                                 </div>

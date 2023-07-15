@@ -4,9 +4,7 @@ from flask import redirect, render_template, url_for
 from forms import CreateProductForm, NutritionTableForm, ProductsListForm, EditProductForm
 from models import db, Loja, Secção, Iva, Medida, Origem, Produto, TabelaNutricional100gr, TabelaNutricionalDR
 from flask_login import login_user, logout_user, current_user
-from datetime import datetime, timedelta
-from werkzeug.utils import secure_filename
-import shutil
+from datetime import datetime, timedelta 
 from sqlalchemy.exc import SQLAlchemyError
 from unidecode import unidecode
 

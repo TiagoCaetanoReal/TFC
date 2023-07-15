@@ -90,9 +90,7 @@ resizeExpo.onmousedown = (event) =>{
             const [shape, resizers] = tools.resizers(canvas.getShapes(),  canvas.getResizeShapes(), selectedExpositor)
 
             canvas.setSelectedShape(shape)
-            canvas.setResizeShapes(resizers)
-            
-            // canvas.resizers(selectedExpositor)
+            canvas.setResizeShapes(resizers) 
         }
         else
             throw new TypeError('');
@@ -223,9 +221,7 @@ detailExpo.onmousedown = (event) =>{
                 for (let index = 0; index < numChilds; index++) {
                     var selector = document.getElementById("selectProduct"+index);
 
-                    products.forEach(element => {
-                        console.log(element.id);
-                        console.log(element.nome);
+                    products.forEach(element => { 
                         let newOption = new Option(element.nome, element.id);
 
                         selector.add(newOption,undefined);

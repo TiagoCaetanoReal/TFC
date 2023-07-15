@@ -36,19 +36,21 @@
                                 <h3 class="text-center">{{product[0].preço}}€/{{product[1].unMedida}}</h3>
                                 <div class="row pt-2">
                                     <div class="col-6  mt-2 g-0">
-                                        <div class="text-center favorito" id="{{product[0].id}}" style="cursor:pointer">
-                                            {% if preferedProducts %}
-                                                {% for prefered in preferedProducts %}
-                                                    {% if product[0].id == prefered.produto_id %}
-                                                        <i class="fa fa-2xl fa-solid fa-heart text-secondary"></i>
-                                                    {% endif %}
-                                                {% endfor %}
-                                            {% else %} 
-                                                <i class="fa fa-2xl fa-regular fa-heart text-secondary"></i>
-                                            {% endif %}
-                                           
-                                            <h7>Favorito</h7>
-                                        </div>
+                                        {% if  user.id != 0 %} 
+                                            <div class="text-center favorito" id="{{product[0].id}}" style="cursor:pointer">
+                                                {% if preferedProducts %}
+                                                    {% for prefered in preferedProducts %}
+                                                        {% if product[0].id == prefered.produto_id %}
+                                                            <i class="fa fa-2xl fa-solid fa-heart text-secondary"></i>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                {% else %} 
+                                                    <i class="fa fa-2xl fa-regular fa-heart text-secondary"></i>
+                                                {% endif %}
+                                            
+                                                <h7>Favorito</h7>
+                                            </div>
+                                        {% endif %}
                                     </div>
                                     <div class="col-1 mt-2 g-0"></div>
                                     <div class="col-5 mt-2 g-0">

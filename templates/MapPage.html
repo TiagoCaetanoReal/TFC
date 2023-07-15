@@ -36,39 +36,56 @@
         </div>
     </form>
 
-    <div class="container mt-3 col-10 col-sm-8 col-md-6 col-lg-5 col-xl-4">
-        <div class="row">
-            <div class="col-3"></div>
-            <div class="col-3 text-center">
-                <a class="btn btn-purple rounded rounded-circle rounded-5 border border-5 border-purple " style="cursor:pointer" href="{{url_for('AutenticationClientModule.doAlteration')}}"> 
-                    <i class="fa fa-user my-2 mx-1" aria-hidden="true"></i>
-                </a>
-                <h6 class="text-white ">Perfil</h6>
-            </div>
-            <div class="col-3">
-                <a class="btn btn-purple rounded rounded-circle rounded-5 border border-5 border-purple " style="cursor:pointer" href="{{url_for('StoreClientModule.seeFavoritesList')}}"> 
-                    <i class="fa fa-list my-2 mx-1" aria-hidden="true"></i>
-                    <i class="fa fa-heart  my-3 position-absolute" aria-hidden="true" style="margin-left: -10px;"></i>
-                </a> 
-                <h6 class="text-white ">Favoritos</h6>
-            </div>
-            <div class="col-3"></div>
+    <div class="container mt-3 col-10 col-sm-8 col-md-6 col-lg-5 col-xl-4 ">
+        <div hidden id="resultCheckButtons">
+            <h3 class="text-center text-white">Encontrou o Produto?</h3>
+            <div class="row">
+                <div class="col-3"></div>
+                <div class="col-3">
+                    <button class="btn btn-secondary" type="submit" id="productFound">
+                        Sim
+                    </button>
+                </div>
+                <div class="col-3">
+                    <button class="btn btn-danger" type="submit" id="productNotFound">
+                        Não
+                    </button>
+                </div>
+            </div> 
+        </div>
+        <!-- caso o utilizador seja visitante, este não terá acesso aos seguintes botões -->
+       
+        <div class="row" id="userButtons"> 
+            {% if user.id != 0 %}
+                <div class="col-3"></div>
+                <div class="col-3 text-center">
+                    <a class="btn btn-purple rounded rounded-circle rounded-5 border border-5 border-purple " style="cursor:pointer" href="{{url_for('AutenticationClientModule.doAlteration')}}"> 
+                        <i class="fa fa-user my-2 mx-1" aria-hidden="true"></i>
+                    </a>
+                    <h6 class="text-white ">Perfil</h6>
+                </div>
+                <div class="col-3">
+                    <a class="btn btn-purple rounded rounded-circle rounded-5 border border-5 border-purple " style="cursor:pointer" href="{{url_for('StoreClientModule.seeFavoritesList')}}"> 
+                        <i class="fa fa-list my-2 mx-1" aria-hidden="true"></i>
+                        <i class="fa fa-heart  my-3 position-absolute" aria-hidden="true" style="margin-left: -10px;"></i>
+                    </a> 
+                    <h6 class="text-white ">Favoritos</h6>
+                </div>
+                <div class="col-3"></div>
+            {% endif %}
         </div>
     </div>
 
 
      <!-- Modal Info -->
-     <div class="modal modal-lg show" id="instructionsModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+     <div class="modal modal-lg show" id="generalModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h3 class="modal-title">Instruções</h3>
+                    <h3 class="modal-title" id="modalTitle"></h3>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body m-3"> 
-                    <p>Nesta tela tem o mapa, o qual pode ser arrastado, com o dedo no telemovel, ou com o rato no computador </p>
-                    <br>
-                    <p>Selecionando um expositor no mapa, verá os seus produtos</p>
+                <div class="modal-body m-3" id="modalBody"> 
                 </div>
             </div>
         </div>
@@ -82,13 +99,27 @@
     import { TextBlock } from '../static/js/textblock.js';
     import { Marker } from '../static/js/marker.js';
     import { Quadro } from '../static/js/verQuadro.js';
- 
+
+    // variaveis do modal
+    var myModal = new bootstrap.Modal(document.getElementById('generalModal'))
+    var modalBody = new bootstrap.Modal(document.getElementById('modalBody'))
+    var modalTitle = new bootstrap.Modal(document.getElementById('modalTitle'))
+
+    
+    // variaveis dos botões
+    var resultCheckButtons = document.getElementById("resultCheckButtons") 
+    var userButtons = document.getElementById("userButtons") 
+
+    // variaveis do mapa
     var expoID = document.getElementById("expoID") 
     var goToExpo = document.getElementById("goToExpo")
     var wantedExpo = document.getElementById("wantedExpo")
     let canvas
     var id = null;
-    
+
+
+
+    // carregar mapa
     fetch('/fetchMap')
         .then(response => response.json())
         .then(data => {
@@ -124,10 +155,12 @@
             if( wantedExpo !== 0 ){  
                 var markerPosition = canvas.getSpecificExpoPosition(wantedExpo)
                 console.log(markerPosition);
-                canvas.addMarker(new Marker(markerPosition.posX, markerPosition.posY, 31, 40))}
-
-            // falta adicionar botões para saber se cliente encontrou produto
+                canvas.addMarker(new Marker(markerPosition.posX, markerPosition.posY, 31, 40))
             
+                userButtons.setAttribute('hidden', 'true'); 
+                resultCheckButtons.removeAttribute('hidden');
+            }
+ 
             onmousedown = (event) =>{
                 id = meuMetodo(id).then((expositorId) => { 
                     // mapa atulizava sempre que dava duplo click em sitios que não existisse expositor, 
@@ -141,6 +174,7 @@
 
                         expoID.value = expositorId 
                         goToExpo.click() 
+                        
                     }
                     
                 });
@@ -150,6 +184,40 @@
                 id = await canvas.detectAction();
                 return id;
             }
+
+            productFound.addEventListener('click',function(){
+                modalTitle.innerHTML = '';
+                modalBody._element.innerHTML = `
+                        <p>Ficamos contentes que tenha encontrado.</p>
+                        <p>Resto de boas compras.
+                    `;
+
+                myModal.toggle()
+                myModal.show();
+
+                
+                resultCheckButtons.setAttribute('hidden', 'true'); 
+                userButtons.removeAttribute('hidden');
+
+                canvas.removeMarker();
+            })
+ 
+            productNotFound.addEventListener('click',function(){
+                modalTitle.innerHTML = '';
+                modalBody._element.innerHTML = `
+                        <p>Ficamos tristes ao saber-lo.</p>
+                        <p>Aconselhamos que peça ajuda a um funcionario.
+                    `;
+
+                myModal.toggle()
+                myModal.show();
+
+                
+                resultCheckButtons.setAttribute('hidden', 'true'); 
+                userButtons.removeAttribute('hidden');
+                
+                canvas.removeMarker();
+            })
         })
 
         
@@ -157,13 +225,17 @@
     var getModalStorageValue = localStorage.getItem('modal')
     console.log(getModalStorageValue);
     
-    if( getModalStorageValue === null){
-        var myModal = new bootstrap.Modal(document.getElementById('instructionsModal'), {})
+    if( getModalStorageValue === null){ 
+        modalTitle.innerHTML = "Instruções";
+        modalBody._element.innerHTML = `
+                <p>Nesta tela tem o mapa, o qual pode ser arrastado, com o dedo no telemovel, ou com o rato no computador </p>
+                <br>
+                <p>Selecionando um expositor no mapa, verá os seus produtos</p>
+            `;
+
         myModal.toggle()
+        myModal.show();
         localStorage.setItem('modal', 'read');
-    }
-
-    // adicionar 2 botões para perceber se cliente encontrou produto
-
+    }  
 </script>
 {% endblock scripts %}
