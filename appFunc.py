@@ -1,16 +1,11 @@
 from flask import Flask
-from models import db, bcrypt, Funcionario
 from flask_login import LoginManager
 from flask_babel import Babel
+from models import db, bcrypt, Funcionario
 
 from backOffice.AutenticationModule import AutenticationFuncModule
 from backOffice.MapsModule import MapsModule
-from backOffice.ProductsModule import ProductsModule
-from backOffice.AnalisysModule import AnalisysModule
-from backOffice.ApprovalsModule import ApprovalsModule
-
-# trocar os nomes dos modulos nas rotas
-
+from backOffice.ProductsModule import ProductsModule 
 
 def create_app(config_filename):
 	app = Flask(__name__)
@@ -32,9 +27,7 @@ def create_app(config_filename):
 
 	app.register_blueprint(AutenticationFuncModule)
 	app.register_blueprint(MapsModule)
-	app.register_blueprint(ProductsModule)
-	app.register_blueprint(ApprovalsModule)
-	app.register_blueprint(AnalisysModule)
+	app.register_blueprint(ProductsModule) 
 
 	babel = Babel(app)
 

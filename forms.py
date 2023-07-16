@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, SelectField, IntegerField, FloatField, FileField, FieldList
-from wtforms.validators import DataRequired, Length, EqualTo, InputRequired, NumberRange
-from flask_wtf.file import FileField, FileAllowed, FileRequired
+from wtforms import StringField, PasswordField, SubmitField, SelectField, IntegerField, FileField
+from wtforms.validators import DataRequired, Length, EqualTo, InputRequired
+from flask_wtf.file import FileField, FileAllowed
 
 class FuncionarioLoginForm(FlaskForm):
     username_funcionario = StringField(label="Nome Utilizador", validators=[InputRequired(), Length(min=5, max=40)])

@@ -254,6 +254,4 @@ class Marcador (db.Model):
    
     def __repr__(self) -> str:
         return f"Marcador " + str(self.id) + " " + str(self.mapa_id) + " " + self.texto
-
-
-# adicionar a coluna eleiminado aos outros
+ 
