@@ -41,5 +41,5 @@ def create_app(config_filename):
 	return app
 
 if __name__ == "__main__":
-	app = create_app("configFunc.DevelopmentConfig")
+	app = create_app("config.DevelopmentConfig")
 	app.run(debug=True)
