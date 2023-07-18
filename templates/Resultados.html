@@ -21,7 +21,6 @@
         <form method="POST" action="" novalidate>
         {{ formFront.csrf_token }}
             <div class="input-group input-group-lg">
-                <!-- <input type="text" class="form-control col-9" placeholder="Inserir Produto" aria-label="Produto" aria-describedby="button-addon2"> -->
                 {{formFront.searchProduct(class="form-control col-9", placeholder="Inserir Produto")}}
 
                 <button class="btn btn-outline-secondary bg-light col-2" type="submit" id="but">
@@ -47,7 +46,7 @@
                             <div class="col-10">
                                 <div class="row">
                                     <h3 class="card-title">{{produto[2].nome}}</h3> 
-                                    <div class="row g-0">
+                                    <div class="row g-0 pt-3">
                                         <div class="col-5 ps-2"> 
                                             <h5 class="">{{produto[2].preço}}€/Kg</h5>
                                         </div>
@@ -66,8 +65,8 @@
                                         
                                     
                                         <div class="col-4">
-                                            <div class="text-center mt-3 mt-sm-3 mt-md-4 detalhes" id="{{produto[2].id}}" style="cursor:pointer">
-                                                <i class="fa fa-2xl fa-circle-info text-secondary"></i>
+                                            <div class="text-center mt-2 mt-sm-2 mt-md-4 detalhes" id="{{produto[2].id}}" style="cursor:pointer">
+                                                <i class="fa fa-2xl fa-circle-info text-secondary mb-3"></i>
                                                 <h6>Detalhes</h6>
                                             </div>
                                                 
@@ -76,11 +75,11 @@
                                                     {% if preferedProducts %}
                                                         {% for prefered in preferedProducts %}
                                                             {% if produto[2].id == prefered.produto_id %}
-                                                                <i class="fa fa-2xl fa-solid fa-heart text-secondary"></i>
+                                                                <i class="fa fa-2xl fa-solid fa-heart text-secondary mb-3"></i>
                                                             {% endif %}
                                                         {% endfor %}
                                                     {% else %} 
-                                                        <i class="fa fa-2xl fa-regular fa-heart text-secondary"></i>
+                                                        <i class="fa fa-2xl fa-regular fa-heart text-secondary mb-3"></i>
                                                     {% endif %}
                                                 
                                                     <h6>Favorito</h6>

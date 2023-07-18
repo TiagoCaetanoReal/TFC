@@ -1,10 +1,8 @@
-from flask import Blueprint, flash, request, session, jsonify
-from flask import redirect, render_template, url_for
-from forms import ClienteExpoDetails, ClienteLoginForm, ClienteRegisterForm, ClienteEditForm, ClienteSearchProduct, ClienteStoreMap
-from models import Favorito, Iva, Medida, Origem, Produto, TabelaNutricional100gr, TabelaNutricionalDR, db, Cliente, bcrypt, Mapa, Expositor, Marcador, ConteudoExpositor, Secção
-from flask_login import login_user, logout_user, current_user
-from datetime import datetime, timedelta
-from sqlalchemy import func
+from flask import Blueprint, request, session, jsonify
+from flask import redirect, render_template
+from forms import ClienteSearchProduct, ClienteStoreMap
+from models import Favorito, Iva, Medida, Origem, Produto, TabelaNutricional100gr, TabelaNutricionalDR, db,  Mapa, Expositor, Marcador, ConteudoExpositor, Secção
+from flask_login import current_user  
 from unidecode import unidecode
 
 StoreClientModule = Blueprint("StoreClientModule", __name__)
@@ -73,10 +71,7 @@ def fetchMap():
         for tag in tags:
             mapDictList.append( {"id": tag.id, "posX": float(tag.coordenadaX), "posY": float(tag.coordenadaY), "width": float(tag.comprimento),
                                 "height": float(tag.altura), "angle": tag.angulo, "value": tag.texto})
-            
-        
-        
-
+             
         return mapDictList
     
     else:
@@ -86,8 +81,7 @@ def fetchMap():
 @StoreClientModule.route("/Displayer", methods=['GET', 'POST'])
 def seeDisplayerItems():
     active_user = current_user
-    form = ClienteExpoDetails() 
-
+    
     if(active_user.is_authenticated):
         idExpo = session.get('expo')  
         products = []
@@ -107,7 +101,7 @@ def seeDisplayerItems():
             if prefered:
                 preferedProducts.append(prefered)
 
-        return render_template("Expositor.html", title = "ExpoPage", department = department, products = products, formFront = form, preferedProducts = preferedProducts, user = active_user)
+        return render_template("Expositor.html", title = "ExpoPage", department = department, products = products,  preferedProducts = preferedProducts, user = active_user)
     
     else:
         return redirect("/login")
@@ -205,6 +199,7 @@ def removeFavorite():
     except Exception as e:
             return f'Erro ao enviar dados: {str(e)}'
     
+
 @StoreClientModule.route("/locateProduct", methods=['GET', 'POST'])
 def locateProduct():  
     product_id = request.form['idProduto']  
@@ -241,13 +236,11 @@ def seeSearchResult():
 
     if(active_user.is_authenticated):
         map_id = session.get('map')
+        preferedProducts = []
         searchProduct = ''
         products = '' 
  
-        preferedProducts = []
-
-        
-        
+ 
         if session.get('searchingProduct') is not None:
             searchProduct = session.get('searchingProduct') 
             session.pop('searchingProduct')
@@ -269,20 +262,14 @@ def seeSearchResult():
                 ConteudoExpositor.produto2_id == Produto.id|ConteudoExpositor.produto3_id == Produto.id|
                 ConteudoExpositor.produto4_id == Produto.id|ConteudoExpositor.produto5_id == Produto.id|
                 ConteudoExpositor.produto6_id == Produto.id).all()
-            
-            
-
-            print(products)
+             
 
             if active_user.id != 0:
                 for product in products: 
                     prefered = db.session.query(Favorito).filter(Favorito.produto_id == product[2].id, Favorito.cliente_id == active_user.id, Favorito.eliminado == 0).first()
                     if prefered:
                         preferedProducts.append(prefered)
-
-                print(preferedProducts)
- 
-
+  
             return render_template("Resultados.html", title = "MapPage", formFront = form, products = products, preferedProducts = preferedProducts, user = active_user)
         else:
             return redirect('/Store')

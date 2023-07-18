@@ -25,8 +25,7 @@ def doLogin():
                 form.username_funcionario.errors = tuple(l)
             else:
                 if(bcrypt.check_password_hash(user.password, form.password_funcionario.data)):
-                    login_user(user)
-                    print(current_user.id)
+                    login_user(user) 
                     return redirect('/MapsList')
                 else:
                     l = list(form.password_funcionario.errors)
@@ -127,11 +126,9 @@ def doAlteration():
                                 elif(len(form.confirm_password.data) < 5 or len(form.confirm_password.data) > 20):
                                     form.password.errors.append("Campo deve conter entre 5 e 20 caracteres")
                                 
-                                if(form.password_funcionario.data == form.confirm_password.data):
-                                    print("FFFFFFFFFFFFFFFFFFFFF")
+                                if(form.password_funcionario.data == form.confirm_password.data): 
                                     encrypted_password = bcrypt.generate_password_hash(form.confirm_password.data).decode('UTF-8')
-                                    userData.password = encrypted_password
-                                    print(encrypted_password)
+                                    userData.password = encrypted_password 
 
                             elif form.password_funcionario.data == '' :
                                 form.password_funcionario.errors.append("Campo tem de ser preenchido")
@@ -160,8 +157,7 @@ def doAlteration():
     
     else:
         return redirect('\login')
-
-# rota para realizar o logout
+ 
 @AutenticationFuncModule.route('/logout')
 def logOut():
    logout_user()

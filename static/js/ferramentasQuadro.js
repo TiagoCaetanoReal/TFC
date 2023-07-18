@@ -1,6 +1,5 @@
 import { Expositor } from './expositor.js';
-
-import * as tools from './ferramentasQuadro.js';
+ 
 export function excludeExpositores(shapes, id){  
     var shape = shapes.find(item => item.id === id);
     const index = shapes.indexOf(shape);
@@ -24,7 +23,7 @@ export function excludeText(texts, id){
     if (index > -1) {  
         texts.splice(index, 1);
 
-        // Atualiza os IDs dos objetos que foram adicionados a seguir ao expositor que for removido
+        // Atualiza os IDs dos objetos que foram adicionados a seguir ao texto que for removido
         for (let i = index; i < texts.length; i++) {
             texts[i].id--;
         }
@@ -34,8 +33,7 @@ export function excludeText(texts, id){
 
 export function resizers(shapes, resizers, id){
     
-    var shape = shapes.find(item => item.id === id);
-    const index = shapes.indexOf(shape);
+    var shape = shapes.find(item => item.id === id); 
     
     resizers = [];
 

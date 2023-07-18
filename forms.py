@@ -107,7 +107,7 @@ class ClienteLoginForm(FlaskForm):
     username_cliente = StringField(label="Nome Utilizador", validators=[InputRequired(), Length(min=5, max=40)])
     password_cliente = PasswordField(label="Password", validators=[InputRequired()])
     login = SubmitField(label="Login")
-    loginGuest = SubmitField(label="Entrar como Visitante")
+    loginGuest = SubmitField(label="Visitante")
 
 
 class ClienteRegisterForm(FlaskForm):
@@ -133,12 +133,6 @@ class ClienteStoreMap(FlaskForm):
     searchProduct = StringField("Inserir Produto") 
     expoID =  IntegerField('expoID')
     goToExpo = SubmitField(label="Ver Expositor")
-
-class ClienteExpoDetails(FlaskForm):
-    productID =  IntegerField('productID')
-    seeDetails = SubmitField(label="Ver detalhes")
-    enjoyProduct = SubmitField()
-
-
+  
 class ClienteSearchProduct(FlaskForm): 
     searchProduct = StringField("Inserir Produto")

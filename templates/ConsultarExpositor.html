@@ -32,7 +32,6 @@
         </li>
         <li class="sidebar-item px-5">
             <a class="sidebar-link bg-secondary" href="">
-                <!-- <i class="align-middle" data-feather="sliders"></i> <span class="align-middle">Criar Mapa</span> -->
                 <h6 class="text-white text-opacity-50">Editar Mapa</h6>
             </a>
         </li>
@@ -143,8 +142,7 @@
             array.shift();
 
             array.forEach(element => {
-                if(index < numExpos){
-                    console.log(element);
+                if(index < numExpos){ 
                     if(element.storeSection === 0){
                         expoData[index] = {"id": element.id, "products": element.products, "capacity": element.capacity, 
                             "divisions": element.divisions,"storeSection": element.storeSection};
@@ -165,7 +163,7 @@
                 var expo = []
                 for (let i = 0; i < expoData.length; i++) {
                     expo = expoData[i]
-                    console.log(expo)
+                    
                     var node = `
                     <tr>
                         <td>${expo.id}</td>

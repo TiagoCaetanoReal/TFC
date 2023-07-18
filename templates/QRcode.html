@@ -39,15 +39,10 @@
 
 {% block scripts %}
     <script>
-        var page = '';
-        var touchDevice = ('ontouchstart' in document.documentElement);
+        var page = ''; 
 
         var isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-
-        // ...
-
-        
-    
+ 
         var goToMapBtn = document.getElementById('goToMap');
         var storeID = document.getElementById('storeID');
         var scanResult = document.getElementById('result');
@@ -63,11 +58,8 @@
         const html5QrCode = new Html5Qrcode("reader");
         const config = { fps: 10, qrbox: { width: 250, height: 250 } };
         
-        if(!touchDevice){
-            // If you want to prefer front camera
-            html5QrCode.start({ facingMode: "user" }, config, success,error);
-
-            // Select front camera or fail with `OverconstrainedError`.
+        if(!isMobileDevice){ 
+            html5QrCode.start({ facingMode: "user" }, config, success,error); 
             html5QrCode.start({ facingMode: { exact: "user"} }, config, success,error);
         }
         
@@ -75,15 +67,10 @@
             divButtons.removeAttribute('hidden');
         }
        
-        function chooseCamera(direction){
-            //colocar icon invisivel
+        function chooseCamera(direction){ 
             scanIcon.style.display = "none";
-
-            // If you want to prefer front camera
-            console.log(direction)
-            html5QrCode.start({ facingMode: direction }, config, success, error);
-            
-            // Select front camera or fail with `OverconstrainedError`.
+  
+            html5QrCode.start({ facingMode: direction }, config, success, error); 
             html5QrCode.start({ facingMode: { exact: direction} }, config, success, error);
             
         }
@@ -120,7 +107,4 @@
         }
         
     </script>
-{% endblock scripts %}
-
-
-<!-- organizer este html melhor -->
+{% endblock scripts %} 

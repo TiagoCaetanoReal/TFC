@@ -88,10 +88,8 @@ def CreateStoreMap():
     employee = [active_user.nome,active_user.cargo,departemant.nome]
     
     if(active_user.is_authenticated):
-        createForm = CreateMapForm()
-
-
-        #query para a secção
+        createForm = CreateMapForm() 
+         
         departmentQuery = db.session.query(Secção).all()
         department_group_list=[(str(i.id), i.nome) for i in departmentQuery]
         department_presets_group_list = [(' ',"Selecionar Secção")]
@@ -109,6 +107,8 @@ def CreateStoreMap():
 
         if request.method == 'POST':
             mapa = json.loads(createForm.map.data)
+
+            print(mapa)
 
             # ober numero de textos
             numLabels = mapa[0]['numLabels']
@@ -128,7 +128,9 @@ def CreateStoreMap():
                                          comprimento = element['width'], altura = element['height'], texto = element['value'])
                     db.session.add(new_marker)
                     db.session.commit()
-                    
+                
+                
+            if(numExpos != 0):    
                     
                 for element in mapa[1:numExpos+1]:
                     new_expo = Expositor(capacidade = element['capacity'], divisorias = element['divisions'], coordenadaX = element['posX'], coordenadaY = element['posY'],
@@ -174,9 +176,10 @@ def fetchSectionColor():
 
 @MapsModule.route("/fetchProducts", methods=['GET','POST'])
 def fetchProducts():
+    active_user = current_user
     seccao_id = request.args.get('seccaoId')
 
-    productsQuery = db.session.query(Produto).filter(Produto.secção_id == seccao_id).all()
+    productsQuery = db.session.query(Produto).filter(Produto.secção_id == seccao_id, Produto.loja_id == active_user.loja_id).all()
 
     products = [
         {"id": str(product.id), "nome": product.nome}
@@ -218,8 +221,7 @@ def AlterStoreMap():
         # para depois implementar a serio
 
         if request.method == 'POST':
-            mapa = json.loads(editForm.map.data)
-            print(str(mapa) + '\n')
+            mapa = json.loads(editForm.map.data) 
 
             # ober numero de textos
             numLabels = mapa[0]['numLabels']
@@ -371,8 +373,7 @@ def AlterStoreMap():
                                 lastExpo = db.session.query(Expositor).filter(Expositor.mapa_id == idmap).order_by(Expositor.id.desc()).first()
                               
                                 # 
-                                if lastExpo:
-                                    print(lastExpo.id)
+                                if lastExpo: 
                                     # armazena o id dos novos expos
                                     newExpoIds.append(lastExpo.id)
                             
@@ -386,15 +387,13 @@ def AlterStoreMap():
                                     else:
                                         setattr(new_expoContent, f"produto{i+1}_id", None)
                                 db.session.add(new_expoContent)
-                                print(str(new_expoContent.produto1_id) + " " + str(new_expoContent.produto2_id) + " " + str(new_expoContent.produto3_id) + " " + str(new_expoContent.produto4_id) + " " + str(new_expoContent.produto5_id) + " " + str(new_expoContent.produto6_id))
-
+                               
                             db.session.commit()
 
 
             # ####################################################
             # # se existirem expositores e conteudoExpo removidos
-                ids_expos = [x for x in ids_expos if x not in editedExpos]
-                print(ids_expos)
+                ids_expos = [x for x in ids_expos if x not in editedExpos] 
 
                 if ids_expos:
                     for id in ids_expos:

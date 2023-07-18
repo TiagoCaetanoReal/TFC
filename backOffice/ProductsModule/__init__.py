@@ -21,8 +21,7 @@ def seeProductList():
     departemant = db.session.query(Secção).filter(Secção.id==active_user.secção_id).first()
     employee = [active_user.nome,active_user.cargo,departemant.nome]
     
-    if(active_user.is_authenticated):
-        #query para a secção
+    if(active_user.is_authenticated): 
         departmentQuery = db.session.query(Secção).all()
         department_group_list=[(str(i.id), i.nome) for i in departmentQuery]
         department_presets_group_list = [(' ',"Selecionar Secção")]
@@ -49,12 +48,10 @@ def seeProductList():
                     return redirect('/EditProduct')
                 
                 elif(acao == 'DeleteProducts'):
-                    productsToDelete = listForm.productsToDelet.data.split(",")
-                    print(productsToDelete)
+                    productsToDelete = listForm.productsToDelet.data.split(",") 
                     nested_transaction = db.session.begin_nested()
 
-                    for productToDelete in productsToDelete:
-                        print(productToDelete)
+                    for productToDelete in productsToDelete: 
                         product = db.session.query(Produto).filter(Produto.id == productToDelete).first()
                         product.eliminado = True
 
@@ -69,18 +66,7 @@ def seeProductList():
         return redirect("/login")
     
     return render_template("ListagemProdutos.html", title = "MapList", active_user = employee, produtos = produtos, listFormFront = listForm)
- 
-
-
-
-
-
-
-# tentar repara o expos na tela de edição, ver se o problema é o id q não é reconhecido
-
-
-
-
+  
 
 @ProductsModule.route("/MakeProduct", methods=['GET', 'POST'])
 def CreateProduct():
@@ -257,8 +243,7 @@ def AlterProduct():
     employee = [active_user.nome,active_user.cargo,departemant.nome]
 
 
-    if(active_user.is_authenticated):
-        #query para o iva 
+    if(active_user.is_authenticated): 
         ivaQuery = db.session.query(Iva).all()
         iva_group_list=[(str(i.id), str(i.percentagem)+'%') for i in ivaQuery]
         iva_presets_group_list = [(' ',"Selecionar Iva")]
@@ -268,8 +253,7 @@ def AlterProduct():
 
         productForm.iva.choices = iva_presets_group_list
 
-
-        #query para a unidade de medida
+ 
         metricQuery = db.session.query(Medida).all()
         metric_group_list=[(str(i.id), i.unMedida) for i in metricQuery]
         metric_presets_group_list = [(' ',"Selecionar Unidade de Medida")]
@@ -279,8 +263,7 @@ def AlterProduct():
 
         productForm.metric.choices = metric_presets_group_list
 
-
-        #query para a origem 
+ 
         originQuery = db.session.query(Origem).all()
         origin_group_list=[(str(i.id), i.Pais) for i in originQuery]
         origin_presets_group_list = [(' ',"Selecionar Origem")]
@@ -290,13 +273,11 @@ def AlterProduct():
 
         productForm.origin.choices = origin_presets_group_list
 
-
-        #query para a secção
+ 
         departmentQuery = db.session.query(Secção).all()
         department_group_list=[(str(i.id), i.nome) for i in departmentQuery]
         department_presets_group_list = [(' ',"Selecionar Secção")]
-
-
+ 
 
         for department in department_group_list:    
             department_presets_group_list.append(department)
@@ -343,12 +324,10 @@ def AlterProduct():
                                     setattr(produto, valor, field.data)
 
                         for index, field in enumerate(nutritionForm):
-                            if tabela100gr and tabelaDR:
-                                print('\n')
-                                print(field.name)  
+                            if tabela100gr and tabelaDR:  
                                 if index < 8 :   
                                     valorNutritionalList = nutritionalList[index]
-                                    print(valorNutritionalList) 
+                                    
                                     if str(field.data) != str(getattr(tabela100gr, valorNutritionalList)) and str(field.data) != '':
                                         setattr(tabela100gr, valorNutritionalList, field.data)
                                     
@@ -386,8 +365,7 @@ def save_photo(produto):
     if not os.path.exists(saveImgDir):
         os.makedirs(saveImgDir)
 
-    photoPath = os.path.join(saveImgDir, produto.nome.replace(' ', '_') + 'Image.png')
-    print(photoPath)
+    photoPath = os.path.join(saveImgDir, produto.nome.replace(' ', '_') + 'Image.png') 
 
     request.files['photoFile'].save(photoPath)
     return photoPath

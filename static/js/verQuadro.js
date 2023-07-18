@@ -1,4 +1,3 @@
-import { Expositor } from './expositor.js';
 
 export class Quadro{
     constructor(canvas, context, limits){
@@ -17,13 +16,8 @@ export class Quadro{
         
         this.current_shape_index;
         this.is_dragging;
-        // this.is_draggingResizer;
-        // this.is_draggingText;
-        
-        // this.selectedShape;
-
-        this.selectedExpo = false;
-        // this.selectedText = false;
+         
+        this.selectedExpo = false; 
         this.isMouseOverCanvas = false;
 
         
@@ -77,10 +71,6 @@ export class Quadro{
     }
     
     
-    // A expressão (shape) => shape.id === id é uma função de callback usada como argumento para o 
-    // método find(). Ela verifica se o atributo id do objeto shape é igual ao valor da variável id. 
-    // Essa função será executada para cada elemento da lista this.shapes até encontrar um 
-    // elemento cujo id corresponda ao valor desejado.
     getSpecificExpoPosition(id){
         const expositor = this.shapes.find((shape) => shape.id === id);
         if (expositor) {
@@ -138,17 +128,10 @@ export class Quadro{
         }
         
 
-        if (this.marker) {
-
-
-// tentar melhorar a localização
-
-
+        if (this.marker) { 
             // permite inserir no mapa o marcador da localização do produto pretendido
             this.context.save(); 
             this.marker.markerImg.onload = () => { 
-                // this.context.drawImage(this.marker.markerImg, this.marker.posX/2 - this.marker.width/2, this.marker.posY/2 - this.marker.height/2, this.marker.width, this.marker.height);
-           
                 this.context.drawImage(this.marker.markerImg, this.marker.posX/2, this.marker.posY/2 - this.marker.height, this.marker.width, this.marker.height);
             }; 
             this.context.restore();
@@ -290,8 +273,4 @@ export class Quadro{
         }
         return false;
     }
-}
-
-
-
-//ao selecionar expositor mostrar produtos
+} 

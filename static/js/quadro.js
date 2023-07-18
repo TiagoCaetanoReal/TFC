@@ -82,13 +82,19 @@ export class Quadro{
     }
 
     getNewTextID(){
-        var id  = this.getTexts()[this.getTexts().length - 1].id + 1
+        if(this.getTexts().length != 0)
+            var id = this.getTexts()[this.getTexts().length - 1].id + 1
+        else
+            var id = 1
         return id
     }
 
     
     getNewShapeID(){
-        var id  = this.getShapes()[this.getShapes().length - 1].id + 1
+        if(this.getShapes().length != 0)
+            var id  = this.getShapes()[this.getShapes().length - 1].id + 1
+        else
+            var id = 1
         return id
     }
     
@@ -100,8 +106,7 @@ export class Quadro{
         return this.current_shape_index
     }
     
-    getSelected(object){
-        console.log(this.current_shape_index);
+    getSelected(object){ 
         return object[this.current_shape_index].id
     }
 
@@ -196,13 +201,10 @@ export class Quadro{
             this.startX = (mouseX - canvasRect.left) * (this.canvas.width / canvasRect.width);
             this.startY = (mouseY - canvasRect.top) * (this.canvas.height / canvasRect.height);
  
-            let index = 0;
-
-            console.log(this.startX + " " + this.startY)
+            let index = 0; 
 
             for( let shape of this.resizeShapes){
-                if(this.is_mouse_in_shape(this.startX, this.startY, shape, 're')){
-                    console.log(shape.id);
+                if(this.is_mouse_in_shape(this.startX, this.startY, shape, 're')){ 
                     this.current_shape_index = shape.id;
                     this.is_dragging = false;
                     this.is_draggingText = false;
@@ -222,8 +224,7 @@ export class Quadro{
 
     
             for( let shape of this.shapes){
-                if(this.is_mouse_in_shape(this.startX, this.startY, shape, 'exp')){
-                    console.log(shape.id);
+                if(this.is_mouse_in_shape(this.startX, this.startY, shape, 'exp')){ 
                     this.current_shape_index = index;
                     this.is_dragging = true;
                     this.is_draggingText = false;
@@ -245,8 +246,7 @@ export class Quadro{
 
             index = 0;
 
-            for(let text of this.texts){
-                console.log(this.startX+ " " + this.startY)
+            for(let text of this.texts){ 
 
                 if(this.is_mouse_in_shape(this.startX, this.startY, text, 'text')){
                     this.current_shape_index = index;

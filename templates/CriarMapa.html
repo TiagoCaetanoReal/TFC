@@ -99,7 +99,7 @@
                     <h5 class="text-white">Detalhar</h5>
                     </button>
                     
-                <button class="botaoFerramenta" id="excludeExpositor">
+                <button class="botaoFerramenta" id="exclude">
                     <i class="fa fa-2x fa-trash text-white my-2 mx-4" aria-hidden="true"></i>
                     <h5 class="text-white">Excluir</h5>
                     </button>
@@ -109,8 +109,8 @@
 
         <!-- Modal Detalhes -->
         <div class="modal modal-lg fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-            <!-- <form method="POST" action="" novalidate enctype="multipart/form-data">
-                {{ createFormFront.csrf_token }} -->
+            <form method="POST" action="" novalidate enctype="multipart/form-data">
+                {{ createFormFront.csrf_token }}
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
@@ -169,7 +169,7 @@
                         </div>
                     </div>
                 </div>
-            <!-- </form> -->
+            </form>
         </div>
 
         <!-- Modal AddText -->

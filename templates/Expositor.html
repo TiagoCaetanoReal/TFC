@@ -32,8 +32,8 @@
                         <div class="card align-items-center">
                             <img class="card-img-top w-50" src={{product[0].photoPath}} data-holder-rendered="true">
                             <div class="card-body">
-                                <h2 class="text-center" style="height: 90px;">{{product[0].nome}}</h2>
-                                <h3 class="text-center">{{product[0].preço}}€/{{product[1].unMedida}}</h3>
+                                <h4 class="text-center" style="height: 90px;">{{product[0].nome}}</h4>
+                                <h4 class="text-center">{{product[0].preço}}€/{{product[1].unMedida}}</h4>
                                 <div class="row pt-2">
                                     <div class="col-6  mt-2 g-0">
                                         {% if  user.id != 0 %} 
@@ -51,9 +51,8 @@
                                                 <h7>Favorito</h7>
                                             </div>
                                         {% endif %}
-                                    </div>
-                                    <div class="col-1 mt-2 g-0"></div>
-                                    <div class="col-5 mt-2 g-0">
+                                    </div> 
+                                    <div class="col-6 mt-2 g-0">
                                         <div class="text-center detalhes" id="{{product[0].id}}" value="{{product[0].nome}}" style="cursor:pointer">
                                             <i class="fa fa-2xl fa-circle-info text-secondary"></i>
                                             <h7>Detalhe</h7>
@@ -66,15 +65,7 @@
                 {% endfor %}
             </div>
             
-            <div hidden>
-                {{formFront.productID(id="productID")}}
-            </div>
-            <div hidden>
-                {{formFront.seeDetails(id="seeDetails")}}
-            </div>
-            <div hidden>
-                {{formFront.enjoyProduct(id="enjoyProduct")}}
-            </div>
+           
         </form> 
 
         <div class="modal modal fade" id="detailsModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
@@ -96,8 +87,7 @@
 {% block scripts %}
 <script type=text/javascript>
     
-    var productID = document.getElementById("productID");
-    var seeDetails = document.getElementById("seeDetails");
+  
 
     $(".detalhes").click(function(e) {
         e.preventDefault();

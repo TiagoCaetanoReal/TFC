@@ -40,14 +40,11 @@ fetch('/fetchMap')
         }
         index++;
         });
-    })
-
-// Adiciona o listener de resize à janela do navegador
-// window.addEventListener("resize", canvas.resizeCanvas, false);
+    }) 
 
 var addExpo = document.getElementById("addExpositor")
 var rotateExpo = document.getElementById("rotateExpositor")
-var excludeExpo = document.getElementById("excludeExpositor")
+var exclude = document.getElementById("exclude")
 var resizeExpo = document.getElementById("resizeExpositor")
 var detailExpo = document.getElementById("detailExpositor")
 var capacity = document.getElementById("selectCapacity")
@@ -64,14 +61,32 @@ var mapFormField = document.getElementById("mapa")
 addExpo.onmousedown = (event) =>{
     canvas.addExpositores(new Expositor(canvas.getNewShapeID(),sizeX/2,sizeY/2, 20, 60, 'grey'));
 }
+ 
+texts.onmousedown = (event) =>{
+    const myModal = new bootstrap.Modal(document.getElementById('addTextBackdrop'));
+    const addTextBtn = document.getElementById('addTextBtn')
+    const textInput = document.getElementById('textInput')
+    
+    addTextBtn.onclick = (event) =>{
+        canvas.addTextBlock(new TextBlock(canvas.getNewTextID(),sizeX/2,sizeY/2,textInput.value, 0));
+        console.log(textInput.value);
+        textInput.value = '';
+    }
+
+    CancelTextBtn.onclick = (event) =>{
+        textInput.value = '';
+    }
+
+    myModal.toggle();
+    myModal.show();
+}
 
 rotateExpo.onmousedown = (event) =>{
     try {
         if(canvas.selectedExpo){   
             canvas.getShapes()[canvas.getCurrentExpositorIndex()].rotate_expositor(); 
         }
-        else if(canvas.selectedText){ 
-            // tentando mudar a seleção do texto, para que quando este roda, a seleção do rato se adapte à rotação ln-120 de quadro.js
+        else if(canvas.selectedText){   
             var text = canvas.getTexts()[canvas.getCurrentExpositorIndex()];
             canvas.rotateText(text)
             console.log(text);
@@ -86,12 +101,9 @@ rotateExpo.onmousedown = (event) =>{
     }
     
     canvas.draw_shapes();
-}
+} 
 
-// ainda tenho de ver se guarda bem novos expositores
-// e como reage a eliminar expos e add novos
-
-excludeExpo.onmousedown = (event) =>{ 
+exclude.onmousedown = (event) =>{ 
     try {
         if(canvas.selectedExpo){ 
 
@@ -141,19 +153,13 @@ detailExpo.onmousedown = (event) =>{
 
     try {
         if(canvas.selectedExpo){
-            selectedExpositor = canvas.getCurrentExpositor();
-            console.log((selectedExpositor));
-
-            // resolver problema de caso expo não tenha produtos, da segunda vez q se entra nele, os campos estão vazios
+            selectedExpositor = canvas.getCurrentExpositor(); 
 
             capacity.onchange = (event) => {
                 var inputText = event.target.value;
                 selectedExpositor.capacity = parseInt(inputText);
         
                 createProductSpaces(inputText);
-         
-        
-                //nesta parte após serem criados os selects dos produtos, tem de ser mandado do backend um array ou string com os produtos, possivelmente um array
             }
 
             departmants.onchange = (event) => {
@@ -296,30 +302,7 @@ detailExpo.onmousedown = (event) =>{
         selectedExpositor.storeSectionColor = '';
 
     }
-}
-
-
-
-
-texts.onmousedown = (event) =>{
-    const myModal = new bootstrap.Modal(document.getElementById('addTextBackdrop'));
-    const addTextBtn = document.getElementById('addTextBtn')
-    const textInput = document.getElementById('textInput')
-    
-    addTextBtn.onclick = (event) =>{
-        canvas.addTextBlock(new TextBlock(canvas.getNewTextID(),sizeX/2,sizeY/2,textInput.value, 0));
-        console.log(textInput.value);
-        textInput.value = '';
-    }
-
-    CancelTextBtn.onclick = (event) =>{
-        textInput.value = '';
-    }
-
-    myModal.toggle();
-    myModal.show();
-}
-
+} 
 
 
 editMap.onmousedown = (event) =>{

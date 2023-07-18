@@ -6,7 +6,7 @@ import * as tools from './ferramentasQuadro.js';
 // elementos html
 var addExpo = document.getElementById("addExpositor")
 var rotateExpo = document.getElementById("rotateExpositor")
-var excludeExpo = document.getElementById("excludeExpositor")
+var exclude = document.getElementById("exclude")
 var resizeExpo = document.getElementById("resizeExpositor")
 var detailExpo = document.getElementById("detailExpositor")
 var capacity = document.getElementById("selectCapacity")
@@ -33,17 +33,39 @@ canvas.detectAction();
 let sizeX = canvas.canvas_width;
 let sizeY = canvas.canvas_height;
 
+
+// adicionar expositor
 addExpo.onmousedown = (event) =>{
     canvas.addExpositores(new Expositor(canvas.shapes.length,sizeX/2,sizeY/2, 20, 60, 'grey'));
 }
+
+
+// adicionar textos
+texts.onmousedown = (event) =>{
+    const myModal = new bootstrap.Modal(document.getElementById('addTextBackdrop'));
+    const addTextBtn = document.getElementById('addTextBtn')
+    const textInput = document.getElementById('textInput')
+    
+    addTextBtn.onclick = (event) =>{
+        canvas.addTextBlock(new TextBlock(canvas.texts.length,sizeX/2,sizeY/2,textInput.value, 0));
+        textInput.value = '';
+    }
+
+    CancelTextBtn.onclick = (event) =>{
+        textInput.value = '';
+    }
+
+    myModal.toggle();
+    myModal.show();
+}
+
 
 rotateExpo.onmousedown = (event) =>{
     try {
         if(canvas.selectedExpo){  
             canvas.getShapes()[canvas.getCurrentExpositorIndex()].rotate_expositor(); 
         }
-        else if(canvas.selectedText){ 
-            // tentando mudar a seleção do texto, para que quando este roda, a seleção do rato se adapte à rotação ln-120 de quadro.js
+        else if(canvas.selectedText){  
             var text = canvas.getTexts()[canvas.getSelected(canvas.getTexts())];
             canvas.rotateText(text)
         }
@@ -59,7 +81,7 @@ rotateExpo.onmousedown = (event) =>{
     canvas.draw_shapes();
 }
 
-excludeExpo.onmousedown = (event) =>{ 
+exclude.onmousedown = (event) =>{ 
     try {
         if(canvas.selectedExpo){
             const alteredShapes = tools.excludeExpositores(canvas.getShapes(), canvas.getSelected(canvas.getShapes()));
@@ -263,27 +285,8 @@ detailExpo.onmousedown = (event) =>{
 
 
 }
+ 
 
-
-
-
-texts.onmousedown = (event) =>{
-    const myModal = new bootstrap.Modal(document.getElementById('addTextBackdrop'));
-    const addTextBtn = document.getElementById('addTextBtn')
-    const textInput = document.getElementById('textInput')
-    
-    addTextBtn.onclick = (event) =>{
-        canvas.addTextBlock(new TextBlock(canvas.texts.length,sizeX/2,sizeY/2,textInput.value, 0));
-        textInput.value = '';
-    }
-
-    CancelTextBtn.onclick = (event) =>{
-        textInput.value = '';
-    }
-
-    myModal.toggle();
-    myModal.show();
-}
 
 
 
@@ -307,9 +310,7 @@ createMap.onmousedown = (event) =>{
 
     ConfirmSaveDeleteBtn.onclick = (event) =>{
         array[index] = {"width": sizeX,"height": sizeY, "numExpos": canvas.getShapes().length, "numLabels": canvas.getTexts().length};
-        index ++;
-
-        console.log(canvas.getShapes());
+        index ++; 
         
         canvas.getShapes().forEach(element => {
             array[index] = {"id": element.id, "posX": element.posX, "posY": element.posY, "width": element.width,
@@ -326,12 +327,11 @@ createMap.onmousedown = (event) =>{
 
         let json = JSON.stringify(array)
 
-        mapFormField.value = json
+        mapFormField.value = json 
 
-        console.log(mapFormField);
+        console.log( mapFormField.value);
         
-        // Envie o formulário
-        
+        // Enviar o form
         document.getElementById("formulario").submit()
     }
 }

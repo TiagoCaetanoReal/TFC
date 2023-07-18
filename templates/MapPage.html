@@ -162,10 +162,6 @@
  
             onmousedown = (event) =>{
                 id = meuMetodo(id).then((expositorId) => { 
-                    // mapa atulizava sempre que dava duplo click em sitios que não existisse expositor, 
-                    // ou seja, fazia um post devido ao goToExpo.click()
-                    // para resolver isso foi adicionado este if abaixo para verificar se tinha sido selecionado
-                    // algo expositor, caso contrario não fazia nada
                     if (id !== null){
                         console.log(id);
                         var arrayExpos = array.slice(0, numExpos);

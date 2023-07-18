@@ -32,7 +32,6 @@
         </li>
         <li class="sidebar-item px-5">
             <a class="sidebar-link bg-secondary">
-                <!-- <i class="align-middle" data-feather="sliders"></i> <span class="align-middle">Criar Mapa</span> -->
                 <h6 class="text-white text-opacity-50">Editar Mapa</h6>
             </a>
         </li>
@@ -255,17 +254,13 @@
                 let sizeY = canvas.canvas_height;
 
                 array.forEach(element => {
-                    if(index < numExpos){
-                        // console.log(element);
+                    if(index < numExpos){ 
                         if(element.storeSection === 0){
                             canvas.addExpositores(new Expositor(element.id, element.posX , element.posY , element.width, element.height, element.color.toString()));
-                            // console.log(canvas.getShapes());
                         }
                         else{
                             canvas.addExpositores(new Expositor(element.id, element.posX, element.posY,  element.width, element.height, element.color.toString(), 
-                                element.products, element.capacity, element.divisions, element.storeSection, element.storeSectionColor.toString())); 
-                                
-                            // console.log(canvas.getShapes());
+                                element.products, element.capacity, element.divisions, element.storeSection, element.storeSectionColor.toString()));  
                         }
                     }
                     else{
@@ -275,24 +270,19 @@
                 }); 
                 
                 this.onmousedown = (event) =>{
-                    id = meuMetodo(id).then((expositorId) => {
-                        // console.log(expositorId)
+                    id = meuMetodo(id).then((expositorId) => { 
                         var arrayExpos = array.slice(0, numExpos);
                         var result = arrayExpos.find(item => item.id === expositorId);
                         showProducts(expositorId, result)
                     });
-                }
-
-                console.log(id)
+                } 
 
                 myModal.show();
             }
 
 
             function showProducts(expoID, mapArray) {
-                const productColumn = document.getElementById('productsPlace');
-
-                console.log(mapArray)
+                const productColumn = document.getElementById('productsPlace'); 
                 
                 productColumn.innerHTML = '';
                 var expo = []
