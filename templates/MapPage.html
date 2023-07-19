@@ -5,8 +5,17 @@
 {% endblock styles %}
 
 {% block header %}
-    <h3 class="text-center text-light py-2">Mapa da Loja</h3>  
-
+    <div class="row"> 
+        <div class="col-1 mx-3 py-2 " >
+            <a id="seta" style="cursor:pointer" href="{{url_for('AutenticationClientModule.logOut')}}"> 
+                <div class="fa fa-2xl fa-door-open text-white"></div> 
+            </a>    
+            <h5 class="pt-2 text-white">Sair</h5>   
+        </div>  
+        
+        <h3 class="text-center text-light py-2 col-9">Mapa da Loja</h3> 
+    </div>
+   
     <div class="container gx-0 bg-light rounded-2 col-10 col-sm-8 col-md-6 col-lg-5 col-xl-4">
         <form method="POST" action="" novalidate>
             {{ formFront.csrf_token }}
@@ -51,8 +60,7 @@
                     </button>
                 </div>
             </div> 
-        </div>
-        <!-- caso o utilizador seja visitante, este não terá acesso aos seguintes botões -->
+        </div> 
        
         <div class="row" id="userButtons"> 
             {% if user.id != 0 %}

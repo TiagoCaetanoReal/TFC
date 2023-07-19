@@ -10,9 +10,6 @@ from unidecode import unidecode
 
 ProductsModule = Blueprint("ProductsModule", __name__)
 
-# problema ao clicar no botão editar, no qual consigo receber o id do produto, porem
-# não consigo mudar o template
-# tentar usar um form para ir buscar o id
 @ProductsModule.route("/ProductsList", methods=['GET', 'POST'])
 def seeProductList():
     listForm = ProductsListForm()
@@ -134,11 +131,7 @@ def CreateProduct():
                     seccao = dict(productForm.department.choices).get(productForm.department.data)
 
                     saveImgDir = './static/productPhotos/'+str(store.id)+'/'+ str(seccao).replace(' ', '_')+'/'
-
-                    # alterar o sitio onde é guardada foto, e alterar o nome da foto segundo:
-                    # https://www.youtube.com/watch?v=ZHQtxITPcAs&list=PLCC34OHNcOtolz2Vd9ZSeSXWc8Bq23yEz&index=38
-                
-                    
+  
                     if not os.path.exists(saveImgDir):
                         os.makedirs(saveImgDir)
 
@@ -146,7 +139,7 @@ def CreateProduct():
                     
                     request.files['photoFile'].save(destination)
 
-                    # caso o primeiro elemento do valor seja . em tipo .99 é add 0 ao inicio para ficar 0.99
+                    # caso o primeiro elemento do valor seja . por exemplo .99 é adicionado 0 ao inicio para ficar 0.99
                     if str(productForm.price.data)[0] == '.':
                         productForm.price.data = float(str(0) + str(productForm.price.data))
 
@@ -207,7 +200,7 @@ def CreateProduct():
         return redirect("/login")
 
 
-# verificar se há campos por preencher
+# verificar se há campos por preencher na tabela
 def isFormFilled(form):
     form_data = form._fields
     counter = len(form_data) -1
@@ -226,12 +219,7 @@ def isFormFilled(form):
     else:
         return True, False
 
-
-
-# problema ao clicar no botão editar, no qual consigo receber o id do produto, porem
-# não consigo mudar o template
-# tentar passar o id do produto de forma escondida
-# resolução no script do js, adicionei o submit para enviar o form
+ 
 @ProductsModule.route("/EditProduct", methods=['GET','POST'])
 def AlterProduct():
     productForm = EditProductForm()
@@ -290,22 +278,11 @@ def AlterProduct():
 
             tabela100gr = db.session.query(TabelaNutricional100gr).filter(TabelaNutricional100gr.produto_id==product_id).first()
             tabelaDR = db.session.query(TabelaNutricionalDR).filter(TabelaNutricionalDR.produto_id==product_id).first()
-
-            # tentar realizar a procura de campos preenchidos de forma dinamica e ao fazer-lo inserir no dado da query para fazer o update 
-            #  provavelmente terei de ter os nomes iguais dos dois lados, ou... ou ...
-            #  posso fazer um dicionario com as posiçoes dos campos do modelo ou do form
-        
-            # tentado o debaixo para fazer um dict com as posicçoes dos campos do modelo para 
-            # fazer um ciclo pelos campos do form e caso esse campo tenha sido preenchido 
-            # verifica com o dict o atributo do modelo e troca o seu valor
-            # tipo dict('nome': 1, 'preço':2) -> ('atributo modelo': posição no form)
-
+ 
             if request.method == 'POST':
                 listProduct  = ['nome', 'preço', 'iva_id','unMedida_id','origem_id', 'secção_id', 'photoPath']
                 nutritionalList = ['kcal', 'kj', 'lipidos', 'hidratos', 'açúcares','fibras', 'proteinas', 'sal']
-
-                # tentar adicionar o modal na parte da frente
-                
+ 
                 if productForm.validate() and productForm.editProduct.data == True:
                     try:
                         for index, field in enumerate(productForm):
@@ -335,11 +312,23 @@ def AlterProduct():
                                     valorNutritionalList = nutritionalList[index-8]
                                     if str(field.data) != str(getattr(tabelaDR, valorNutritionalList)) and str(field.data) != '':
                                         setattr(tabelaDR, valorNutritionalList, field.data)
+                            
+                            else:  
+                                new_100grTable =  TabelaNutricional100gr(
+                                    kcal = nutritionForm.kcal100gr.data, kj = nutritionForm.kj100gr.data,
+                                    lipidos = nutritionForm.lipids100gr.data, hidratos = nutritionForm.carbohydrates100gr.data,
+                                    fibras = nutritionForm.sugars100gr.data, proteinas = nutritionForm.fibers100gr.data, 
+                                    açúcares = nutritionForm.protein100gr.data,sal = nutritionForm.salt100gr.data, produto_id = product_id)
+                            
+                                new_DRTable = TabelaNutricionalDR(
+                                    kcal = nutritionForm.kcalDR.data, kj = nutritionForm.kjDR.data,
+                                    lipidos = nutritionForm.lipidsDR.data, hidratos = nutritionForm.carbohydratesDR.data,
+                                    fibras = nutritionForm.sugarsDR.data, proteinas = nutritionForm.fibersDR.data, 
+                                    açúcares = nutritionForm.proteinDR.data,sal = nutritionForm.saltDR.data, produto_id = product_id)
 
-
-                        # problema commit não esta a funcionar
-                        # solução  remover atributos[valor] e utilizar  setattr(produto, valor, field.data) 
-                        # para armazenar o valor modificado objeto da db
+                                db.session.add(new_100grTable)
+                                db.session.add(new_DRTable) 
+ 
                         db.session.commit()
                         return redirect('/ProductsList')
                     
@@ -352,11 +341,8 @@ def AlterProduct():
     else:
         return redirect('/login')
     
-    
- 
-
-# alterar o sitio onde é guardada foto, e alterar o nome da foto segundo:
-# https://www.youtube.com/watch?v=ZHQtxITPcAs&list=PLCC34OHNcOtolz2Vd9ZSeSXWc8Bq23yEz&index=38
+   
+# alterar o sitio onde é guardada foto, e alterar o nome da foto segundo: 
 def save_photo(produto):
     departemant = db.session.query(Secção).filter(Secção.id==produto.secção_id).first()
 

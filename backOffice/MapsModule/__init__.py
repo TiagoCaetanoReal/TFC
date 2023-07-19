@@ -98,17 +98,10 @@ def CreateStoreMap():
         for department in department_group_list:    
             department_presets_group_list.append(department)
 
-        createForm.departments.choices = department_presets_group_list
-
-
-        # fazer um ciclo for para cada um dos de cimas onda da add a bd e depois no fim dá commit
-        # testando solução com um dict 
-        # para depois implementar a serio
+        createForm.departments.choices = department_presets_group_list 
 
         if request.method == 'POST':
-            mapa = json.loads(createForm.map.data)
-
-            print(mapa)
+            mapa = json.loads(createForm.map.data) 
 
             # ober numero de textos
             numLabels = mapa[0]['numLabels']
@@ -119,7 +112,7 @@ def CreateStoreMap():
             db.session.add(new_Map)
             db.session.commit()
 
-            # ir buscar o ultimo mapa a ser criado nesta loja por este funcionario, para utilizar nos commits
+            # busca mapa recém criado, para utilizar nos commits seguintes
             lastMapa = db.session.query(Mapa).filter(Mapa.funcionario_id==active_user.id, Mapa.loja_id == active_user.loja_id, Mapa.eliminado == 0).order_by(Mapa.id.desc()).first()
             
             if(numLabels != 0):
@@ -138,7 +131,7 @@ def CreateStoreMap():
                     db.session.add(new_expo)
                     db.session.commit()
 
-                    # ir buscar o ultimo expo a ser criado neste mapa para utilizar na tabela do ConteudoExpositor
+                    # buscar ultimo expo criado neste mapa para criar ConteudoExpositor
                     lastExpo = db.session.query(Expositor).filter(Expositor.secção_id == element['storeSection'], Expositor.mapa_id == lastMapa.id, Expositor.eliminado == 0).order_by(Expositor.id.desc()).first()
             
                     if(element['products'] != ''):
@@ -213,12 +206,7 @@ def AlterStoreMap():
         for department in department_group_list:    
             department_presets_group_list.append(department)
 
-        editForm.departments.choices = department_presets_group_list
-
-
-        # fazer um ciclo for para cada um dos de cimas onda da add a bd e depois no fim dá commit
-        # testando solução com um dict 
-        # para depois implementar a serio
+        editForm.departments.choices = department_presets_group_list 
 
         if request.method == 'POST':
             mapa = json.loads(editForm.map.data) 
@@ -227,8 +215,7 @@ def AlterStoreMap():
             numLabels = mapa[0]['numLabels']
             # ober numero de textos
             numExpos = mapa[0]['numExpos']
-
-            # ___________________________________working_______________________________________________ 
+ 
             # apartir das tag na db ver quais foram alteradas/removidas e adicionadas
             if(numLabels != 0):
                 listLabelsTag = ['coordenadaX','coordenadaY','comprimento','altura','angulo','texto']
@@ -238,11 +225,10 @@ def AlterStoreMap():
                 ids_tags = [tag.id for tag in tags]
 
                 editedTag = []
-                
-                ####################################################
+                 
                 # verifica se existem tags novas/eliminadas ou modificadas
                 for element in mapa[1+numExpos:]:
-                    # verifica se a tags eliminadas ou modificadas
+                    # verifica se há tags eliminadas ou modificadas
                     if element['id'] in ids_tags:
                         editedTag.append(element['id'])
 
@@ -254,19 +240,15 @@ def AlterStoreMap():
 
                                 if str(element[field]) != str(getattr(modifiedTag, valor)):
                                     setattr(modifiedTag, valor, element[field])
-                        
-                    
+                         
                     # verifica se existem tags novas
                     else:
                         editedTag.append(element['id'])
                     
                     db.session.commit()  
-                ####################################################
-
-                # tentar verificar pelos ids quais as tag que existem ainda e que foram adicionadas
                 
-                ####################################################
-                # se existirem novos arcadores, estes são adicionados á db
+  
+                # se existirem novos marcadores, estes são adicionados a db
                 newTags = [x for x in editedTag if x not in ids_tags]
 
                 if newTags:
@@ -276,23 +258,17 @@ def AlterStoreMap():
                                 new_marker = Marcador(mapa_id = idmap, angulo = element['angle'], coordenadaX = element['posX'], coordenadaY = element['posY'], 
                                                         comprimento = element['width'], altura = element['height'], texto = element['value'])
                                 db.session.add(new_marker)
-                    db.session.commit()
-                ####################################################
+                    db.session.commit() 
 
 
-                ####################################################
-                # se existirem marcadores removidos
                 ids_tags = [x for x in ids_tags if x not in editedTag]
 
                 if ids_tags:
                     for tag in ids_tags:
                         deletedTag = db.session.query(Marcador).filter(Marcador.id == tag, Marcador.eliminado == 0).first()
                         deletedTag.eliminado = True
-                    db.session.commit()
-                ####################################################
-
-            #tentar guardar dados novos dos mesmo elementos
-            #^ter cuidado com aqueles que são apagados, ver se id existe caso contrario fazer delete
+                    db.session.commit() 
+  
             if(numLabels != 0):
                 listLabelsTag = ['coordenadaX','coordenadaY','comprimento','altura','angulo','texto']
 
@@ -303,7 +279,7 @@ def AlterStoreMap():
                                          comprimento = element['width'], altura = element['height'], texto = element['value'])
                     
                     db.session.commit()
-            #####################################################################################################################
+                    
 
             if(numExpos != 0):
                 listLabelsExpositor  = ['coordenadaX', 'coordenadaY', 'comprimento', 'altura','capacidade', 'divisorias',  'secção_id']
@@ -313,12 +289,10 @@ def AlterStoreMap():
                 ids_expos = [expo.id for expo in expos]
 
                 editedExpos = []
-                ####################################################
+                 
                 # verifica se existem expos novos/eliminados ou modificados
-                for element in mapa[1:numExpos+1]:  
-
-                    # guarda e processa os expos modificados
-                    if element['id'] in ids_expos:
+                for element in mapa[1:numExpos+1]:   
+                    if element['id'] in ids_expos: 
 
                         editedExpos.append(element['id'])
 
@@ -352,8 +326,7 @@ def AlterStoreMap():
                     else:
                         editedExpos.append(element['id'])
                     
-                    db.session.commit()  
-                ####################################################
+                    db.session.commit()   
 
 
                 newExpos = [x for x in editedExpos if x not in ids_expos]
@@ -369,10 +342,10 @@ def AlterStoreMap():
                                         comprimento = element['width'], altura = element['height'], secção_id = element['storeSection'], mapa_id = idmap)
                                 db.session.add(new_expo)
                                 db.session.commit()
+
                                 # procura o expo acabado de criar para utilizar na criação dp conteudoExpositor
                                 lastExpo = db.session.query(Expositor).filter(Expositor.mapa_id == idmap).order_by(Expositor.id.desc()).first()
-                              
-                                # 
+                               
                                 if lastExpo: 
                                     # armazena o id dos novos expos
                                     newExpoIds.append(lastExpo.id)
@@ -390,9 +363,8 @@ def AlterStoreMap():
                                
                             db.session.commit()
 
-
-            # ####################################################
-            # # se existirem expositores e conteudoExpo removidos
+ 
+                # se existirem expositores e conteudoExpo removidos
                 ids_expos = [x for x in ids_expos if x not in editedExpos] 
 
                 if ids_expos:
@@ -402,8 +374,7 @@ def AlterStoreMap():
                         
                         deletedContent = db.session.query(ConteudoExpositor).filter(ConteudoExpositor.expositor_id == id, ConteudoExpositor.eliminado == 0).first()
                         deletedContent.eliminado = True
-                    db.session.commit()
-            ####################################################
+                    db.session.commit() 
 
             return redirect('/MapsList')
 
@@ -418,7 +389,7 @@ def AlterStoreMap():
 @MapsModule.route("/fetchMap", methods=['GET','POST'])
 def fetchMap():
 
-    # fzer queries para obter dados do mapa e mostra-lo no frontend enviando um json
+    # fazer queries para obter dados do mapa e mostra-lo no frontend enviando um json
     if session.get('map') is not None:
         map_id = session.get('map')
         mapDictList = []

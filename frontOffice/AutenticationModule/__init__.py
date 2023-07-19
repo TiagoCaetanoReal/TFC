@@ -1,9 +1,8 @@
-from flask import Blueprint, flash, request, session
-from flask import redirect, render_template, url_for
+from flask import Blueprint, request, session
+from flask import redirect, render_template 
 from forms import ClienteLoginForm, ClienteRegisterForm, ClienteEditForm, ClienteScanStore
 from models import db, Cliente, bcrypt
-from flask_login import login_user, logout_user, current_user
-from datetime import datetime, timedelta
+from flask_login import login_user, logout_user, current_user 
 
 AutenticationClientModule = Blueprint("AutenticationClientModule", __name__)
 
@@ -131,11 +130,9 @@ def doAlteration():
                                     l.append("Campo deve conter entre 5 e 20 caracteres")
                                     form.confirm_password.errors = tuple(l) 
                                 
-                                if(form.password_cliente.data == form.confirm_password.data):
-                                    print("FFFFFFFFFFFFFFFFFFFFF")
+                                if(form.password_cliente.data == form.confirm_password.data): 
                                     encrypted_password = bcrypt.generate_password_hash(form.confirm_password.data).decode('UTF-8')
                                     userData.password = encrypted_password
-                                    print(encrypted_password)
 
                             elif form.password_cliente.data == '' :
                                 l = list(form.password_cliente.errors)
@@ -164,3 +161,9 @@ def doAlteration():
     
     else:
         return redirect('\login')
+    
+
+@AutenticationClientModule.route('/logout')
+def logOut():
+   logout_user()
+   return redirect('/login')

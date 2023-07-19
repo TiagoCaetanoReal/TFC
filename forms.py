@@ -30,7 +30,7 @@ class FuncionarioEditForm(FlaskForm):
 
 class CreateProductForm(FlaskForm):
     name = StringField(label="Inserir o Nome do Produto", render_kw={"placeholder": "Baguete"}, validators=[InputRequired(), Length(min=3, max=40)])
-    price = StringField(label="Inserir o Preço do Produto", render_kw={"placeholder": "3.50"}, validators=[InputRequired()])
+    price = StringField(label="Inserir o Preço do Produto com Iva", render_kw={"placeholder": "3.50"}, validators=[InputRequired()])
     iva = SelectField(label='Inserir a Percentagem do Iva', coerce=str, validators=[DataRequired()])
     metric = SelectField('Inserir a Unidade de Medida', coerce=str, validators=[DataRequired()])        
     origin = SelectField(label='Inserir a Origem do Produto', coerce=str, validators=[DataRequired()])
@@ -43,7 +43,7 @@ class CreateProductForm(FlaskForm):
 
 class EditProductForm(FlaskForm):
     name = StringField(label="Inserir o Nome do Produto", render_kw={"placeholder": "Baguete"}, validators=[InputRequired(), Length(min=3, max=40)])
-    price = StringField(label="Inserir o Preço do Produto", render_kw={"placeholder": "3.50"}, validators=[InputRequired()])
+    price = StringField(label="Inserir o Preço do Produto com Iva", render_kw={"placeholder": "3.50"}, validators=[InputRequired()])
     iva = SelectField(label='Inserir a Percentagem do Iva', coerce=str, validators=[DataRequired()])
     metric = SelectField('Inserir a Unidade de Medida', coerce=str, validators=[DataRequired()])        
     origin = SelectField(label='Inserir a Origem do Produto', coerce=str, validators=[DataRequired()])
