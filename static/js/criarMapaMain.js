@@ -313,7 +313,7 @@ createMap.onmousedown = (event) =>{
         index ++; 
         
         canvas.getShapes().forEach(element => {
-            array[index] = {"id": element.id, "posX": element.posX, "posY": element.posY, "width": element.width,
+            array[index] = {"id": element.id, "posX": element.posX + 2, "posY": element.posY, "width": element.width,
                             "height": element.height, "products": element.products, "capacity": element.capacity, 
                             "divisions": element.divisions, "storeSection": element.storeSection};
             index ++;

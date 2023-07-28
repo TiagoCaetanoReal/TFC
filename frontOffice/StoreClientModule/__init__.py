@@ -1,5 +1,6 @@
 from flask import Blueprint, request, session, jsonify
 from flask import redirect, render_template
+from sqlalchemy import or_
 from forms import ClienteSearchProduct, ClienteStoreMap
 from models import Favorito, Iva, Medida, Origem, Produto, TabelaNutricional100gr, TabelaNutricionalDR, db,  Mapa, Expositor, Marcador, ConteudoExpositor, Secção
 from flask_login import current_user  
@@ -205,7 +206,13 @@ def locateProduct():
     product_id = request.form['idProduto']  
     map_id = session.get('map')
 
+    print(product_id)
+
     expos = db.session.query(Expositor).filter(Expositor.mapa_id == map_id).all()
+
+    print(expos)
+
+    
 
     wantedExpo = db.session.query(ConteudoExpositor).filter(
         (
@@ -219,7 +226,11 @@ def locateProduct():
         (ConteudoExpositor.expositor_id.in_([expo.id for expo in expos]))
     ).first()
 
+
+
     if wantedExpo:
+        
+        print(wantedExpo.expositor_id)
         session['wantedExpo'] = wantedExpo.expositor_id
 
     try: 
@@ -256,13 +267,23 @@ def seeSearchResult():
 
             # problema não conseguia procurar objetos com acentos
             # resolução adicionei uma coluna a tabela produtos no qual o nome é escrito com caracteres simples
+            # products =  db.session.query(Expositor, ConteudoExpositor, Produto).filter(
+            #     Expositor.mapa_id == map_id, ConteudoExpositor.expositor_id == Expositor.id,
+            #     Produto.nomeUnaccented.ilike(productName_normalized), ConteudoExpositor.produto1_id == Produto.id |
+            #     ConteudoExpositor.produto2_id == Produto.id | ConteudoExpositor.produto3_id == Produto.id|
+            #     ConteudoExpositor.produto4_id == Produto.id|ConteudoExpositor.produto5_id == Produto.id|
+            #     ConteudoExpositor.produto6_id == Produto.id).all()
+            
             products =  db.session.query(Expositor, ConteudoExpositor, Produto).filter(
                 Expositor.mapa_id == map_id, ConteudoExpositor.expositor_id == Expositor.id,
-                Produto.nomeUnaccented.ilike(productName_normalized), ConteudoExpositor.produto1_id == Produto.id |
-                ConteudoExpositor.produto2_id == Produto.id|ConteudoExpositor.produto3_id == Produto.id|
-                ConteudoExpositor.produto4_id == Produto.id|ConteudoExpositor.produto5_id == Produto.id|
-                ConteudoExpositor.produto6_id == Produto.id).all()
-             
+                Produto.nomeUnaccented.ilike(productName_normalized)).filter(or_(
+                Produto.id == ConteudoExpositor.produto1_id,
+                Produto.id == ConteudoExpositor.produto2_id,
+                Produto.id == ConteudoExpositor.produto3_id,
+                Produto.id == ConteudoExpositor.produto4_id,
+                Produto.id == ConteudoExpositor.produto5_id,
+                Produto.id == ConteudoExpositor.produto6_id,
+            ))
 
             if active_user.id != 0:
                 for product in products: 
@@ -275,6 +296,3 @@ def seeSearchResult():
             return redirect('/Store')
     else:
         return redirect("/login")
-    
-    # só falta realizar a procura do produto
-    # depois tentar alinhar o mapa e adicionar os botões para entender se o user encontrou o produto

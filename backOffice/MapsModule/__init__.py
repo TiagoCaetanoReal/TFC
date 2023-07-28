@@ -307,20 +307,34 @@ def AlterStoreMap():
                                     setattr(modifiedExpo, valor, element[field])
                                 
                             elif index == 5:
-                                
+                                new_expoContent = ''
                                 modifiedExpoContent = db.session.query(ConteudoExpositor).filter(ConteudoExpositor.expositor_id == element['id'], ConteudoExpositor.eliminado == 0).first()
 
                                 for index, product in enumerate(element[field]):
                                     valorProduct = listConteudoExpositor[index]
 
-                                    if str(product) != str(getattr(modifiedExpoContent, valorProduct)):
-                                        setattr(modifiedExpoContent, valorProduct, product)
+                                    if modifiedExpoContent:
+                                        if str(product) != str(getattr(modifiedExpoContent, valorProduct)):
+                                            setattr(modifiedExpoContent, valorProduct, product)
+
+                                    else:
+                                        new_expoContent = ConteudoExpositor( expositor_id = element['id'])
+
+                                        for i, product in enumerate(listConteudoExpositor):
+                                            if i < len(element['products']):
+                                                setattr(new_expoContent, f"produto{i+1}_id", element['products'][i])
+                                            else:
+                                                setattr(new_expoContent, f"produto{i+1}_id", None)
+                                
+                                if new_expoContent != '':
+                                    db.session.add(new_expoContent)
 
                             elif index  > 5 and index < 9:
                                 valor = listLabelsExpositor[index-2]
 
                                 if str(element[field]) != str(getattr(modifiedExpo, valor)):
                                     setattr(modifiedExpo, valor, element[field])
+                                    
                             
                     # guarda os expos novos
                     else:
@@ -404,8 +418,10 @@ def fetchMap():
         for expo in expos:
             produtos = []
             conteudoExpositores = db.session.query(ConteudoExpositor).filter(ConteudoExpositor.expositor_id == expo.id, ConteudoExpositor.eliminado == 0).first()
-            for index in range(expo.capacidade):
-                produtos.append(getattr(conteudoExpositores, f"produto{index+1}_id"))
+            
+            if conteudoExpositores:
+                for index in range(expo.capacidade):
+                    produtos.append(getattr(conteudoExpositores, f"produto{index+1}_id"))
 
             colorQuery = db.session.query(Secção).filter(Secção.id==expo.secção_id).first()
             

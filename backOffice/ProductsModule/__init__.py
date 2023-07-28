@@ -300,37 +300,56 @@ def AlterProduct():
 
                                     setattr(produto, valor, field.data)
 
-                        for index, field in enumerate(nutritionForm):
-                            if tabela100gr and tabelaDR:  
-                                if index < 8 :   
-                                    valorNutritionalList = nutritionalList[index]
-                                    
-                                    if str(field.data) != str(getattr(tabela100gr, valorNutritionalList)) and str(field.data) != '':
-                                        setattr(tabela100gr, valorNutritionalList, field.data)
-                                    
-                                if index >= 8 and index < 16:    
-                                    valorNutritionalList = nutritionalList[index-8]
-                                    if str(field.data) != str(getattr(tabelaDR, valorNutritionalList)) and str(field.data) != '':
-                                        setattr(tabelaDR, valorNutritionalList, field.data)
-                            
-                            else:  
-                                new_100grTable =  TabelaNutricional100gr(
-                                    kcal = nutritionForm.kcal100gr.data, kj = nutritionForm.kj100gr.data,
-                                    lipidos = nutritionForm.lipids100gr.data, hidratos = nutritionForm.carbohydrates100gr.data,
-                                    fibras = nutritionForm.sugars100gr.data, proteinas = nutritionForm.fibers100gr.data, 
-                                    açúcares = nutritionForm.protein100gr.data,sal = nutritionForm.salt100gr.data, produto_id = product_id)
-                            
-                                new_DRTable = TabelaNutricionalDR(
-                                    kcal = nutritionForm.kcalDR.data, kj = nutritionForm.kjDR.data,
-                                    lipidos = nutritionForm.lipidsDR.data, hidratos = nutritionForm.carbohydratesDR.data,
-                                    fibras = nutritionForm.sugarsDR.data, proteinas = nutritionForm.fibersDR.data, 
-                                    açúcares = nutritionForm.proteinDR.data,sal = nutritionForm.saltDR.data, produto_id = product_id)
 
-                                db.session.add(new_100grTable)
-                                db.session.add(new_DRTable) 
- 
-                        db.session.commit()
-                        return redirect('/ProductsList')
+
+                        fullyFilled, partFilled = isFormFilled(nutritionForm)
+
+                        print(fullyFilled)
+                        print(partFilled)
+
+                               
+                        if(fullyFilled and not partFilled):
+                            for index, field in enumerate(nutritionForm):
+                                if tabela100gr and tabelaDR:  
+                                    if index < 8 :   
+                                        valorNutritionalList = nutritionalList[index]
+                                        
+                                        if str(field.data) != str(getattr(tabela100gr, valorNutritionalList)) and str(field.data) != '':
+                                            setattr(tabela100gr, valorNutritionalList, field.data)
+                                        
+                                    if index >= 8 and index < 16:    
+                                        valorNutritionalList = nutritionalList[index-8]
+                                        if str(field.data) != str(getattr(tabelaDR, valorNutritionalList)) and str(field.data) != '':
+                                            setattr(tabelaDR, valorNutritionalList, field.data)
+                                
+                                else:  
+                                    new_100grTable =  TabelaNutricional100gr(
+                                        kcal = nutritionForm.kcal100gr.data, kj = nutritionForm.kj100gr.data,
+                                        lipidos = nutritionForm.lipids100gr.data, hidratos = nutritionForm.carbohydrates100gr.data,
+                                        fibras = nutritionForm.sugars100gr.data, proteinas = nutritionForm.fibers100gr.data, 
+                                        açúcares = nutritionForm.protein100gr.data,sal = nutritionForm.salt100gr.data, produto_id = product_id)
+                                
+                                    new_DRTable = TabelaNutricionalDR(
+                                        kcal = nutritionForm.kcalDR.data, kj = nutritionForm.kjDR.data,
+                                        lipidos = nutritionForm.lipidsDR.data, hidratos = nutritionForm.carbohydratesDR.data,
+                                        fibras = nutritionForm.sugarsDR.data, proteinas = nutritionForm.fibersDR.data, 
+                                        açúcares = nutritionForm.proteinDR.data,sal = nutritionForm.saltDR.data, produto_id = product_id)
+
+                                    db.session.add(new_100grTable)
+                                    db.session.add(new_DRTable) 
+                                    
+                            db.session.commit()
+                            return redirect('/ProductsList')
+
+                        elif(not fullyFilled and partFilled):
+                            l = list(nutritionForm.kcal100gr.errors)
+                            l.append("Ao preencher uma celula da tabela tem de a preencher toda")
+                            nutritionForm.kcal100gr.errors = tuple(l)
+
+                        elif(not fullyFilled and not partFilled):
+                            db.session.commit()
+                            return redirect('/ProductsList')
+                         
                     
                     except SQLAlchemyError as e:
                         print(f'Erro ao editar o produto: {str(e)}')

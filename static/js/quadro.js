@@ -162,10 +162,10 @@ export class Quadro{
         for(let text of this.texts){
             this.context.fillStyle = '#000';
 
-            this.context.save();
+            this.context.save(); 
             this.context.translate(text.posX - text.width / 2, text.posY - text.height / 2);
             this.context.rotate(text.get_angle() * Math.PI / 180);
-            this.context.fillText(text.text, -text.width / 2,  text.height / 4);
+            this.context.fillText(text.text, - text.width / 2,  text.height /2);
 
             this.context.restore();
         }
