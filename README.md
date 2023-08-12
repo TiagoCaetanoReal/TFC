@@ -1,4 +1,6 @@
-# Este projeto foi realizado no ambito do Projeto Final de Curso, no istituto ISMAT.
+# WebApp Acha-Me
+
+Este projeto foi realizado no ambito do Projeto Final de Curso, no istituto ISMAT.
 
 O projeto tem como objetivo a criação de uma aplicação web acessivel a clientes de uma loja/supermercado, que auxilia os clientes a localizarem os produtos existentes na mesma.
 
